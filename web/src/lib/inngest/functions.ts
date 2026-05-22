@@ -19,14 +19,14 @@ function chunkText(text: string, chunkSize: number = 2000): string[] {
 export const processDocument = inngest.createFunction(
   { id: "process-document", triggers: [{ event: "document.process" }] },
   async ({ event, step }) => {
-    const { documentId, fileUrl, userId } = event.data;
+    const { documentId, filePath, userId } = event.data;
 
     // 1. Download the file from Supabase Storage
     const fileContent = await step.run("download-file", async () => {
-      // Assuming 'documents' is the bucket and fileUrl is the path inside the bucket
+      // filePath is the storage path (e.g. "userId/ts-filename.pdf") — not a URL
       const { data, error } = await supabaseAdmin.storage
         .from('documents')
-        .download(fileUrl);
+        .download(filePath);
         
       if (error || !data) {
         throw new Error(`Failed to download file: ${error?.message}`);
@@ -42,7 +42,7 @@ export const processDocument = inngest.createFunction(
     // 3. Call Gemini API to extract entities and relationships
     const extractedData = await step.run("extract-graph", async () => {
       const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash",
+        model: "gemini-2.5-flash",
         generationConfig: {
           responseMimeType: "application/json"
         }

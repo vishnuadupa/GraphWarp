@@ -15,15 +15,16 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { question } = body;
+    // Frontend sends `message`; accept both for compatibility
+    const question: string = body.message ?? body.question;
 
     if (!question) {
-      return NextResponse.json({ error: 'Question is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
     // 1. Extract Entities using Gemini 1.5 Flash
     const extractModel = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       generationConfig: {
         responseMimeType: 'application/json'
       }
@@ -83,10 +84,10 @@ export async function POST(req: NextRequest) {
           const rType = r.properties.type;
 
           if (!nodeMap.has(nName)) {
-            nodeMap.set(nName, { id: nName, label: nName });
+            nodeMap.set(nName, { id: nName, name: nName });
           }
           if (!nodeMap.has(mName)) {
-            nodeMap.set(mName, { id: mName, label: mName });
+            nodeMap.set(mName, { id: mName, name: mName });
           }
 
           const linkId = `${r.identity.toNumber()}`;
@@ -116,7 +117,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Synthesize Answer using Gemini 1.5 Pro
-    const synthModel = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
+    const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
     const synthPrompt = `
       You are a helpful assistant. Answer the user's question based ONLY on the following knowledge graph context. 
       If the context doesn't contain the answer, say "I don't have enough information to answer that."

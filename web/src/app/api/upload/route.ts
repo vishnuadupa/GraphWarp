@@ -12,10 +12,10 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { fileUrl, filename } = body;
+    const { filePath, filename } = body;
 
-    if (!fileUrl || !filename) {
-      return NextResponse.json({ error: 'Missing fileUrl or filename' }, { status: 400 });
+    if (!filePath || !filename) {
+      return NextResponse.json({ error: 'Missing filePath or filename' }, { status: 400 });
     }
 
     const { data: document, error: insertError } = await supabase
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       .insert({
         user_id: user.id,
         filename: filename,
-        storage_path: fileUrl,
+        storage_path: filePath,
         status: 'Processing',
       })
       .select()
@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       name: 'document.process',
       data: {
         documentId: document.id,
-        fileUrl,
+        filePath,
         userId: user.id
       }
     });

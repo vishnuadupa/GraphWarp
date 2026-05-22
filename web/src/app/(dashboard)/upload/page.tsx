@@ -57,18 +57,14 @@ export default function UploadPage() {
           continue;
         }
 
-        // 2. Get the public URL
-        const { data: urlData } = supabase.storage
-          .from("documents")
-          .getPublicUrl(path);
-
-        // 3. Notify the backend API
+        // 2. Notify the backend API with the storage path (not a public URL —
+        //    the bucket is private; the server downloads it with the service key)
         try {
           await fetch("/api/upload", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              fileUrl: urlData.publicUrl,
+              filePath: path,
               filename: file.name,
             }),
           });
