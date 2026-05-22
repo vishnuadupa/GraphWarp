@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -25,8 +25,7 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // Refresh the session so it stays valid — do NOT remove this line.
-  // See: https://supabase.com/docs/guides/auth/server-side/nextjs
+  // Refresh the session cookie on every request so it stays valid.
   await supabase.auth.getUser()
 
   return supabaseResponse
@@ -34,9 +33,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except static files and Next.js internals.
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

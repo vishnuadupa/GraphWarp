@@ -5,6 +5,33 @@ import { driver } from '@/lib/neo4j/neo4j';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+/** Retry a Gemini call up to `maxAttempts` times on 503 / overload errors. */
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxAttempts = 3,
+  baseDelayMs = 1500
+): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      const msg: string = err?.message ?? '';
+      const isRetryable =
+        msg.includes('503') ||
+        msg.includes('Service Unavailable') ||
+        msg.includes('overloaded') ||
+        msg.includes('high demand');
+      if (!isRetryable || attempt === maxAttempts) throw err;
+      const delay = baseDelayMs * Math.pow(2, attempt - 1); // 1.5 s, 3 s
+      console.warn(`Gemini 503 on attempt ${attempt}, retrying in ${delay}ms…`);
+      await new Promise((r) => setTimeout(r, delay));
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -22,8 +49,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    // 1. Extract Entities using Gemini 1.5 Flash
-    const extractModel = genAI.getGenerativeModel({ 
+    // 1. Extract Entities using Gemini 2.5 Flash
+    const extractModel = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
       generationConfig: {
         responseMimeType: 'application/json'
@@ -37,31 +64,30 @@ export async function POST(req: NextRequest) {
       Question: ${question}
     `;
 
-    const extractResult = await extractModel.generateContent(extractPrompt);
+    const extractResult = await withRetry(() => extractModel.generateContent(extractPrompt));
     const extractText = extractResult.response.text();
     
     let entities: string[] = [];
     try {
-      const jsonMatch = extractText.match(/\[[\s\S]*\]/);
-      entities = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(extractText);
+      entities = JSON.parse(extractText);
     } catch (e) {
       console.warn('Failed to parse entities:', extractText);
       entities = [];
     }
 
     // 2. Query Neo4j for the Subgraph
-    const session = driver.session();
     let nodes: any[] = [];
     let links: any[] = [];
     let subgraphData = '';
-    
+
     if (entities.length > 0) {
+      const session = driver.session();
       try {
         const result = await session.executeRead(async (tx) => {
           return tx.run(
             `
             MATCH (n:Entity)-[r:RELATION]-(m:Entity)
-            WHERE n.user_id = $userId AND n.name IN $entities
+            WHERE n.user_id = $userId AND toLower(n.name) IN [e IN $entities | toLower(e)]
             AND m.user_id = $userId
             RETURN n, r, m
             LIMIT 100
@@ -107,7 +133,48 @@ export async function POST(req: NextRequest) {
         });
 
         nodes = Array.from(nodeMap.values());
-        subgraphData = Array.from(pathStrings).join('\\n');
+        subgraphData = Array.from(pathStrings).join('\n');
+
+        // Fallback: if exact-ish match found nothing, do a CONTAINS search
+        if (nodes.length === 0) {
+          const fallbackResult = await session.executeRead(async (tx) => {
+            // Build OR conditions for each entity keyword
+            const conditions = entities
+              .map((_: string, i: number) => `toLower(n.name) CONTAINS $e${i}`)
+              .join(' OR ');
+            const params: Record<string, string> = { userId: user.id };
+            entities.forEach((e: string, i: number) => { params[`e${i}`] = e.toLowerCase(); });
+            return tx.run(
+              `MATCH (n:Entity)-[r:RELATION]-(m:Entity)
+               WHERE n.user_id = $userId AND m.user_id = $userId
+               AND (${conditions})
+               RETURN n, r, m LIMIT 100`,
+              params
+            );
+          });
+
+          fallbackResult.records.forEach((record) => {
+            const n = record.get('n');
+            const r = record.get('r');
+            const m = record.get('m');
+            const nName = n.properties.name;
+            const mName = m.properties.name;
+            const rType = r.properties.type;
+            if (!nodeMap.has(nName)) nodeMap.set(nName, { id: nName, name: nName });
+            if (!nodeMap.has(mName)) nodeMap.set(mName, { id: mName, name: mName });
+            const linkId = `${r.identity.toNumber()}`;
+            if (!linkMap.has(linkId)) {
+              const src = r.start.toNumber() === n.identity.toNumber() ? nName : mName;
+              const tgt = r.start.toNumber() === n.identity.toNumber() ? mName : nName;
+              links.push({ source: src, target: tgt, label: rType });
+              linkMap.set(linkId, true);
+              pathStrings.add(`${src} -[${rType}]-> ${tgt}`);
+            }
+          });
+
+          nodes = Array.from(nodeMap.values());
+          subgraphData = Array.from(pathStrings).join('\n');
+        }
 
       } catch (error) {
         console.error('Neo4j Query Error:', error);
@@ -116,8 +183,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 3. Synthesize Answer using Gemini 1.5 Pro
-    const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+    // 3. Synthesize Answer using Gemini 2.5 Flash
+    const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const synthPrompt = `
       You are a helpful assistant. Answer the user's question based ONLY on the following knowledge graph context. 
       If the context doesn't contain the answer, say "I don't have enough information to answer that."
@@ -128,7 +195,7 @@ export async function POST(req: NextRequest) {
       Question: ${question}
     `;
 
-    const synthResult = await synthModel.generateContent(synthPrompt);
+    const synthResult = await withRetry(() => synthModel.generateContent(synthPrompt));
     const answer = synthResult.response.text();
 
     return NextResponse.json({

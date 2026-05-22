@@ -41,7 +41,7 @@ export const processDocument = inngest.createFunction(
 
     // 3. Call Gemini API to extract entities and relationships
     const extractedData = await step.run("extract-graph", async () => {
-      const model = genAI.getGenerativeModel({ 
+      const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
         generationConfig: {
           responseMimeType: "application/json"

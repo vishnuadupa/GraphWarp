@@ -9,7 +9,15 @@
       "Bash(claude mcp *)",
       "mcp__Claude_in_Chrome__browser_batch",
       "Bash(claude /mcp)",
-      "Bash(echo \"exit: $?\")"
+      "Bash(echo \"exit: $?\")",
+      "mcp__8a971c25-1ea2-4f80-89ec-53e3724f100d__execute_sql",
+      "mcp__8a971c25-1ea2-4f80-89ec-53e3724f100d__get_logs",
+      "WebFetch(domain:ai.google.dev)",
+      "Bash(del \"D:\\\\Graph\\\\web\\\\src\\\\app\\\\api\\\\debug\\\\route.ts\")",
+      "Bash(vercel env *)",
+      "Bash(vercel inspect *)",
+      "Bash(vercel logs *)",
+      "Bash(npx next *)"
     ]
   }
 }

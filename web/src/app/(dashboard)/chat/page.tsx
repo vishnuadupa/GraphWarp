@@ -58,14 +58,17 @@ export default function ChatPage() {
         }),
       });
 
-      if (!res.ok) throw new Error(`API ${res.status}`);
-
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.details || data?.error || `API ${res.status}`);
+      }
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: data.answer ?? "(no response)" },
       ]);
-      if (data.graph) setGraph(data.graph);
+      // Only replace the graph when the response actually has nodes —
+      // an empty graph from a no-match query should not wipe the existing view.
+      if (data.graph?.nodes?.length > 0) setGraph(data.graph);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unknown error";
       setMessages((prev) => [
