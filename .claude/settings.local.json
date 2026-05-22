@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Recurse -Depth 4 D:\\\\Graph\\\\web)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Format-Table -AutoSize)",
+      "mcp__mcp-registry__search_mcp_registry",
+      "Bash(npx skills *)"
+    ]
+  }
+}
