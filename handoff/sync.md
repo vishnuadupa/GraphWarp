@@ -52,6 +52,9 @@ To avoid Git conflicts and hallucinations, do not edit files outside your assign
 
 ---
 ## ✅ Completed Tasks
-- **Task #1 (UI Foundation):** Claude scaffolded the landing page, globals.css, and `UploadDropzone` component.
+- **Task #1 (UI Foundation — redo):** Hallmark redesign of landing page. Narrative Workflow macrostructure, Quiet theme (light modern-minimal), OKLCH token system, JetBrains Mono display + Geist body. Files: `tokens.css`, `globals.css`, `layout.tsx`, `page.tsx`.
 - **Task #1 (Backend Foundation):** Antigravity initialized Next.js, defined the subagent personas, and established the Handoff protocol.
+- **Task #2 (Frontend Auth UI):** Login + signup pages with Supabase `signInWithPassword` / `signUp`. Browser client via `@supabase/ssr`. Nav upgraded to Next.js `<Link>`.
 - **Task #2 (Backend Security):** Antigravity Security-DBA wrote the strict Supabase SQL schemas and RLS multi-tenant policies.
+- **Task #3 (Upload UI):** Dashboard upload page — auth-guarded, wired to Supabase Storage + `/api/upload`.
+- **Task #4 (Chat + Graph UI):** Split-screen chat page + `ForceGraph` component (`react-force-graph-2d`, SSR-safe).

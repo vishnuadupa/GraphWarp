@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
             nodeMap.set(mName, { id: mName, label: mName });
           }
 
-          const linkId = \`\${r.identity.toNumber()}\`;
+          const linkId = `${r.identity.toNumber()}`;
           if (!linkMap.has(linkId)) {
             links.push({
               source: r.start.toNumber() === n.identity.toNumber() ? nName : mName,
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
           // Format for LLM context
           const sourceName = r.start.toNumber() === n.identity.toNumber() ? nName : mName;
           const targetName = r.start.toNumber() === n.identity.toNumber() ? mName : nName;
-          pathStrings.add(\`\${sourceName} -[\${rType}]-> \${targetName}\`);
+          pathStrings.add(`${sourceName} -[${rType}]-> ${targetName}`);
         });
 
         nodes = Array.from(nodeMap.values());
@@ -117,15 +117,15 @@ export async function POST(req: NextRequest) {
 
     // 3. Synthesize Answer using Gemini 1.5 Pro
     const synthModel = genAI.getGenerativeModel({ model: 'gemini-1.5-pro' });
-    const synthPrompt = \`
+    const synthPrompt = `
       You are a helpful assistant. Answer the user's question based ONLY on the following knowledge graph context. 
       If the context doesn't contain the answer, say "I don't have enough information to answer that."
 
       Context (Knowledge Graph paths):
-      \${subgraphData || "No relevant information found in the graph."}
+      ${subgraphData || "No relevant information found in the graph."}
 
-      Question: \${question}
-    \`;
+      Question: ${question}
+    `;
 
     const synthResult = await synthModel.generateContent(synthPrompt);
     const answer = synthResult.response.text();

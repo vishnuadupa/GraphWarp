@@ -110,17 +110,7 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
           </p>
         </div>
 
-        {/* Processing placeholder badge */}
-        <div
-          className="absolute bottom-4 right-4 text-xs px-2 py-1 rounded-full"
-          style={{
-            background: "rgba(6,182,212,0.1)",
-            border: "1px solid rgba(6,182,212,0.2)",
-            color: "#67e8f9",
-          }}
-        >
-          API not wired — placeholder
-        </div>
+
       </label>
 
       {/* Queue */}

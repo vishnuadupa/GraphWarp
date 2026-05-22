@@ -68,7 +68,7 @@ export default function UploadPage() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              file_url: urlData.publicUrl,
+              fileUrl: urlData.publicUrl,
               filename: file.name,
             }),
           });
@@ -144,6 +144,14 @@ export default function UploadPage() {
                   </span>
                 </div>
               ))}
+              
+              {statuses.some(s => s.state === "done") && (
+                <div className="mt-8 flex justify-center">
+                  <Link href="/chat" className="btn-ink-full text-center" style={{ width: '100%' }}>
+                    Next Step: Ask the Knowledge Graph →
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>

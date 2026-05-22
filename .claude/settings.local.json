@@ -5,7 +5,11 @@
       "Bash(Select-Object FullName, PSIsContainer)",
       "Bash(Format-Table -AutoSize)",
       "mcp__mcp-registry__search_mcp_registry",
-      "Bash(npx skills *)"
+      "Bash(npx skills *)",
+      "Bash(claude mcp *)",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "Bash(claude /mcp)",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }

@@ -60,3 +60,24 @@ CREATE POLICY "Users can select their own embeddings" ON public.document_embeddi
 CREATE POLICY "Users can insert their own embeddings" ON public.document_embeddings FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update their own embeddings" ON public.document_embeddings FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can delete their own embeddings" ON public.document_embeddings FOR DELETE USING (auth.uid() = user_id);
+
+-- ==========================================
+-- 4. Storage Bucket Configuration
+-- ==========================================
+-- Insert the 'documents' bucket into the storage schema
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('documents', 'documents', false)
+ON CONFLICT (id) DO NOTHING;
+
+-- RLS policies for storage.objects
+CREATE POLICY "Users can upload their own documents" 
+ON storage.objects FOR INSERT 
+WITH CHECK (bucket_id = 'documents' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can read their own documents" 
+ON storage.objects FOR SELECT 
+USING (bucket_id = 'documents' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+CREATE POLICY "Users can delete their own documents" 
+ON storage.objects FOR DELETE 
+USING (bucket_id = 'documents' AND auth.uid()::text = (storage.foldername(name))[1]);

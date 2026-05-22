@@ -53,7 +53,7 @@ export default function ChatPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: text,
+          question: text,
           history: messages,
         }),
       });
