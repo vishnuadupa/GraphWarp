@@ -1,32 +1,29 @@
-/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5
- * genre: editorial · macrostructure: Marquee Hero
- * theme: Brutal · anchor hue: 0 (monochrome)
- * nav: N9 Edge-aligned minimal (CTA=filled pill · padding=spacious)
- * footer: Ft4 Dense colophon (Layout=log-style)
- * tone: premium · audience: researcher / tech enthusiast
+/* Hallmark · iOS 26 Glassmorphic Dark Redesign
+ * tone: premium · theme: Dark Glassmorphic · typography: Outfit + Inter
  */
 
 :root {
-  /* ── Colour — Stark Monochrome ── */
-  --color-paper:     oklch(100% 0 0);
-  --color-paper-2:   oklch(96% 0 0);
-  --color-paper-3:   oklch(92% 0 0);
-  --color-rule:      oklch(88% 0 0);
-  --color-neutral:   oklch(45% 0 0);
-  --color-muted:     oklch(35% 0 0);
-  --color-ink:       oklch(10% 0 0);
-  --color-accent:    oklch(15% 0 0);
-  --color-focus:     oklch(30% 0 0);
+  /* ── Colour — Premium iOS 26 Dark Glassmorphism ── */
+  --color-bg-base:      oklch(14% 0.02 245);       /* Deep Navy Obsidian Base */
+  --color-paper:        rgba(16, 18, 30, 0.65);    /* Frosted Glass backing sheet */
+  --color-paper-2:      rgba(24, 28, 48, 0.45);    /* Translucent dashboard panels */
+  --color-paper-3:      rgba(38, 44, 76, 0.4);     /* Accent glass indicators */
+  --color-rule:         rgba(255, 255, 255, 0.08); /* Ultrafine translucent glass border */
+  --color-neutral:      rgba(255, 255, 255, 0.7);  /* Slate readable body text */
+  --color-muted:        rgba(255, 255, 255, 0.5);  /* Soft muted captions */
+  --color-ink:          oklch(96% 0.01 240);       /* High-contrast crisp near-white */
+  --color-accent:       oklch(65% 0.22 280);       /* Luminous iOS violet */
+  --color-focus:        oklch(70% 0.20 280);       /* Active glowing element outline */
 
-  /* Dark surface (for demo panel / reverse contrast) */
-  --color-surface-dark:   oklch(12% 0 0);
-  --color-surface-dark-2: oklch(18% 0 0);
-  --color-rule-dark:      oklch(30% 0 0);
+  /* Dark surface utilities */
+  --color-surface-dark:   rgba(10, 11, 20, 0.85);
+  --color-surface-dark-2: rgba(18, 20, 36, 0.75);
+  --color-rule-dark:      rgba(255, 255, 255, 0.12);
 
-  /* ── Typography ── */
-  --font-display: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
-  --font-body:    var(--font-geist-sans),     "Geist",          ui-sans-serif, system-ui, sans-serif;
-  --font-mono:    var(--font-geist-mono),     "Geist Mono",     ui-monospace, monospace;
+  /* ── Typography (iOS Sans Hallmark) ── */
+  --font-display: var(--font-outfit), "Inter", -apple-system, sans-serif;
+  --font-body:    var(--font-inter), -apple-system, sans-serif;
+  --font-mono:    var(--font-geist-mono), ui-monospace, monospace;
 
   /* ── Type scale — major third (× 1.25) from 16 px base ── */
   --text-xs:       0.64rem;    /* 10.24 px */
@@ -41,7 +38,7 @@
   --text-display:  clamp(3rem, 7vw + 1rem, 6rem);
   --text-display-s: clamp(2rem, 4vw + 0.5rem, 3.5rem);
 
-  /* ── Spacing — 4 pt scale ── */
+  /* ── Spacing ── */
   --space-xs:   0.25rem;   /*  4 px */
   --space-sm:   0.5rem;    /*  8 px */
   --space-md:   1rem;      /* 16 px */
@@ -53,18 +50,18 @@
   --space-5xl:  8rem;      /* 128 px */
 
   /* ── Motion ── */
-  --ease-out:     cubic-bezier(0.22, 1, 0.36, 1);
-  --ease-in:      cubic-bezier(0.55, 0, 1, 0.45);
-  --ease-in-out:  cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-short:    100ms;
-  --dur-med:      200ms;
-  --dur-long:     400ms;
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);    /* Silky iOS ease-out */
+  --ease-in:      cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out:  cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-short:    120ms;
+  --dur-med:      260ms;
+  --dur-long:     450ms;
 
-  /* ── Geometry ── */
-  --radius-sm:    0px; /* Brutal: sharp corners */
-  --radius-md:    0px;
-  --radius-lg:    0px;
-  --radius-pill:  0px;
+  /* ── Geometry (iOS Squircles) ── */
+  --radius-sm:    8px;
+  --radius-md:    16px;
+  --radius-lg:    24px;
+  --radius-pill:  9999px;
 
   /* ── Z-index ── */
   --z-base:    0;
