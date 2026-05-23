@@ -69,7 +69,7 @@ export const processDocument = inngest.createFunction(
     await setStep(documentId, 'extracting');
     const extractedData = await step.run("extract-graph", async () => {
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.5-flash-lite",
         generationConfig: { responseMimeType: "application/json" }
       });
 

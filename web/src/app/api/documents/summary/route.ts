@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate summary with Gemini
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
     const prompt = `
       You are a knowledge base analyst. The following facts were extracted from a document called "${filename}".
       Write a concise 2-3 sentence summary of what this document is about and what key knowledge it contributes.

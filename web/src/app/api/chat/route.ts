@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
           send({ type: 'phase', data: 'searching' });
 
           const extractModel = genAI.getGenerativeModel({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.5-flash-lite',
             generationConfig: { responseMimeType: 'application/json' },
           });
 
@@ -247,7 +247,7 @@ Keep entity names concise and capitalized. Question: ${question}`;
               }\n`
             : '';
 
-          const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+          const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
           const synthPrompt = `You are a strict, factual assistant. Answer based ONLY on the knowledge graph context below.
 If the context does not contain the answer, say "I don't have enough information to answer that."
 Cite sources using the [Source: filename] annotations.${historyContext}
