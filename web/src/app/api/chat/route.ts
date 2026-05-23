@@ -96,8 +96,8 @@ Keep entity names concise and capitalized. Question: ${question}`;
                      WHERE m.user_id = $uid AND (k IS NULL OR k.user_id = $uid)
                      ${docFilter}
                      WITH startNode, r1, m, r2, k,
-                          size((startNode)-[:RELATION]-()) AS sDeg,
-                          size((m)-[:RELATION]-()) AS mDeg
+                         COUNT { (startNode)-[:RELATION]-() } AS sDeg,
+                         COUNT { (m)-[:RELATION]-() } AS mDeg
                      RETURN startNode, r1, m, r2, k, sDeg, mDeg
                      LIMIT 50`,
                     { uid: user.id, embedding, selectedDocs }

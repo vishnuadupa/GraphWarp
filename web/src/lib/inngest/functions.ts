@@ -138,14 +138,16 @@ export const processDocument = inngest.createFunction(
 
       const session = driver.session();
       try {
-        await session.executeWrite(async (tx) => {
-          await tx.run(
-            "CREATE VECTOR INDEX entity_name_embeddings IF NOT EXISTS FOR (e:Entity) ON (e.embedding) OPTIONS {indexConfig: { `vector.dimensions`: 768, `vector.similarity_function`: 'cosine' }}"
-          );
-          await tx.run(
-            "CREATE CONSTRAINT entity_user_unique IF NOT EXISTS FOR (e:Entity) REQUIRE (e.name, e.user_id) IS NODE KEY"
-          );
+        // DDL must run in auto-commit mode (outside explicit transactions) in Neo4j 5.x
+        await session.run(
+          "CREATE VECTOR INDEX entity_name_embeddings IF NOT EXISTS FOR (e:Entity) ON (e.embedding) OPTIONS {indexConfig: { `vector.dimensions`: 768, `vector.similarity_function`: 'cosine' }}"
+        );
+        await session.run(
+          "CREATE CONSTRAINT entity_user_unique IF NOT EXISTS FOR (e:Entity) REQUIRE (e.name, e.user_id) IS NODE KEY"
+        );
 
+        // Write entities and relationships in a transaction
+        await session.executeWrite(async (tx) => {
           for (const item of extractedData) {
             await tx.run(
               `

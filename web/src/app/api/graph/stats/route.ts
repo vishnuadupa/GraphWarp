@@ -28,7 +28,7 @@ export async function GET() {
         session.executeRead((tx) =>
           tx.run(
             `MATCH (n:Entity {user_id: $uid})
-             WITH n, size((n)-[:RELATION]-()) AS deg
+             WITH n, COUNT { (n)-[:RELATION]-() } AS deg
              ORDER BY deg DESC LIMIT 8
              RETURN n.name AS name, n.type AS type, deg`,
             { uid: user.id }

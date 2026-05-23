@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         session.executeRead((tx) =>
           tx.run(
             `MATCH (n:Entity {name: $nodeId, user_id: $uid})
-             WITH n, size((n)-[:RELATION]-()) AS degree
+             WITH n, COUNT { (n)-[:RELATION]-() } AS degree
              RETURN n.name AS name, n.type AS type, degree`,
             { nodeId, uid: user.id }
           )

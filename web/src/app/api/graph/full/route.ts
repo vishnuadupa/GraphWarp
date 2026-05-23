@@ -16,8 +16,8 @@ export async function GET() {
         tx.run(
           `MATCH (n:Entity {user_id: $userId})-[r:RELATION]->(m:Entity {user_id: $userId})
            WITH n, r, m,
-                size((n)-[:RELATION]-()) AS nDegree,
-                size((m)-[:RELATION]-()) AS mDegree
+                COUNT { (n)-[:RELATION]-() } AS nDegree,
+                COUNT { (m)-[:RELATION]-() } AS mDegree
            RETURN n, r, m, nDegree, mDegree
            LIMIT 500`,
           { userId: user.id }
