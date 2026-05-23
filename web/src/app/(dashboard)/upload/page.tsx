@@ -59,7 +59,7 @@ export default function UploadPage() {
         }
 
         try {
-          await fetch("/api/upload", {
+          const res = await fetch("/api/upload", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -67,6 +67,19 @@ export default function UploadPage() {
               filename: file.name,
             }),
           });
+
+          if (!res.ok) {
+            const errBody = await res.json().catch(() => ({}));
+            const errMsg = errBody?.error || errBody?.details || `Server error ${res.status}`;
+            setStatuses((prev) =>
+              prev.map((s) =>
+                s.filename === file.name && s.state === "uploading"
+                  ? { ...s, state: "error", message: errMsg }
+                  : s
+              )
+            );
+            continue;
+          }
 
           setStatuses((prev) =>
             prev.map((s) =>

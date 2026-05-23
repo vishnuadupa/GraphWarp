@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/service';
 import { inngest } from '@/lib/inngest/client';
 
 export const runtime = "nodejs";
@@ -40,15 +41,28 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to create document record' }, { status: 500 });
     }
 
-    await inngest.send({
-      name: 'document.process',
-      data: {
-        documentId: document.id,
-        filePath,
-        userId: user.id,
-        filename: document.filename
-      }
-    });
+    try {
+      await inngest.send({
+        name: 'document.process',
+        data: {
+          documentId: document.id,
+          filePath,
+          userId: user.id,
+          filename: document.filename
+        }
+      });
+    } catch (inngestErr: any) {
+      console.error('Inngest send failed:', inngestErr?.message, inngestErr?.status, JSON.stringify(inngestErr));
+      // Mark the document as Failed so the user isn't stuck on "Processing"
+      await supabaseAdmin
+        .from('documents')
+        .update({ status: 'Failed', processing_step: null })
+        .eq('id', document.id);
+      return NextResponse.json(
+        { error: `Processing queue error: ${inngestErr?.message ?? 'inngest.send failed'}` },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({ success: true, document });
   } catch (err: any) {
