@@ -505,13 +505,16 @@ export default function ChatPage() {
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unknown error";
+      const errorContent = `⚠️ ${msg}`;
       setMessages((prev) => {
         const last = prev[prev.length - 1];
         if (last?.role === "assistant" && last.content === "") {
-          const msgs = [...prev]; msgs[msgs.length - 1].content = `Error: ${msg}`; return msgs;
+          const msgs = [...prev]; msgs[msgs.length - 1].content = errorContent; return msgs;
         }
-        return [...prev, { role: "assistant", content: `Error: ${msg}` }];
+        return [...prev, { role: "assistant", content: errorContent }];
       });
+      // Persist error so it's visible after reload
+      if (convId) await saveMessage(convId, "assistant", errorContent);
     } finally {
       setLoading(false);
       setThinkingPhase(null);
