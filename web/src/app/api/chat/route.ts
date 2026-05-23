@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 import { driver } from '@/lib/neo4j/neo4j';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+// OpenRouter — single key routes to any model
+const openrouter = new OpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.OPENROUTER_API_KEY || '',
+});
+
+// OpenAI directly for embeddings (OpenRouter has no /embeddings endpoint)
+const openaiEmbed = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' });
 
 async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 4, baseDelayMs = 2000): Promise<T> {
   let lastError: unknown;
@@ -61,32 +68,35 @@ export async function POST(req: NextRequest) {
           // ── Phase 1: entity extraction ────────────────────────────────────
           send({ type: 'phase', data: 'searching' });
 
-          const extractModel = genAI.getGenerativeModel({
-            model: 'gemini-2.5-flash-lite',
-            generationConfig: { responseMimeType: 'application/json' },
-          });
-
-          const extractPrompt = `Extract the key entities from this question as a JSON array of strings.
-Keep entity names concise and capitalized. Question: ${question}`;
-
-          const extractResult = await withRetry(() => extractModel.generateContent(extractPrompt));
+          const extractResult = await withRetry(() =>
+            openrouter.chat.completions.create({
+              model: 'deepseek/deepseek-v4-flash',
+              messages: [{
+                role: 'user',
+                content: `Extract the key entities from this question as a JSON array of strings. Keep entity names concise and capitalized. Output ONLY the JSON array, no other text. Question: ${question}`,
+              }],
+            })
+          );
           let entities: string[] = [];
           try {
-            const txt = extractResult.response.text();
+            const txt = extractResult.choices[0]?.message?.content || '[]';
             const m = txt.match(/\[[\s\S]*\]/);
             entities = m ? JSON.parse(m[0]) : JSON.parse(txt);
           } catch { /* fall back */ }
           if (!Array.isArray(entities) || entities.length === 0) entities = [question];
           console.log('[chat] extracted entities:', entities);
 
-          // Embed entities
-          const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
-          const embeddings = await Promise.all(
-            entities.map(async (e) => {
-              try { return (await embedModel.embedContent(e)).embedding.values; } catch { return null; }
-            })
-          );
-          const validEmbeddings = embeddings.filter(Boolean);
+          // Embed entities via OpenAI text-embedding-3-small
+          let validEmbeddings: number[][] = [];
+          try {
+            const embedRes = await openaiEmbed.embeddings.create({
+              model: 'text-embedding-3-small',
+              input: entities,
+            });
+            validEmbeddings = embedRes.data.map((d) => d.embedding);
+          } catch (embedErr: any) {
+            console.warn('[chat] Embedding failed (non-fatal):', embedErr?.message);
+          }
 
           // ── Phase 2: graph traversal ──────────────────────────────────────
           send({ type: 'phase', data: 'traversing' });
@@ -251,7 +261,6 @@ Keep entity names concise and capitalized. Question: ${question}`;
               }\n`
             : '';
 
-          const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' });
           const synthPrompt = `You are a strict, factual assistant. Answer based ONLY on the knowledge graph context below.
 If the context does not contain the answer, say "I don't have enough information to answer that."
 Cite sources using the [Source: filename] annotations.${historyContext}
@@ -263,9 +272,15 @@ Current question: ${question}
 
 AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q3?"]</suggestions>`;
 
-          const synthStream = await withRetry(() => synthModel.generateContentStream(synthPrompt));
-          for await (const chunk of synthStream.stream) {
-            const text = chunk.text();
+          const synthStream = await withRetry(() =>
+            openrouter.chat.completions.create({
+              model: 'deepseek/deepseek-v4-flash',
+              messages: [{ role: 'user', content: synthPrompt }],
+              stream: true,
+            })
+          );
+          for await (const chunk of synthStream) {
+            const text = chunk.choices[0]?.delta?.content || '';
             if (text) send({ type: 'text', data: text });
           }
 

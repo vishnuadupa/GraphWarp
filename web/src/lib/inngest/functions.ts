@@ -1,12 +1,16 @@
 // @ts-nocheck
 import { inngest } from './client';
 import { supabaseAdmin } from '../supabase/service';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 import { driver } from '../neo4j/neo4j';
 import * as mammoth from 'mammoth';
 import Papa from 'papaparse';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+// OpenRouter client — one key, swap model string per task
+const openrouter = new OpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.OPENROUTER_API_KEY || '',
+});
 
 // ── Relationship column keyword map ────────────────────────────────────────────
 // Keys are lowercase substrings to match against CSV/JSON column headers.
@@ -228,10 +232,10 @@ export const processDocument = inngest.createFunction(
         let promptInput: any;
 
         if (['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
-          // Images only: send as inline data (Gemini vision)
+          // Images: send as base64 data URL to Qwen vision
           const mimeType = `image/${ext === 'jpg' ? 'jpeg' : ext}`;
-          promptInput = { inlineData: { data: fileData.buffer, mimeType } };
-          console.log(`[ingest] Image (${ext}) — sending to Gemini vision`);
+          promptInput = { type: 'image_url', image_url: { url: `data:${mimeType};base64,${fileData.buffer}` } };
+          console.log(`[ingest] Image (${ext}) — sending to Qwen vision`);
         } else if (ext === 'pdf') {
           // PDF: extract text with pdf-parse (dynamic import — static import crashes at module init)
           try {
@@ -252,15 +256,23 @@ export const processDocument = inngest.createFunction(
           console.log(`[ingest] Text (${ext}) — ${promptInput.length} chars`);
         }
 
-        // Call Gemini
-        const model = genAI.getGenerativeModel({
-          model: 'gemini-2.5-flash-lite',
-          generationConfig: { responseMimeType: 'application/json' },
-        });
+        // Call Qwen3.5 Plus via OpenRouter (handles text + vision)
+        const userContent = typeof promptInput === 'string'
+          ? promptInput
+          : [{ type: 'text', text: EXTRACT_PROMPT }, promptInput];
 
         try {
-          const result = await withRetry(() => model.generateContent([EXTRACT_PROMPT, promptInput]));
-          const responseText = result.response.text();
+          const result = await withRetry(() =>
+            openrouter.chat.completions.create({
+              model: 'qwen/qwen3.5-plus-20260420',
+              messages: [
+                { role: 'system', content: EXTRACT_PROMPT },
+                { role: 'user', content: typeof promptInput === 'string' ? promptInput : [promptInput] },
+              ],
+              response_format: { type: 'json_object' },
+            })
+          );
+          const responseText = result.choices[0]?.message?.content || '[]';
           const jsonMatch = responseText.match(/\[[\s\S]*\]/);
           const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(responseText);
 
@@ -276,7 +288,7 @@ export const processDocument = inngest.createFunction(
                 }))
             : [];
         } catch (err: any) {
-          throw new Error(`Gemini extraction failed: ${err.message}`);
+          throw new Error(`Qwen extraction failed: ${err.message}`);
         }
       });
 
@@ -344,16 +356,22 @@ export const processDocument = inngest.createFunction(
             if (!entityMap[d.target]) entityMap[d.target] = d.target_type;
           }
 
-          const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
           const uniqueEntities = Object.keys(entityMap);
-          const BATCH = 30;
+          const BATCH = 100; // text-embedding-3-small supports up to 2048 inputs per call
           const embeddingsData: Record<string, number[]> = {};
+
+          // Use OpenAI text-embedding-3-small directly (OpenRouter doesn't support embeddings)
+          const openaiEmbed = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' });
 
           for (let i = 0; i < uniqueEntities.length; i += BATCH) {
             const batch = uniqueEntities.slice(i, i + BATCH);
-            const vectors = await embedEntitiesBatch(embedModel, batch);
-            batch.forEach((entity, idx) => { if (vectors[idx]) embeddingsData[entity] = vectors[idx]!; });
-            if (i + BATCH < uniqueEntities.length) await new Promise((r) => setTimeout(r, 1000));
+            try {
+              const res = await openaiEmbed.embeddings.create({ model: 'text-embedding-3-small', input: batch });
+              res.data.forEach((item, idx) => { embeddingsData[batch[idx]] = item.embedding; });
+            } catch (embedErr: any) {
+              console.warn(`[ingest] Embedding batch failed:`, embedErr?.message);
+            }
+            if (i + BATCH < uniqueEntities.length) await new Promise((r) => setTimeout(r, 200));
           }
 
           // Write embeddings back to Neo4j nodes
