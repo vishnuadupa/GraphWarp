@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser-client";
-import { ForceGraph, type GraphData } from "@/components/ForceGraph";
+import { ForceGraph, type GraphData, type ThinkingPhase } from "@/components/ForceGraph";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion } from "framer-motion";
@@ -27,7 +27,9 @@ export default function ChatPage() {
   const [availableDocs, setAvailableDocs] = useState<any[]>([]);
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
-  
+  const [thinkingPhase, setThinkingPhase] = useState<ThinkingPhase>(null);
+  const [activeNodeIds, setActiveNodeIds] = useState<Set<string>>(new Set());
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -79,6 +81,8 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
+    setThinkingPhase("searching");
+    setActiveNodeIds(new Set());
 
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -110,45 +114,54 @@ export default function ChatPage() {
         done = readerDone;
         if (value) {
           buffer += decoder.decode(value, { stream: true });
-          const blocks = buffer.split('\n\n');
+          const blocks = buffer.split("\n\n");
           buffer = blocks.pop() || "";
-          
-          for (const block of blocks) {
-            if (block.startsWith('data: ')) {
-               const dataStr = block.slice(6);
-               if (dataStr === '[DONE]') continue;
-               try {
-                 const parsed = JSON.parse(dataStr);
-                 if (parsed.type === 'graph') {
-                   setGraph(parsed.data);
-                 } else if (parsed.type === 'text') {
-                   assistantMessage += parsed.data;
-                   
-                   let displayContent = assistantMessage;
-                   let suggestions: string[] = [];
-                   const suggestionMatch = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
-                   if (suggestionMatch) {
-                      displayContent = assistantMessage.replace(suggestionMatch[0], '').trim();
-                      try {
-                        suggestions = JSON.parse(suggestionMatch[1]);
-                      } catch(e) {}
-                   }
 
-                   setMessages((prev) => {
-                     const newMessages = [...prev];
-                     const lastMsg = newMessages[newMessages.length - 1];
-                     lastMsg.content = displayContent;
-                     if (suggestions.length > 0) {
-                       lastMsg.suggestions = suggestions;
-                     }
-                     return newMessages;
-                   });
-                 } else if (parsed.type === 'error') {
-                   throw new Error(parsed.data);
-                 }
-               } catch (e) {
-                 // ignore partial json
-               }
+          for (const block of blocks) {
+            if (block.startsWith("data: ")) {
+              const dataStr = block.slice(6);
+              if (dataStr === "[DONE]") continue;
+              try {
+                const parsed = JSON.parse(dataStr);
+
+                if (parsed.type === "phase") {
+                  setThinkingPhase(parsed.data as ThinkingPhase);
+
+                } else if (parsed.type === "graph") {
+                  setGraph(parsed.data);
+                  if (parsed.activeNodeIds?.length > 0) {
+                    setActiveNodeIds(new Set<string>(parsed.activeNodeIds));
+                  }
+
+                } else if (parsed.type === "text") {
+                  assistantMessage += parsed.data;
+
+                  let displayContent = assistantMessage;
+                  let suggestions: string[] = [];
+                  const suggestionMatch = assistantMessage.match(
+                    /<suggestions>([\s\S]*?)<\/suggestions>/
+                  );
+                  if (suggestionMatch) {
+                    displayContent = assistantMessage.replace(suggestionMatch[0], "").trim();
+                    try {
+                      suggestions = JSON.parse(suggestionMatch[1]);
+                    } catch (e) {}
+                  }
+
+                  setMessages((prev) => {
+                    const newMessages = [...prev];
+                    const lastMsg = newMessages[newMessages.length - 1];
+                    lastMsg.content = displayContent;
+                    if (suggestions.length > 0) lastMsg.suggestions = suggestions;
+                    return newMessages;
+                  });
+
+                } else if (parsed.type === "error") {
+                  throw new Error(parsed.data);
+                }
+              } catch (e) {
+                // ignore partial JSON
+              }
             }
           }
         }
@@ -157,16 +170,18 @@ export default function ChatPage() {
       const msg = err instanceof Error ? err.message : "Unknown error";
       setMessages((prev) => {
         const last = prev[prev.length - 1];
-        if (last && last.role === 'assistant' && last.content === '') {
+        if (last && last.role === "assistant" && last.content === "") {
           const newMessages = [...prev];
           newMessages[newMessages.length - 1].content = `Error: ${msg}`;
           return newMessages;
-        } else {
-          return [...prev, { role: "assistant", content: `Error: ${msg}` }];
         }
+        return [...prev, { role: "assistant", content: `Error: ${msg}` }];
       });
     } finally {
       setLoading(false);
+      setThinkingPhase(null);
+      // Fade out active highlights after 3 s
+      setTimeout(() => setActiveNodeIds(new Set()), 3000);
     }
   };
 
@@ -193,11 +208,11 @@ export default function ChatPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        setGraph(prev => {
+        setGraph((prev) => {
           const newNodes = [...prev.nodes];
           const newLinks = [...prev.links];
-          
-          const nodeMap = new Set(newNodes.map(n => n.id));
+          const nodeMap = new Set(newNodes.map((n) => n.id));
+
           data.graph.nodes.forEach((n: any) => {
             if (!nodeMap.has(n.id)) {
               newNodes.push(n);
@@ -206,27 +221,27 @@ export default function ChatPage() {
           });
 
           data.graph.links.forEach((l: any) => {
-            const sId = typeof l.source === 'object' ? l.source.id : l.source;
-            const tId = typeof l.target === 'object' ? l.target.id : l.target;
+            const sId = typeof l.source === "object" ? l.source.id : l.source;
+            const tId = typeof l.target === "object" ? l.target.id : l.target;
             const exists = newLinks.some((ex: any) => {
-               const exsId = typeof ex.source === 'object' ? ex.source.id : ex.source;
-               const extId = typeof ex.target === 'object' ? ex.target.id : ex.target;
-               return exsId === sId && extId === tId && ex.label === l.label;
+              const exsId = typeof ex.source === "object" ? ex.source.id : ex.source;
+              const extId = typeof ex.target === "object" ? ex.target.id : ex.target;
+              return exsId === sId && extId === tId && ex.label === l.label;
             });
             if (!exists) newLinks.push(l);
           });
           return { nodes: newNodes, links: newLinks };
         });
       }
-    } catch(err) {
+    } catch (err) {
       console.error("Failed to expand graph", err);
     }
   }, []);
 
   const toggleDocSelection = (filename: string) => {
-    setSelectedDocs(prev => 
-      prev.includes(filename) 
-        ? prev.filter(d => d !== filename)
+    setSelectedDocs((prev) =>
+      prev.includes(filename)
+        ? prev.filter((d) => d !== filename)
         : [...prev, filename]
     );
   };
@@ -235,18 +250,18 @@ export default function ChatPage() {
 
   return (
     <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden bg-[#0A0A0B]">
-      
+
       {/* Left Chat Panel */}
       <section className="flex-1 flex flex-col min-w-[320px] max-w-2xl border-r border-white/[0.08] relative">
-        
-        {/* Chat Header w/ Filters */}
+
+        {/* Chat Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/[0.08] bg-white/[0.01]">
           <h2 className="font-medium text-white/90 flex items-center gap-2">
             Semantic Graph Chat
           </h2>
           {availableDocs.length > 0 && (
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setFilterOpen(!filterOpen)}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-sm text-white/80 transition-colors"
               >
@@ -254,24 +269,24 @@ export default function ChatPage() {
                 {selectedDocs.length === 0 ? "All Docs" : `${selectedDocs.length} Selected`}
                 <ChevronDown className="w-3.5 h-3.5 opacity-50" />
               </button>
-              
+
               {filterOpen && (
                 <div className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-[#111113] border border-white/[0.08] shadow-xl z-50 overflow-hidden">
                   <div className="p-2 border-b border-white/[0.08]">
-                     <label className="flex items-center gap-3 px-3 py-2 hover:bg-white/[0.04] rounded-lg cursor-pointer transition-colors">
-                       <input 
-                         type="checkbox" 
-                         className="rounded border-white/20 bg-transparent text-indigo-500 focus:ring-indigo-500/20"
-                         checked={selectedDocs.length === 0} 
-                         onChange={() => setSelectedDocs([])} 
-                       />
-                       <span className="text-sm text-white/90">All Documents</span>
-                     </label>
+                    <label className="flex items-center gap-3 px-3 py-2 hover:bg-white/[0.04] rounded-lg cursor-pointer transition-colors">
+                      <input
+                        type="checkbox"
+                        className="rounded border-white/20 bg-transparent text-indigo-500 focus:ring-indigo-500/20"
+                        checked={selectedDocs.length === 0}
+                        onChange={() => setSelectedDocs([])}
+                      />
+                      <span className="text-sm text-white/90">All Documents</span>
+                    </label>
                   </div>
                   <div className="p-2 max-h-60 overflow-y-auto">
-                    {availableDocs.map(doc => (
+                    {availableDocs.map((doc) => (
                       <label key={doc.id} className="flex items-center gap-3 px-3 py-2 hover:bg-white/[0.04] rounded-lg cursor-pointer transition-colors">
-                        <input 
+                        <input
                           type="checkbox"
                           className="rounded border-white/20 bg-transparent text-indigo-500 focus:ring-indigo-500/20"
                           checked={selectedDocs.includes(doc.filename)}
@@ -292,35 +307,37 @@ export default function ChatPage() {
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center opacity-40">
               <Network className="w-12 h-12 mb-4 text-indigo-400" />
-              <p className="text-center text-sm uppercase tracking-widest font-medium">Zero-Hallucination<br/>Graph Context</p>
+              <p className="text-center text-sm uppercase tracking-widest font-medium">
+                Zero-Hallucination<br />Graph Context
+              </p>
             </div>
           ) : (
             messages.map((m, i) => (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                key={i} 
-                className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
+                key={i}
+                className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start"}`}
               >
                 <div className={`max-w-[85%] rounded-2xl px-5 py-3.5 text-sm leading-relaxed ${
-                  m.role === 'user' 
-                    ? 'bg-indigo-600 text-white' 
-                    : 'bg-white/[0.04] border border-white/[0.08] text-white/90'
+                  m.role === "user"
+                    ? "bg-indigo-600 text-white"
+                    : "bg-white/[0.04] border border-white/[0.08] text-white/90"
                 }`}>
-                  {m.role === 'user' ? (
-                     m.content 
+                  {m.role === "user" ? (
+                    m.content
                   ) : (
-                     <div className="prose prose-invert prose-sm max-w-none">
-                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
-                     </div>
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                    </div>
                   )}
                 </div>
-                
-                {m.role === 'assistant' && m.suggestions && m.suggestions.length > 0 && (
+
+                {m.role === "assistant" && m.suggestions && m.suggestions.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3 ml-2">
                     {m.suggestions.map((sug, idx) => (
-                      <button 
-                        key={idx} 
+                      <button
+                        key={idx}
                         onClick={() => handleSend(sug)}
                         disabled={loading}
                         className="px-3 py-1.5 rounded-full bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-300 text-xs font-medium transition-colors"
@@ -333,19 +350,22 @@ export default function ChatPage() {
               </motion.div>
             ))
           )}
-          
-          {loading && messages[messages.length - 1]?.role !== 'assistant' && (
-            <motion.div 
+
+          {loading && messages[messages.length - 1]?.role !== "assistant" && (
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="flex items-center gap-3 text-white/40 text-sm font-medium px-2"
             >
               <div className="flex gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce"></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
-              Semantic Entity Resolution...
+              {thinkingPhase === "searching"  && "Resolving entities…"}
+              {thinkingPhase === "traversing" && "Traversing graph…"}
+              {thinkingPhase === "answering"  && "Synthesising answer…"}
+              {!thinkingPhase                 && "Thinking…"}
             </motion.div>
           )}
           <div ref={messagesEndRef} />
@@ -357,7 +377,7 @@ export default function ChatPage() {
             <textarea
               ref={textareaRef}
               className="flex-1 max-h-40 min-h-[44px] bg-transparent text-sm text-white placeholder-white/30 resize-none outline-none py-3 px-3 leading-relaxed"
-              placeholder="Ask about your documents..."
+              placeholder="Ask about your documents…"
               rows={1}
               value={input}
               onChange={handleTextareaInput}
@@ -377,9 +397,14 @@ export default function ChatPage() {
 
       {/* Right Graph Panel */}
       <section className="hidden md:flex flex-1 flex-col bg-[#050505] relative overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#0A0A0B]/80 to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute inset-0 opacity-40 mix-blend-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent pointer-events-none"></div>
-        <ForceGraph data={graph} onNodeClick={handleNodeClick} />
+        <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#0A0A0B]/60 to-transparent z-10 pointer-events-none" />
+        <div className="absolute inset-0 opacity-30 mix-blend-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent pointer-events-none" />
+        <ForceGraph
+          data={graph}
+          thinkingPhase={thinkingPhase}
+          activeNodeIds={activeNodeIds}
+          onNodeClick={handleNodeClick}
+        />
       </section>
     </div>
   );
