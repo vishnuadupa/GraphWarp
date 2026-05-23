@@ -23,10 +23,10 @@ async function embedEntity(model: any, entity: string): Promise<number[] | null>
 }
 
 export const processDocument = inngest.createFunction(
-  { 
-    id: "process-document", 
+  {
+    id: "process-document",
     retries: 2,
-    trigger: { event: "document.process" }
+    triggers: [{ event: "document.process" }],
   },
   async ({ event, step }: any) => {
     const { documentId, filePath, userId, filename } = event.data;
