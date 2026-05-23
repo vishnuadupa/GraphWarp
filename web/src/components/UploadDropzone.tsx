@@ -62,9 +62,9 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         className={`
-          dropzone-idle glass rounded-2xl flex flex-col items-center justify-center gap-4
-          cursor-pointer select-none p-12 transition-all duration-300
-          ${isDragging ? "border-indigo-400 bg-indigo-500/10 scale-[1.01]" : ""}
+          border-[2px] border-dashed border-[var(--color-rule)] bg-[var(--color-paper)] rounded-none flex flex-col items-center justify-center gap-4
+          cursor-pointer select-none p-12 transition-all duration-300 hover:border-[var(--color-ink)] hover:bg-[var(--color-paper-2)]
+          ${isDragging ? "border-[var(--color-ink)] bg-[var(--color-paper-3)] scale-[1.01]" : ""}
         `}
         style={{ minHeight: 220 }}
       >
@@ -79,12 +79,10 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
 
         {/* Icon */}
         <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-300"
+          className="w-16 h-16 rounded-none flex items-center justify-center transition-transform duration-300 border-[2px]"
           style={{
-            background: isDragging
-              ? "rgba(99,102,241,0.25)"
-              : "rgba(99,102,241,0.1)",
-            border: "1px solid rgba(99,102,241,0.3)",
+            background: "var(--color-paper-2)",
+            borderColor: "var(--color-rule)",
             transform: isDragging ? "scale(1.1)" : "scale(1)",
           }}
         >
@@ -93,8 +91,8 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
             height="28"
             viewBox="0 0 24 24"
             fill="none"
-            stroke={isDragging ? "#a5b4fc" : "#818cf8"}
-            strokeWidth="1.8"
+            stroke="var(--color-ink)"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
@@ -105,21 +103,19 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
         </div>
 
         <div className="text-center space-y-1">
-          <p className="text-base font-medium text-white/90">
+          <p className="text-base font-bold text-[var(--color-ink)]">
             {isDragging ? "Drop to add to graph" : "Drop documents here"}
           </p>
-          <p className="text-sm text-white/40">
+          <p className="text-sm text-[var(--color-neutral)] font-medium">
             or{" "}
-            <span className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
+            <span className="text-[var(--color-ink)] font-bold hover:opacity-85 underline underline-offset-2">
               browse files
             </span>
           </p>
-          <p className="text-xs text-white/25 pt-1">
+          <p className="text-xs text-[var(--color-neutral)] font-mono uppercase tracking-widest pt-1">
             {ACCEPTED_TYPES.join("  ·  ")} (Max 1MB)
           </p>
         </div>
-
-
       </label>
 
       {/* Queue */}
@@ -128,26 +124,22 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
           {queued.map((file, i) => (
             <li
               key={`${file.name}-${i}`}
-              className="glass rounded-xl flex items-center justify-between gap-3 px-4 py-3 text-sm"
+              className="rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper)] flex items-center justify-between gap-3 px-4 py-3 text-sm"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <span
-                  className="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-semibold"
-                  style={{
-                    background: "rgba(99,102,241,0.15)",
-                    color: "#a5b4fc",
-                  }}
+                  className="shrink-0 w-7 h-7 rounded-none border-[1px] border-[var(--color-rule)] bg-[var(--color-paper-2)] flex items-center justify-center text-xs font-mono font-bold text-[var(--color-neutral)]"
                 >
                   {file.name.split(".").pop()?.toUpperCase().slice(0, 3)}
                 </span>
-                <span className="truncate text-white/70">{file.name}</span>
-                <span className="shrink-0 text-white/30">
+                <span className="truncate text-[var(--color-ink)] font-bold">{file.name}</span>
+                <span className="shrink-0 text-[var(--color-neutral)] font-mono text-xs">
                   {(file.size / 1024).toFixed(0)} KB
                 </span>
               </div>
               <button
                 onClick={() => removeFile(i)}
-                className="shrink-0 text-white/30 hover:text-red-400 transition-colors"
+                className="shrink-0 text-[var(--color-neutral)] hover:text-red-600 transition-colors"
                 aria-label="Remove file"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

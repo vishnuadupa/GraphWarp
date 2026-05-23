@@ -633,7 +633,7 @@ body {
   overflow:       hidden;
   display:        flex;
   flex-direction: column;
-  background:     #0a0a0b;
+  background:     var(--color-paper);
 }
 
 .dash-topbar {
@@ -641,10 +641,8 @@ body {
   align-items:     center;
   justify-content: space-between;
   padding:         var(--space-md) clamp(var(--space-md), 4vw, var(--space-xl));
-  border-bottom:   1px solid rgba(255,255,255,0.07);
-  background:      rgba(8,8,10,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border-bottom:   2px solid var(--color-rule);
+  background:      var(--color-paper);
   position:        sticky;
   top:             0;
   z-index:         var(--z-nav);
@@ -654,7 +652,7 @@ body {
   font-family:     var(--font-display);
   font-weight:     700;
   font-size:       var(--text-sm);
-  color:           rgba(255,255,255,0.90);
+  color:           var(--color-ink);
   text-decoration: none;
   letter-spacing:  0.02em;
   white-space:     nowrap;
@@ -669,19 +667,19 @@ body {
 .dash-topbar-link {
   font-family:     var(--font-body);
   font-size:       var(--text-sm);
-  color:           rgba(255,255,255,0.45);
+  color:           var(--color-neutral);
   text-decoration: none;
   white-space:     nowrap;
   transition:      color var(--dur-short) var(--ease-out);
 }
 
-.dash-topbar-link:hover { color: rgba(255,255,255,0.85); }
+.dash-topbar-link:hover { color: var(--color-ink); }
 
 .dash-content {
   flex:       1;
   display:    flex;
   overflow:   hidden;
-  background: #0a0a0b;
+  background: var(--color-paper);
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -878,7 +876,8 @@ body {
 /* Right panel — graph */
 .graph-panel {
   flex:       1;
-  background: var(--color-surface-dark);
+  background: var(--color-paper);
+  border-left: 2px solid var(--color-rule);
   overflow:   hidden;
   position:   relative;
   display:    none;

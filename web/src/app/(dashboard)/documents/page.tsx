@@ -31,14 +31,14 @@ const PROCESSING_STEPS = [
 function StatusBadge({ status, processingStep }: { status: string; processingStep?: string | null }) {
   if (status === "Completed")
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-        <CheckCircle2 className="w-3 h-3" /> Completed
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none text-xs font-mono font-bold bg-green-50 text-green-700 border border-green-200">
+        <CheckCircle2 className="w-3 h-3" /> COMPLETED
       </span>
     );
   if (status === "Failed")
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20">
-        <AlertCircle className="w-3 h-3" /> Failed
+      <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none text-xs font-mono font-bold bg-red-50 text-red-700 border border-red-200">
+        <AlertCircle className="w-3 h-3" /> FAILED
       </span>
     );
 
@@ -52,19 +52,19 @@ function StatusBadge({ status, processingStep }: { status: string; processingSte
           const isCurrent = idx === currentIdx;
           return (
             <div key={s.key} className="flex items-center gap-1">
-              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all ${
+              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-none text-[10px] font-mono font-bold transition-all ${
                 isCurrent
-                  ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                  ? "bg-amber-50 text-amber-800 border border-amber-300"
                   : isDone
-                  ? "text-white/30"
-                  : "text-white/15"
+                  ? "text-[var(--color-neutral)] opacity-70"
+                  : "text-[var(--color-rule)]"
               }`}>
                 {isCurrent && <Loader2 className="w-2.5 h-2.5 animate-spin shrink-0" />}
-                {isDone && <CheckCircle2 className="w-2.5 h-2.5 shrink-0 text-green-500/60" />}
-                <span>{s.label}</span>
+                {isDone && <CheckCircle2 className="w-2.5 h-2.5 shrink-0 text-green-600/80" />}
+                <span>{s.label.toUpperCase()}</span>
               </div>
               {idx < PROCESSING_STEPS.length - 1 && (
-                <span className="text-white/15 text-[10px]">›</span>
+                <span className="text-[var(--color-rule)] text-[10px]">›</span>
               )}
             </div>
           );
@@ -75,8 +75,8 @@ function StatusBadge({ status, processingStep }: { status: string; processingSte
 
   // Fallback: generic processing badge
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
-      <Loader2 className="w-3 h-3 animate-spin" /> Processing
+    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none text-xs font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200">
+      <Loader2 className="w-3 h-3 animate-spin" /> PROCESSING
     </span>
   );
 }
@@ -207,14 +207,14 @@ export default function DocumentsPage() {
   if (!ready) return null;
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-[#0A0A0B] text-white min-h-full">
+    <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-[var(--color-paper)] text-[var(--color-ink)] min-h-full">
       <div className="max-w-5xl mx-auto space-y-8">
 
         {/* Header */}
-        <div className="flex justify-between items-end border-b border-white/[0.08] pb-6">
+        <div className="flex justify-between items-end border-b-[2px] border-[var(--color-rule)] pb-6">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight text-white">Documents</h1>
-            <p className="text-white/50 text-sm">
+            <h1 className="text-3xl font-bold tracking-tighter uppercase text-[var(--color-ink)]">Documents</h1>
+            <p className="text-[var(--color-neutral)] text-sm font-mono uppercase tracking-wider">
               {documents.length} file{documents.length !== 1 ? "s" : ""} ingested — live updates via Realtime
             </p>
           </motion.div>
@@ -223,14 +223,14 @@ export default function DocumentsPage() {
               <button
                 onClick={handleReprocessAll}
                 disabled={reprocessingAll}
-                className="flex items-center gap-1.5 px-4 py-2.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 rounded-xl font-medium transition-all text-sm disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 border-[2px] border-amber-300 text-amber-800 rounded-none font-mono uppercase font-bold text-xs disabled:opacity-50"
               >
                 {reprocessingAll
                   ? <><Loader2 className="w-4 h-4 animate-spin" /> Queuing…</>
                   : <><RefreshCw className="w-4 h-4" /> Reprocess All ({stuckDocs.length})</>}
               </button>
             )}
-            <Link href="/upload" className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all text-sm">
+            <Link href="/upload" className="flex items-center gap-2 px-5 py-3 bg-[var(--color-ink)] text-[var(--color-paper)] hover:opacity-85 rounded-none font-mono uppercase font-bold text-xs border-[2px] border-[var(--color-ink)] transition-opacity">
               <Plus className="w-4 h-4" /> Add Document
             </Link>
           </motion.div>
@@ -239,68 +239,68 @@ export default function DocumentsPage() {
         {/* Body */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--color-ink)]" />
           </div>
         ) : documents.length === 0 ? (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-24 px-6 rounded-3xl border border-white/[0.08] border-dashed bg-white/[0.01]">
-            <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-6">
+            className="flex flex-col items-center justify-center py-24 px-6 rounded-none border-[2px] border-[var(--color-rule)] border-dashed bg-[var(--color-paper-2)]">
+            <div className="w-16 h-16 rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper-3)] text-[var(--color-neutral)] flex items-center justify-center mb-6">
               <FileText className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">No documents yet</h3>
-            <p className="text-white/50 text-center max-w-sm mb-8">Upload your first document to begin building your deterministic knowledge graph.</p>
-            <Link href="/upload" className="flex items-center gap-2 px-6 py-3 bg-white text-black hover:bg-white/90 rounded-xl font-medium transition-all">
+            <h3 className="text-xl font-bold tracking-tight mb-2 uppercase">No documents yet</h3>
+            <p className="text-[var(--color-neutral)] text-center max-w-sm mb-8 leading-relaxed font-medium">Upload your first document to begin building your deterministic knowledge graph.</p>
+            <Link href="/upload" className="flex items-center gap-2 px-6 py-3 bg-black text-[var(--color-paper)] hover:opacity-85 rounded-none font-mono uppercase font-bold text-sm">
               <Upload className="w-4 h-4" /> Upload Document
             </Link>
           </motion.div>
         ) : (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden">
+            className="rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper)] overflow-hidden">
             <table className="w-full text-left">
-              <thead className="bg-white/[0.02] border-b border-white/[0.08]">
+              <thead className="bg-[var(--color-paper-2)] border-b-[2px] border-[var(--color-rule)]">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-medium text-white/40 uppercase tracking-wider">File</th>
-                  <th className="px-6 py-4 text-xs font-medium text-white/40 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-4 text-xs font-medium text-white/40 uppercase tracking-wider">Entities</th>
-                  <th className="px-6 py-4 text-xs font-medium text-white/40 uppercase tracking-wider">Relations</th>
-                  <th className="px-6 py-4 text-xs font-medium text-white/40 uppercase tracking-wider">Uploaded</th>
-                  <th className="px-6 py-4 text-xs font-medium text-white/40 uppercase tracking-wider text-right">Actions</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-neutral)] font-mono uppercase tracking-wider">File</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-neutral)] font-mono uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-neutral)] font-mono uppercase tracking-wider">Entities</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-neutral)] font-mono uppercase tracking-wider">Relations</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-neutral)] font-mono uppercase tracking-wider">Uploaded</th>
+                  <th className="px-6 py-4 text-xs font-bold text-[var(--color-neutral)] font-mono uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.06]">
+              <tbody className="divide-y divide-[var(--color-rule)]">
                 {documents.map((doc) => (
-                  <tr key={doc.id} className="hover:bg-white/[0.02] transition-colors">
+                  <tr key={doc.id} className="hover:bg-[var(--color-paper-2)] border-b border-[var(--color-rule)] transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
-                        <span className="font-medium text-white/90 text-sm truncate max-w-xs">{doc.filename}</span>
+                        <FileText className="w-4 h-4 text-[var(--color-neutral)] shrink-0" />
+                        <span className="font-bold text-[var(--color-ink)] text-sm truncate max-w-xs">{doc.filename}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4"><StatusBadge status={doc.status} processingStep={doc.processing_step} /></td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-white/60 tabular-nums">
-                        {doc.status === "Completed" ? (doc.entity_count ?? "—") : <span className="text-white/25">—</span>}
+                      <span className="text-sm font-mono font-bold text-[var(--color-muted)] tabular-nums">
+                        {doc.status === "Completed" ? (doc.entity_count ?? "—") : <span className="text-[var(--color-rule)]">—</span>}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-white/60 tabular-nums">
-                        {doc.status === "Completed" ? (doc.relation_count ?? "—") : <span className="text-white/25">—</span>}
+                      <span className="text-sm font-mono font-bold text-[var(--color-muted)] tabular-nums">
+                        {doc.status === "Completed" ? (doc.relation_count ?? "—") : <span className="text-[var(--color-rule)]">—</span>}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-white/40 flex items-center gap-1.5">
+                      <span className="text-sm font-mono font-bold text-[var(--color-neutral)] flex items-center gap-1.5">
                         <Clock className="w-3 h-3" />
                         {new Date(doc.created_at).toLocaleDateString()}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-1">
+                      <div className="flex items-center justify-end gap-2">
                         {/* Reprocess */}
                         <button
                           onClick={() => handleReprocess(doc)}
                           disabled={reprocessing.has(doc.id) || doc.status === "Processing"}
                           title="Re-extract graph"
-                          className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-white/30 hover:text-indigo-400 hover:bg-indigo-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-none border border-transparent hover:border-[var(--color-rule)] text-[var(--color-neutral)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                           <RefreshCw className={`w-3.5 h-3.5 ${reprocessing.has(doc.id) ? "animate-spin" : ""}`} />
                         </button>
@@ -309,7 +309,7 @@ export default function DocumentsPage() {
                           onClick={() => handleDelete(doc)}
                           disabled={deleting.has(doc.id)}
                           title="Delete document"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/40 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none text-xs font-mono font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                           {deleting.has(doc.id)
                             ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Deleting...</>

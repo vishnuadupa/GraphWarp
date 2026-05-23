@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import LandingGraph from "@/components/LandingGraph";
 
 export default function Home() {
   return (
@@ -24,24 +25,30 @@ export default function Home() {
 
       {/* 03 Marquee Hero */}
       <main className="flex-1 flex flex-col">
-        <section className="px-6 pt-12 pb-32 md:pt-24 md:pb-48 flex flex-col justify-end min-h-[60svh] border-b-[2px] border-[var(--color-rule)]">
-          <h1 className="text-[clamp(3.5rem,10vw,10rem)] font-bold tracking-tighter leading-[0.85] text-[var(--color-ink)] max-w-7xl uppercase mb-8">
-            Chat with<br />
-            your data.<br />
-            <span className="text-[var(--color-neutral)]">Deterministically.</span>
-          </h1>
-          
-          <div className="flex flex-col md:flex-row gap-8 md:gap-24 items-start md:items-end mt-8">
-            <p className="text-xl max-w-xl text-[var(--color-muted)] leading-[1.6]">
-              Stop trusting probabilistic text chunks. GraphWeave extracts a strict semantic knowledge graph from your documents, ensuring a 0% hallucination rate.
-            </p>
-            <Link
-              href="/signup"
-              className="group flex items-center gap-3 text-lg font-bold text-[var(--color-ink)] border-b-2 border-[var(--color-ink)] pb-1 hover:text-[var(--color-neutral)] hover:border-[var(--color-neutral)] transition-colors"
-            >
-              Enter the platform
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
+        <section className="px-6 pt-12 pb-32 md:pt-24 md:pb-48 flex flex-col justify-end min-h-[60svh] border-b-[2px] border-[var(--color-rule)] relative overflow-hidden">
+          <div className="absolute inset-y-0 right-0 w-full md:w-[60%] h-full opacity-60 md:opacity-90 z-0">
+            <LandingGraph />
+          </div>
+
+          <div className="relative z-10 pointer-events-none max-w-7xl w-full flex flex-col justify-end">
+            <h1 className="text-[clamp(3.5rem,10vw,10rem)] font-bold tracking-tighter leading-[0.85] text-[var(--color-ink)] uppercase mb-8">
+              Chat with<br />
+              your data.<br />
+              <span className="text-[var(--color-neutral)]">Deterministically.</span>
+            </h1>
+            
+            <div className="flex flex-col md:flex-row gap-8 md:gap-24 items-start md:items-end mt-8">
+              <p className="text-xl max-w-xl text-[var(--color-muted)] leading-[1.6] pointer-events-auto">
+                Stop trusting probabilistic text chunks. GraphWeave extracts a strict semantic knowledge graph from your documents, ensuring a 0% hallucination rate.
+              </p>
+              <Link
+                href="/signup"
+                className="group flex items-center gap-3 text-lg font-bold text-[var(--color-ink)] border-b-2 border-[var(--color-ink)] pb-1 hover:text-[var(--color-neutral)] hover:border-[var(--color-neutral)] transition-colors pointer-events-auto"
+              >
+                Enter the platform
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </div>
         </section>
 

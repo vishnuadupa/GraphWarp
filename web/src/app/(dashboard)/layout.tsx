@@ -34,8 +34,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm font-medium transition-colors ${
-                    isActive ? "text-white border-b-2 border-white pb-[2px]" : "text-white/40 hover:text-white/80"
+                  className={`text-xs font-mono uppercase tracking-widest font-bold transition-all ${
+                    isActive ? "text-[var(--color-ink)] border-b-[2px] border-[var(--color-ink)] pb-[2px]" : "text-[var(--color-neutral)] hover:text-[var(--color-ink)]"
                   }`}
                 >
                   {link.label}

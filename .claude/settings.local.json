@@ -46,7 +46,17 @@
       "Bash(curl -s \"https://graph-weave.vercel.app/api/inngest\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d, indent=2\\)\\)\")",
       "Bash(findstr \"inngest\\\\|upload\\\\|reprocess\\\\|error\")",
-      "Bash(vercel --prod --yes)"
+      "Bash(vercel --prod --yes)",
+      "Bash(vercel deploy *)",
+      "Bash(vercel ls *)",
+      "Bash(curl -s \"https://graph-weave.vercel.app/api/inngest\" -o /dev/null -w \"%{http_code}\")",
+      "Bash(git commit -m 'fix: keep graph visible when Gemini returns no results - never overwrite with empty *)",
+      "Bash(grep -E \"\\\\.\\(env|key|secret\\)$\")",
+      "Bash(grep -E \"next\\\\.config\\\\.\\(ts|js\\)$\")",
+      "Bash(git grep *)",
+      "Bash(del .env.production)",
+      "Bash(del .env.local)",
+      "Bash(npx vercel *)"
     ]
   }
 }

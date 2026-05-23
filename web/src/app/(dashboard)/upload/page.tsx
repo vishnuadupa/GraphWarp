@@ -105,27 +105,27 @@ export default function UploadPage() {
   if (!userId) return null;
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-[#0A0A0B] text-white">
+    <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-[var(--color-paper)] text-[var(--color-ink)] min-h-full">
       <div className="max-w-4xl mx-auto space-y-12">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto mb-6">
+          <div className="w-16 h-16 rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper-2)] text-[var(--color-neutral)] flex items-center justify-center mx-auto mb-6">
             <FileUp className="w-8 h-8" />
           </div>
-          <h1 className="text-4xl font-bold tracking-tight">Ingest Documents</h1>
-          <p className="text-white/50 text-lg max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold tracking-tighter uppercase text-[var(--color-ink)]">Ingest Documents</h1>
+          <p className="text-[var(--color-neutral)] text-lg max-w-2xl mx-auto leading-relaxed">
             Drop any file up to 1 MB. It uploads securely to your private tenant bucket, then extracts entities and semantic embeddings in the background.
           </p>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
-          <div className="bg-white/[0.02] border border-white/[0.08] rounded-3xl p-2 shadow-2xl">
+          <div className="bg-[var(--color-paper)] border-[2px] border-[var(--color-rule)] rounded-none p-2 shadow-sm">
             <UploadDropzone onFilesSelected={handleFilesSelected} />
           </div>
         </motion.div>
 
         {statuses.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-            <div className="font-medium text-white/40 uppercase tracking-widest text-xs ml-1">Upload Status</div>
+            <div className="font-bold text-[var(--color-neutral)] uppercase tracking-widest text-xs font-mono ml-1">Upload Status</div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <AnimatePresence>
                 {statuses.map((s, i) => (
@@ -133,19 +133,19 @@ export default function UploadPage() {
                     key={`${s.filename}-${i}`}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.05] transition-colors"
+                    className="flex flex-col p-4 rounded-none bg-[var(--color-paper-2)] border-[2px] border-[var(--color-rule)] hover:bg-[var(--color-paper-3)] transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      {s.state === "uploading" && <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />}
-                      {s.state === "done" && <CheckCircle2 className="w-5 h-5 text-green-400" />}
-                      {s.state === "error" && <XCircle className="w-5 h-5 text-red-400" />}
+                      {s.state === "uploading" && <Loader2 className="w-5 h-5 text-[var(--color-ink)] animate-spin" />}
+                      {s.state === "done" && <CheckCircle2 className="w-5 h-5 text-green-600" />}
+                      {s.state === "error" && <XCircle className="w-5 h-5 text-red-600" />}
                       
-                      <span className="text-sm font-medium text-white/90 truncate flex-1">
+                      <span className="text-sm font-bold text-[var(--color-ink)] truncate flex-1">
                         {s.filename}
                       </span>
                     </div>
                     {s.message && (
-                      <span className="text-xs text-red-400/80 mt-2 ml-8">{s.message}</span>
+                      <span className="text-xs text-red-600 mt-2 ml-8 font-mono">{s.message}</span>
                     )}
                   </motion.div>
                 ))}
@@ -156,7 +156,7 @@ export default function UploadPage() {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="pt-8 flex justify-center">
                 <Link
                   href="/chat"
-                  className="group flex items-center gap-2 px-8 py-4 bg-white text-black hover:bg-white/90 rounded-2xl font-semibold transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] hover:shadow-[0_0_60px_rgba(255,255,255,0.2)]"
+                  className="group flex items-center gap-2 px-8 py-4 bg-[var(--color-ink)] text-[var(--color-paper)] hover:opacity-85 rounded-none font-mono uppercase font-bold text-sm border-[2px] border-[var(--color-ink)] shadow-md hover:shadow-lg transition-all"
                 >
                   Next Step: Ask the Graph
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
