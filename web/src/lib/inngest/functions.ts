@@ -170,10 +170,10 @@ async function embedEntitiesBatch(model: any, entities: string[]): Promise<(numb
       return res.embeddings.map((emb: any) => emb.values || null);
     });
   } catch (err: any) {
-    console.error(`[ingest] Batch embed failed, falling back to sequential:`, err?.message);
-    const out = [];
-    for (const e of entities) out.push(await embedEntity(model, e));
-    return out;
+    // Skip sequential fallback — 100 individual calls would stall the function.
+    // Embeddings are optional; return nulls and continue.
+    console.warn(`[ingest] Batch embed failed, skipping embeddings for this batch:`, err?.message);
+    return entities.map(() => null);
   }
 }
 
@@ -282,44 +282,7 @@ export const processDocument = inngest.createFunction(
 
       console.log(`[ingest] Extracted ${extractedData.length} triples from ${filename}`);
 
-      // 3. Embeddings
-      await setStep(documentId, 'embedding');
-      const embeddingsData = await step.run('generate-embeddings', async () => {
-        if (!extractedData.length) return {};
-        const entityMap: Record<string, string> = {};
-        for (const d of extractedData) {
-          if (!entityMap[d.source]) entityMap[d.source] = d.source_type;
-          if (!entityMap[d.target]) entityMap[d.target] = d.target_type;
-        }
-
-        const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
-        const uniqueEntities = Object.keys(entityMap);
-        const BATCH = 30;
-        const result: Record<string, number[]> = {};
-
-        for (let i = 0; i < uniqueEntities.length; i += BATCH) {
-          const batch = uniqueEntities.slice(i, i + BATCH);
-          const vectors = await embedEntitiesBatch(embedModel, batch);
-          batch.forEach((entity, idx) => { if (vectors[idx]) result[entity] = vectors[idx]!; });
-          if (i + BATCH < uniqueEntities.length) await new Promise((r) => setTimeout(r, 1000));
-        }
-        return result;
-      });
-
-      // 3.5 pgvector
-      await step.run('save-to-postgres-pgvector', async () => {
-        if (!extractedData.length) return { inserted: 0 };
-        const uniqueEntities = new Set(extractedData.flatMap((d: any) => [d.source, d.target]));
-        const inserts = Array.from(uniqueEntities)
-          .map((entity) => ({ document_id: documentId, user_id: userId, content: entity, embedding: embeddingsData[entity] || null }))
-          .filter(item => item.embedding !== null);
-        if (!inserts.length) return { inserted: 0 };
-        const { error } = await supabaseAdmin.from('document_embeddings').insert(inserts);
-        if (error) console.error(`[ingest] pgvector insert error:`, error.message);
-        return { inserted: inserts.length };
-      });
-
-      // 4. Neo4j
+      // 3. Save to Neo4j (no embeddings yet — keep the critical path fast)
       await setStep(documentId, 'saving');
       await step.run('save-to-neo4j', async () => {
         if (!extractedData.length) return { inserted: 0 };
@@ -335,11 +298,11 @@ export const processDocument = inngest.createFunction(
             const queries = extractedData.map((item) =>
               tx.run(
                 `MERGE (s:Entity {name: $source, user_id: $userId})
-                 ON CREATE SET s.type = $sourceType, s.embedding = $sourceEmbedding, s.created_at = datetime()
-                 ON MATCH SET s.type = coalesce(s.type, $sourceType), s.embedding = coalesce(s.embedding, $sourceEmbedding)
+                 ON CREATE SET s.type = $sourceType, s.created_at = datetime()
+                 ON MATCH SET s.type = coalesce(s.type, $sourceType)
                  MERGE (t:Entity {name: $target, user_id: $userId})
-                 ON CREATE SET t.type = $targetType, t.embedding = $targetEmbedding, t.created_at = datetime()
-                 ON MATCH SET t.type = coalesce(t.type, $targetType), t.embedding = coalesce(t.embedding, $targetEmbedding)
+                 ON CREATE SET t.type = $targetType, t.created_at = datetime()
+                 ON MATCH SET t.type = coalesce(t.type, $targetType)
                  MERGE (s)-[r:RELATION {type: $relation, user_id: $userId, source_file: $filename}]->(t)
                  ON CREATE SET r.weight = 1, r.created_at = datetime()
                  ON MATCH SET r.weight = r.weight + 1`,
@@ -347,8 +310,6 @@ export const processDocument = inngest.createFunction(
                   source: item.source, sourceType: item.source_type,
                   target: item.target, targetType: item.target_type,
                   relation: item.relation, userId, filename: filename || 'Unknown Source',
-                  sourceEmbedding: embeddingsData[item.source] ?? null,
-                  targetEmbedding: embeddingsData[item.target] ?? null,
                 }
               )
             );
@@ -360,7 +321,7 @@ export const processDocument = inngest.createFunction(
         return { inserted: extractedData.length };
       });
 
-      // 5. Mark complete
+      // 4. Mark complete — graph is now visible to the user
       await step.run('update-status', async () => {
         const uniqueEntities = new Set(extractedData.flatMap((d: any) => [d.source, d.target]));
         await supabaseAdmin.from('documents').update({
@@ -369,6 +330,63 @@ export const processDocument = inngest.createFunction(
           entity_count: uniqueEntities.size,
           relation_count: extractedData.length,
         }).eq('id', documentId);
+      });
+
+      // 5. Embeddings — optional, runs after graph is visible, failure does NOT fail the function
+      await step.run('generate-embeddings', async () => {
+        if (!extractedData.length) return { embedded: 0 };
+        try {
+          const entityMap: Record<string, string> = {};
+          for (const d of extractedData) {
+            if (!entityMap[d.source]) entityMap[d.source] = d.source_type;
+            if (!entityMap[d.target]) entityMap[d.target] = d.target_type;
+          }
+
+          const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+          const uniqueEntities = Object.keys(entityMap);
+          const BATCH = 30;
+          const embeddingsData: Record<string, number[]> = {};
+
+          for (let i = 0; i < uniqueEntities.length; i += BATCH) {
+            const batch = uniqueEntities.slice(i, i + BATCH);
+            const vectors = await embedEntitiesBatch(embedModel, batch);
+            batch.forEach((entity, idx) => { if (vectors[idx]) embeddingsData[entity] = vectors[idx]!; });
+            if (i + BATCH < uniqueEntities.length) await new Promise((r) => setTimeout(r, 1000));
+          }
+
+          // Write embeddings back to Neo4j nodes
+          if (Object.keys(embeddingsData).length) {
+            const session = driver.session();
+            try {
+              await session.executeWrite(async (tx) => {
+                const queries = Object.entries(embeddingsData).map(([name, embedding]) =>
+                  tx.run(
+                    `MATCH (e:Entity {name: $name, user_id: $userId}) SET e.embedding = $embedding`,
+                    { name, userId, embedding }
+                  )
+                );
+                await Promise.all(queries);
+              });
+            } finally {
+              await session.close();
+            }
+          }
+
+          // Save to pgvector
+          const pgInserts = Object.entries(embeddingsData).map(([entity, embedding]) => ({
+            document_id: documentId, user_id: userId, content: entity, embedding,
+          }));
+          if (pgInserts.length) {
+            const { error } = await supabaseAdmin.from('document_embeddings').insert(pgInserts);
+            if (error) console.error(`[ingest] pgvector insert error:`, error.message);
+          }
+
+          return { embedded: Object.keys(embeddingsData).length };
+        } catch (err: any) {
+          // Embeddings are optional — log and move on
+          console.warn(`[ingest] Embedding step failed (non-fatal):`, err?.message);
+          return { embedded: 0, skipped: true };
+        }
       });
 
       return { success: true, relationsExtracted: extractedData.length };
