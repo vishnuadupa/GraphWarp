@@ -465,7 +465,8 @@ export default function ChatPage() {
               if (parsed.type === "phase") {
                 setThinkingPhase(parsed.data as ThinkingPhase);
               } else if (parsed.type === "graph") {
-                setGraph(parsed.data);
+                // Only replace the graph if we actually got nodes back — never clear a populated graph
+                if (parsed.data?.nodes?.length > 0) setGraph(parsed.data);
                 if (parsed.activeNodeIds?.length > 0) setActiveNodeIds(new Set<string>(parsed.activeNodeIds));
               } else if (parsed.type === "text") {
                 assistantMessage += parsed.data;

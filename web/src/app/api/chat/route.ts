@@ -146,7 +146,10 @@ Keep entity names concise and capitalized. Question: ${question}`;
             await session.close();
           }
 
-          send({ type: 'graph', data: { nodes, links }, activeNodeIds: nodes.map((n) => n.id) });
+          // Only send graph update when we actually found nodes — empty payload would clear the client graph
+          if (nodes.length > 0) {
+            send({ type: 'graph', data: { nodes, links }, activeNodeIds: nodes.map((n) => n.id) });
+          }
 
           // ── Phase 3: synthesis with multi-turn context ────────────────────
           send({ type: 'phase', data: 'answering' });
