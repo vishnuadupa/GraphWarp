@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser-client";
 import UploadDropzone from "@/components/UploadDropzone";
+import { motion } from "framer-motion";
+import { ArrowRight, Loader2, CheckCircle2, XCircle } from "lucide-react";
 
 interface UploadStatus {
   filename: string;
@@ -41,7 +43,6 @@ export default function UploadPage() {
           ...prev,
         ]);
 
-        // 1. Upload to Supabase Storage
         const { error: uploadError } = await supabase.storage
           .from("documents")
           .upload(path, file);
@@ -57,8 +58,6 @@ export default function UploadPage() {
           continue;
         }
 
-        // 2. Notify the backend API with the storage path (not a public URL —
-        //    the bucket is private; the server downloads it with the service key)
         try {
           await fetch("/api/upload", {
             method: "POST",
@@ -93,88 +92,74 @@ export default function UploadPage() {
   if (!userId) return null;
 
   return (
-    <div className="dash-shell">
-      <header className="dash-topbar">
-        <Link href="/" className="dash-wordmark">GraphWeave</Link>
-        <nav className="dash-topbar-right">
-          <Link href="/chat" className="dash-topbar-link">Chat</Link>
-          <Link href="/upload" className="dash-topbar-link">Upload</Link>
-          <Link href="/documents" className="dash-topbar-link">My Documents</Link>
-          <LogoutButton />
-        </nav>
-      </header>
-
-      <main className="dash-content">
-        <div className="upload-layout">
-          <h1 className="upload-heading">Ingest a document.</h1>
-          <p className="upload-lede">
-            Drop any file up to 2 MB. It uploads to Supabase Storage, then Inngest
-            extracts entities and builds your knowledge graph in the background.
+    <div className="flex-1 overflow-y-auto p-8 lg:p-12">
+      <div className="max-w-3xl mx-auto space-y-12">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          <h1 className="text-4xl font-bold tracking-tight">Ingest Documents</h1>
+          <p className="text-white/50 text-lg max-w-xl">
+            Drop any file up to 1 MB. It uploads securely to your private tenant bucket, then Inngest extracts entities and semantic embeddings in the background.
           </p>
+        </motion.div>
 
-          <div className="demo__panel">
-            <UploadDropzone onFilesSelected={handleFilesSelected} />
-          </div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <UploadDropzone onFilesSelected={handleFilesSelected} />
+        </motion.div>
 
-          {statuses.length > 0 && (
-            <div className="upload-status">
+        {statuses.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4 pt-8 border-t border-white/[0.08]"
+          >
+            <h3 className="font-medium text-white/80">Upload Status</h3>
+            <div className="space-y-3">
               {statuses.map((s, i) => (
                 <div
                   key={i}
-                  className={`upload-status-item upload-status-item--${
-                    s.state === "done"
-                      ? "ok"
-                      : s.state === "error"
-                      ? "err"
-                      : "busy"
-                  }`}
+                  className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.08]"
                 >
-                  <span>
-                    {s.state === "done"
-                      ? "✓"
-                      : s.state === "error"
-                      ? "✗"
-                      : "·"}
-                  </span>
-                  <span>
-                    {s.filename}
-                    {s.message ? ` — ${s.message}` : ""}
-                  </span>
+                  <div className="flex items-center gap-4">
+                    {s.state === "uploading" && <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />}
+                    {s.state === "done" && <CheckCircle2 className="w-5 h-5 text-green-400" />}
+                    {s.state === "error" && <XCircle className="w-5 h-5 text-red-400" />}
+                    
+                    <span className="text-sm font-medium text-white/80">
+                      {s.filename}
+                    </span>
+                  </div>
+                  {s.message && (
+                    <span className="text-xs text-white/40">{s.message}</span>
+                  )}
                 </div>
               ))}
-              
-              {statuses.some(s => s.state === "done") && (
-                <div className="mt-8 flex justify-center">
-                  <Link href="/chat" className="btn-ink-full text-center" style={{ width: '100%' }}>
-                    Next Step: Ask the Knowledge Graph →
-                  </Link>
-                </div>
-              )}
             </div>
-          )}
-        </div>
-      </main>
+
+            {statuses.some(s => s.state === "done") && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="pt-6 flex justify-end"
+              >
+                <Link
+                  href="/chat"
+                  className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all"
+                >
+                  Next Step: Ask the Graph
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </div>
     </div>
-  );
-}
-
-function LogoutButton() {
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.replace("/login");
-    router.refresh();
-  };
-
-  return (
-    <button
-      onClick={handleLogout}
-      className="dash-topbar-link"
-      style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-    >
-      Sign out
-    </button>
   );
 }

@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser-client";
 import { ForceGraph, type GraphData } from "@/components/ForceGraph";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { motion } from "framer-motion";
+import { Send, Filter, Network, ChevronDown } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
@@ -25,6 +26,7 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [availableDocs, setAvailableDocs] = useState<any[]>([]);
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  const [filterOpen, setFilterOpen] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -91,7 +93,7 @@ export default function ChatPage() {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || `API \${res.status}`);
+        throw new Error(errorData.error || `API ${res.status}`);
       }
       if (!res.body) throw new Error("No response body");
 
@@ -113,41 +115,40 @@ export default function ChatPage() {
           
           for (const block of blocks) {
             if (block.startsWith('data: ')) {
-              const dataStr = block.slice(6);
-              if (dataStr === '[DONE]') continue;
-              try {
-                const parsed = JSON.parse(dataStr);
-                if (parsed.type === 'graph') {
-                  setGraph(parsed.data);
-                } else if (parsed.type === 'text') {
-                  assistantMessage += parsed.data;
-                  
-                  // Extract <suggestions> block
-                  let displayContent = assistantMessage;
-                  let suggestions: string[] = [];
-                  const suggestionMatch = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
-                  if (suggestionMatch) {
-                     displayContent = assistantMessage.replace(suggestionMatch[0], '').trim();
-                     try {
-                       suggestions = JSON.parse(suggestionMatch[1]);
-                     } catch(e) {}
-                  }
+               const dataStr = block.slice(6);
+               if (dataStr === '[DONE]') continue;
+               try {
+                 const parsed = JSON.parse(dataStr);
+                 if (parsed.type === 'graph') {
+                   setGraph(parsed.data);
+                 } else if (parsed.type === 'text') {
+                   assistantMessage += parsed.data;
+                   
+                   let displayContent = assistantMessage;
+                   let suggestions: string[] = [];
+                   const suggestionMatch = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
+                   if (suggestionMatch) {
+                      displayContent = assistantMessage.replace(suggestionMatch[0], '').trim();
+                      try {
+                        suggestions = JSON.parse(suggestionMatch[1]);
+                      } catch(e) {}
+                   }
 
-                  setMessages((prev) => {
-                    const newMessages = [...prev];
-                    const lastMsg = newMessages[newMessages.length - 1];
-                    lastMsg.content = displayContent;
-                    if (suggestions.length > 0) {
-                      lastMsg.suggestions = suggestions;
-                    }
-                    return newMessages;
-                  });
-                } else if (parsed.type === 'error') {
-                  throw new Error(parsed.data);
-                }
-              } catch (e) {
-                // Ignore partial JSON parse errors
-              }
+                   setMessages((prev) => {
+                     const newMessages = [...prev];
+                     const lastMsg = newMessages[newMessages.length - 1];
+                     lastMsg.content = displayContent;
+                     if (suggestions.length > 0) {
+                       lastMsg.suggestions = suggestions;
+                     }
+                     return newMessages;
+                   });
+                 } else if (parsed.type === 'error') {
+                   throw new Error(parsed.data);
+                 }
+               } catch (e) {
+                 // ignore partial json
+               }
             }
           }
         }
@@ -158,10 +159,10 @@ export default function ChatPage() {
         const last = prev[prev.length - 1];
         if (last && last.role === 'assistant' && last.content === '') {
           const newMessages = [...prev];
-          newMessages[newMessages.length - 1].content = `Error: \${msg}`;
+          newMessages[newMessages.length - 1].content = `Error: ${msg}`;
           return newMessages;
         } else {
-          return [...prev, { role: "assistant", content: `Error: \${msg}` }];
+          return [...prev, { role: "assistant", content: `Error: ${msg}` }];
         }
       });
     } finally {
@@ -180,7 +181,7 @@ export default function ChatPage() {
     setInput(e.target.value);
     const el = e.target;
     el.style.height = "auto";
-    el.style.height = `\${Math.min(el.scrollHeight, 160)}px`;
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   };
 
   const handleNodeClick = useCallback(async (node: any) => {
@@ -233,159 +234,153 @@ export default function ChatPage() {
   if (!ready) return null;
 
   return (
-    <div className="dash-shell">
-      <header className="dash-topbar">
-        <Link href="/" className="dash-wordmark">GraphWeave</Link>
-        <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+    <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden bg-[#0A0A0B]">
+      
+      {/* Left Chat Panel */}
+      <section className="flex-1 flex flex-col min-w-[320px] max-w-2xl border-r border-white/[0.08] relative">
+        
+        {/* Chat Header w/ Filters */}
+        <div className="h-16 flex items-center justify-between px-6 border-b border-white/[0.08] bg-white/[0.01]">
+          <h2 className="font-medium text-white/90 flex items-center gap-2">
+            Semantic Graph Chat
+          </h2>
           {availableDocs.length > 0 && (
-            <div className="doc-selector" style={{position: 'relative'}}>
+            <div className="relative">
               <button 
-                style={{
-                  background: 'var(--gray-100)', 
-                  border: '1px solid var(--gray-200)',
-                  padding: '4px 12px',
-                  borderRadius: '16px',
-                  fontSize: '12px',
-                  cursor: 'pointer'
-                }}
-                onClick={(e) => {
-                  const menu = e.currentTarget.nextElementSibling as HTMLElement;
-                  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-                }}
+                onClick={() => setFilterOpen(!filterOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] text-sm text-white/80 transition-colors"
               >
-                Filters: {selectedDocs.length === 0 ? "All Docs" : `\${selectedDocs.length} Selected`} ▾
+                <Filter className="w-3.5 h-3.5" />
+                {selectedDocs.length === 0 ? "All Docs" : `${selectedDocs.length} Selected`}
+                <ChevronDown className="w-3.5 h-3.5 opacity-50" />
               </button>
-              <div 
-                className="doc-menu"
-                style={{
-                  display: 'none', position: 'absolute', top: '100%', right: 0, marginTop: '8px',
-                  background: 'white', border: '1px solid var(--gray-200)', borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', zIndex: 50, padding: '8px',
-                  minWidth: '200px', maxHeight: '300px', overflowY: 'auto'
-                }}
-              >
-                <label style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', fontSize: '14px', cursor: 'pointer'}}>
-                  <input type="checkbox" checked={selectedDocs.length === 0} onChange={() => setSelectedDocs([])} />
-                  All Documents
-                </label>
-                <hr style={{margin: '4px 0', borderColor: 'var(--gray-100)'}} />
-                {availableDocs.map(doc => (
-                  <label key={doc.id} style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', fontSize: '14px', cursor: 'pointer'}}>
-                    <input 
-                      type="checkbox" 
-                      checked={selectedDocs.includes(doc.filename)}
-                      onChange={() => toggleDocSelection(doc.filename)}
-                    />
-                    {doc.filename}
-                  </label>
-                ))}
-              </div>
+              
+              {filterOpen && (
+                <div className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-[#111113] border border-white/[0.08] shadow-xl z-50 overflow-hidden">
+                  <div className="p-2 border-b border-white/[0.08]">
+                     <label className="flex items-center gap-3 px-3 py-2 hover:bg-white/[0.04] rounded-lg cursor-pointer transition-colors">
+                       <input 
+                         type="checkbox" 
+                         className="rounded border-white/20 bg-transparent text-indigo-500 focus:ring-indigo-500/20"
+                         checked={selectedDocs.length === 0} 
+                         onChange={() => setSelectedDocs([])} 
+                       />
+                       <span className="text-sm text-white/90">All Documents</span>
+                     </label>
+                  </div>
+                  <div className="p-2 max-h-60 overflow-y-auto">
+                    {availableDocs.map(doc => (
+                      <label key={doc.id} className="flex items-center gap-3 px-3 py-2 hover:bg-white/[0.04] rounded-lg cursor-pointer transition-colors">
+                        <input 
+                          type="checkbox"
+                          className="rounded border-white/20 bg-transparent text-indigo-500 focus:ring-indigo-500/20"
+                          checked={selectedDocs.includes(doc.filename)}
+                          onChange={() => toggleDocSelection(doc.filename)}
+                        />
+                        <span className="text-sm text-white/70 truncate">{doc.filename}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
-        <nav className="dash-topbar-right">
-          <Link href="/upload" className="dash-topbar-link">Upload</Link>
-          <Link href="/documents" className="dash-topbar-link">My Documents</Link>
-          <LogoutButton router={router} />
-        </nav>
-      </header>
 
-      <main className="dash-content">
-        <section className="chat-panel" aria-label="Chat">
-          <div className="chat-messages" role="log" aria-live="polite">
-            {messages.length === 0 ? (
-              <div className="chat-empty">
-                ASK ANYTHING ABOUT<br />YOUR DOCUMENTS
-              </div>
-            ) : (
-              messages.map((m, i) => (
-                <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div className={`chat-msg chat-msg--\${m.role}`}>
-                    {m.role === 'user' ? (
-                       m.content 
-                    ) : (
+        {/* Chat Messages */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {messages.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center opacity-40">
+              <Network className="w-12 h-12 mb-4 text-indigo-400" />
+              <p className="text-center text-sm uppercase tracking-widest font-medium">Zero-Hallucination<br/>Graph Context</p>
+            </div>
+          ) : (
+            messages.map((m, i) => (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                key={i} 
+                className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
+              >
+                <div className={`max-w-[85%] rounded-2xl px-5 py-3.5 text-sm leading-relaxed ${
+                  m.role === 'user' 
+                    ? 'bg-indigo-600 text-white' 
+                    : 'bg-white/[0.04] border border-white/[0.08] text-white/90'
+                }`}>
+                  {m.role === 'user' ? (
+                     m.content 
+                  ) : (
+                     <div className="prose prose-invert prose-sm max-w-none">
                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
-                    )}
-                  </div>
-                  {m.role === 'assistant' && m.suggestions && m.suggestions.length > 0 && (
-                    <div className="chat-suggestions" style={{display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px', marginBottom: '16px'}}>
-                      {m.suggestions.map((sug, idx) => (
-                        <button 
-                          key={idx} 
-                          onClick={() => handleSend(sug)}
-                          disabled={loading}
-                          style={{
-                            background: 'var(--gray-50)', border: '1px solid var(--gray-200)',
-                            borderRadius: '16px', padding: '6px 12px', fontSize: '12px',
-                            color: 'var(--gray-600)', cursor: 'pointer', transition: 'all 0.2s'
-                          }}
-                          onMouseOver={(e) => { e.currentTarget.style.background = 'var(--gray-100)'; e.currentTarget.style.color = 'var(--gray-900)'; }}
-                          onMouseOut={(e) => { e.currentTarget.style.background = 'var(--gray-50)'; e.currentTarget.style.color = 'var(--gray-600)'; }}
-                        >
-                          {sug}
-                        </button>
-                      ))}
-                    </div>
+                     </div>
                   )}
                 </div>
-              ))
-            )}
-            {loading && messages[messages.length - 1]?.role !== 'assistant' && (
-              <div className="chat-msg chat-msg--thinking">traversing graph…</div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+                
+                {m.role === 'assistant' && m.suggestions && m.suggestions.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3 ml-2">
+                    {m.suggestions.map((sug, idx) => (
+                      <button 
+                        key={idx} 
+                        onClick={() => handleSend(sug)}
+                        disabled={loading}
+                        className="px-3 py-1.5 rounded-full bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-300 text-xs font-medium transition-colors"
+                      >
+                        {sug}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            ))
+          )}
+          
+          {loading && messages[messages.length - 1]?.role !== 'assistant' && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center gap-3 text-white/40 text-sm font-medium px-2"
+            >
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+              </div>
+              Semantic Entity Resolution...
+            </motion.div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
 
-          <div className="chat-input-area">
+        {/* Input Area */}
+        <div className="p-4 border-t border-white/[0.08] bg-white/[0.01]">
+          <div className="relative flex items-end gap-2 bg-[#111113] border border-white/[0.08] focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/50 rounded-2xl transition-all p-2">
             <textarea
               ref={textareaRef}
-              className="chat-textarea"
-              placeholder="Ask about your documents…"
+              className="flex-1 max-h-40 min-h-[44px] bg-transparent text-sm text-white placeholder-white/30 resize-none outline-none py-3 px-3 leading-relaxed"
+              placeholder="Ask about your documents..."
               rows={1}
               value={input}
               onChange={handleTextareaInput}
               onKeyDown={handleKeyDown}
               disabled={loading}
-              aria-label="Chat input"
             />
             <button
-              className="chat-send"
               onClick={() => handleSend()}
               disabled={!input.trim() || loading}
-              aria-label="Send message"
+              className="shrink-0 w-10 h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:bg-white/[0.05] disabled:text-white/30 text-white flex items-center justify-center transition-all mb-0.5"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
+              <Send className="w-4 h-4" />
             </button>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section className="graph-panel" aria-label="Knowledge graph">
-          <ForceGraph data={graph} onNodeClick={handleNodeClick} />
-        </section>
-      </main>
+      {/* Right Graph Panel */}
+      <section className="hidden md:flex flex-1 flex-col bg-[#050505] relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#0A0A0B]/80 to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-0 opacity-40 mix-blend-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-transparent to-transparent pointer-events-none"></div>
+        <ForceGraph data={graph} onNodeClick={handleNodeClick} />
+      </section>
     </div>
-  );
-}
-
-function LogoutButton({ router }: { router: ReturnType<typeof useRouter> }) {
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.replace("/login");
-    router.refresh();
-  };
-
-  return (
-    <button
-      onClick={handleLogout}
-      className="dash-topbar-link"
-      style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-    >
-      Sign out
-    </button>
   );
 }

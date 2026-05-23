@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser-client";
+import { motion } from "framer-motion";
+import { FileText, Loader2, Trash2, Upload, Plus } from "lucide-react";
 
 export default function DocumentsPage() {
   const router = useRouter();
@@ -60,99 +62,108 @@ export default function DocumentsPage() {
   if (!ready) return null;
 
   return (
-    <div className="dash-shell">
-      <header className="dash-topbar">
-        <Link href="/" className="dash-wordmark">GraphWeave</Link>
-        <nav className="dash-topbar-right">
-          <Link href="/chat" className="dash-topbar-link">Chat</Link>
-          <Link href="/upload" className="dash-topbar-link">Upload</Link>
-          <Link href="/documents" className="dash-topbar-link">My Documents</Link>
-        </nav>
-      </header>
-
-      <main className="dash-content" style={{ padding: 'var(--space-2xl)' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-xl)' }}>
-            <h1 style={{ fontSize: '1.5rem', color: 'var(--gray-900)' }}>My Documents</h1>
-            <Link href="/upload" style={{
-              background: 'var(--primary-600)',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              textDecoration: 'none',
-              fontSize: '0.875rem'
-            }}>
-              Upload New
+    <div className="flex-1 overflow-y-auto p-8 lg:p-12">
+      <div className="max-w-5xl mx-auto space-y-8">
+        <div className="flex justify-between items-end border-b border-white/[0.08] pb-6">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-2"
+          >
+            <h1 className="text-3xl font-bold tracking-tight">Documents</h1>
+            <p className="text-white/50">Manage your ingested knowledge base files.</p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <Link
+              href="/upload"
+              className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              Add Document
             </Link>
-          </div>
-
-          {loading ? (
-            <div style={{ color: 'var(--gray-500)' }}>Loading documents...</div>
-          ) : documents.length === 0 ? (
-            <div className="empty-state" style={{ 
-              textAlign: 'center', 
-              padding: 'var(--space-3xl)', 
-              background: 'white', 
-              borderRadius: '8px',
-              border: '1px solid var(--gray-200)'
-            }}>
-              <p style={{ color: 'var(--gray-500)', marginBottom: 'var(--space-md)' }}>No documents found.</p>
-              <Link href="/upload" style={{ color: 'var(--primary-600)' }}>Upload your first document</Link>
-            </div>
-          ) : (
-            <div style={{ background: 'white', borderRadius: '8px', border: '1px solid var(--gray-200)', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                <thead style={{ background: 'var(--gray-50)', borderBottom: '1px solid var(--gray-200)' }}>
-                  <tr>
-                    <th style={{ padding: '1rem', fontWeight: 500, color: 'var(--gray-600)' }}>Filename</th>
-                    <th style={{ padding: '1rem', fontWeight: 500, color: 'var(--gray-600)' }}>Status</th>
-                    <th style={{ padding: '1rem', fontWeight: 500, color: 'var(--gray-600)' }}>Uploaded</th>
-                    <th style={{ padding: '1rem', fontWeight: 500, color: 'var(--gray-600)', textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {documents.map((doc) => (
-                    <tr key={doc.id} style={{ borderBottom: '1px solid var(--gray-100)' }}>
-                      <td style={{ padding: '1rem', color: 'var(--gray-900)' }}>{doc.filename}</td>
-                      <td style={{ padding: '1rem' }}>
-                        <span style={{
-                          display: 'inline-block',
-                          padding: '0.25rem 0.5rem',
-                          borderRadius: '9999px',
-                          fontSize: '0.75rem',
-                          fontWeight: 500,
-                          background: doc.status === 'Completed' ? '#dcfce7' : '#fef9c3',
-                          color: doc.status === 'Completed' ? '#166534' : '#854d0e'
-                        }}>
-                          {doc.status}
-                        </span>
-                      </td>
-                      <td style={{ padding: '1rem', color: 'var(--gray-500)', fontSize: '0.875rem' }}>
-                        {new Date(doc.created_at).toLocaleDateString()}
-                      </td>
-                      <td style={{ padding: '1rem', textAlign: 'right' }}>
-                        <button
-                          onClick={() => handleDelete(doc.id)}
-                          style={{
-                            background: 'transparent',
-                            color: '#ef4444',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: '0.875rem',
-                            fontWeight: 500
-                          }}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          </motion.div>
         </div>
-      </main>
+
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+          </div>
+        ) : documents.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center justify-center py-24 px-6 rounded-3xl border border-white/[0.08] border-dashed bg-white/[0.01]"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-6">
+              <FileText className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">No documents yet</h3>
+            <p className="text-white/50 text-center max-w-sm mb-8">
+              Upload your first document to begin building your deterministic knowledge graph.
+            </p>
+            <Link
+              href="/upload"
+              className="flex items-center gap-2 px-6 py-3 bg-white text-black hover:bg-white/90 rounded-xl font-medium transition-all"
+            >
+              <Upload className="w-4 h-4" />
+              Upload Document
+            </Link>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl border border-white/[0.08] bg-white/[0.02] overflow-hidden"
+          >
+            <table className="w-full text-left">
+              <thead className="bg-white/[0.02] border-b border-white/[0.08]">
+                <tr>
+                  <th className="px-6 py-4 text-sm font-medium text-white/50">Filename</th>
+                  <th className="px-6 py-4 text-sm font-medium text-white/50">Status</th>
+                  <th className="px-6 py-4 text-sm font-medium text-white/50">Uploaded</th>
+                  <th className="px-6 py-4 text-sm font-medium text-white/50 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/[0.08]">
+                {documents.map((doc) => (
+                  <tr key={doc.id} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <FileText className="w-5 h-5 text-indigo-400" />
+                        <span className="font-medium text-white/90">{doc.filename}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                        doc.status === 'Completed' 
+                          ? 'bg-green-500/10 text-green-400 border border-green-500/20' 
+                          : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+                      }`}>
+                        {doc.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-sm text-white/50">
+                      {new Date(doc.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => handleDelete(doc.id)}
+                        className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

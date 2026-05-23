@@ -31,7 +31,9 @@
       "Bash(git ls-tree *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(node -e \"require\\('framer-motion'\\)\")",
+      "Bash(node -e \"require\\('lucide-react'\\)\")"
     ]
   }
 }

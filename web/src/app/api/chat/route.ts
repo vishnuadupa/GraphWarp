@@ -112,9 +112,10 @@ export async function POST(req: NextRequest) {
             // Find top 3 closest nodes for each extracted entity and traverse 2 hops
             const result = await tx.run(
               `
-              CALL db.index.vector.queryNodes('entity_name_embeddings', 3, $embedding)
+              CALL db.index.vector.queryNodes('entity_name_embeddings', 50, $embedding)
               YIELD node AS startNode, score
               WHERE startNode.user_id = $userId
+              WITH startNode LIMIT 3
               MATCH (startNode)-[r1:RELATION]-(m:Entity)
               OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
               WHERE m.user_id = $userId AND (k IS NULL OR k.user_id = $userId)
