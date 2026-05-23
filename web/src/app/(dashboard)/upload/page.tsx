@@ -118,9 +118,7 @@ export default function UploadPage() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
-          <div className="bg-[var(--color-paper)] border-[2px] border-[var(--color-rule)] rounded-none p-2 shadow-sm">
-            <UploadDropzone onFilesSelected={handleFilesSelected} />
-          </div>
+          <UploadDropzone onFilesSelected={handleFilesSelected} />
         </motion.div>
 
         {statuses.length > 0 && (

@@ -120,9 +120,15 @@ export default function ChatPage() {
   const [nodeDetail, setNodeDetail] = useState<NodeDetail | null>(null);
   const [nodeDetailLoading, setNodeDetailLoading] = useState(false);
 
+  const [convSearch, setConvSearch] = useState("");
+  const [graphDocFilter, setGraphDocFilter] = useState<string | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef   = useRef<HTMLTextAreaElement>(null);
+  const textareaRef    = useRef<HTMLTextAreaElement>(null);
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup debounce on unmount
+  useEffect(() => () => { if (searchDebounce.current) clearTimeout(searchDebounce.current); }, []);
 
   // ── Boot ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -246,6 +252,31 @@ export default function ChatPage() {
     setPathNodeIds(new Set());
     setPathLength(null);
     setPathNotFound(false);
+    setPathFrom("");
+    setPathTo("");
+    setPathOpen(false);
+    setSelectedDocs([]);
+    setGraphDocFilter(null);
+    setGraphSearch("");
+    setSearchResults(new Set());
+    setStatsOpen(false);
+    fetchFullGraph(userIdRef.current);
+  };
+
+  const fetchGraphForDoc = async (doc: string) => {
+    setGraphDocFilter(doc);
+    try {
+      const res = await fetch(`/api/graph/full?doc=${encodeURIComponent(doc)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.graph) setGraph(data.graph);
+      }
+    } catch (err) { console.error("Failed to fetch doc graph:", err); }
+  };
+
+  const clearGraphDocFilter = () => {
+    setGraphDocFilter(null);
+    fetchFullGraph(userIdRef.current);
   };
 
   const handleSelectConversation = (conv: Conversation) => {
@@ -567,30 +598,46 @@ export default function ChatPage() {
               </button>
             </div>
 
+            {/* Conversation search */}
+            <div className="px-3 py-2 border-b-[1px] border-[var(--color-rule)] shrink-0">
+              <div className="flex items-center gap-2 bg-[var(--color-paper)] border-[1px] border-[var(--color-rule)] px-2 py-1.5">
+                <Search className="w-3 h-3 text-[var(--color-neutral)] shrink-0" />
+                <input
+                  className="flex-1 bg-transparent text-[10px] font-mono text-[var(--color-ink)] placeholder-[var(--color-neutral)] outline-none"
+                  placeholder="Search…"
+                  value={convSearch}
+                  onChange={(e) => setConvSearch(e.target.value)}
+                />
+                {convSearch && <button onClick={() => setConvSearch("")} className="text-[var(--color-neutral)] hover:text-[var(--color-ink)]"><X className="w-3 h-3" /></button>}
+              </div>
+            </div>
+
             {/* Conversations list */}
-            <div className="flex-1 overflow-y-auto py-2">
+            <div className="flex-1 overflow-y-auto py-1">
               {conversations.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-32 gap-2 opacity-40">
                   <MessageSquare className="w-5 h-5 text-[var(--color-ink)]" />
                   <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--color-neutral)] text-center">Empty</span>
                 </div>
               ) : (
-                conversations.map((conv) => (
-                  <button
-                    key={conv.id}
-                    onClick={() => handleSelectConversation(conv)}
-                    className={`w-full text-left px-4 py-3.5 transition-colors group relative border-b-[1px] border-[var(--color-rule)] cursor-pointer ${
-                      conv.id === currentConvId
-                        ? "bg-[var(--color-paper)] border-r-[3px] border-[var(--color-ink)]"
-                        : "hover:bg-[var(--color-paper-3)]"
-                    }`}
-                  >
-                    <p className={`text-xs truncate font-mono uppercase tracking-wider font-bold ${conv.id === currentConvId ? "text-[var(--color-ink)]" : "text-[var(--color-neutral)]"}`}>
-                      {conv.title || "New conversation"}
-                    </p>
-                    <p className="text-[10px] font-mono text-[var(--color-neutral)] uppercase mt-1">{fmtDate(conv.updated_at)}</p>
-                  </button>
-                ))
+                conversations
+                  .filter((c) => !convSearch || (c.title ?? "New conversation").toLowerCase().includes(convSearch.toLowerCase()))
+                  .map((conv) => (
+                    <button
+                      key={conv.id}
+                      onClick={() => handleSelectConversation(conv)}
+                      className={`w-full text-left px-4 py-3 transition-colors group relative border-b-[1px] border-[var(--color-rule)] cursor-pointer ${
+                        conv.id === currentConvId
+                          ? "bg-[var(--color-paper)] border-r-[3px] border-[var(--color-ink)]"
+                          : "hover:bg-[var(--color-paper-3)]"
+                      }`}
+                    >
+                      <p className={`text-xs truncate font-mono uppercase tracking-wider font-bold leading-snug ${conv.id === currentConvId ? "text-[var(--color-ink)]" : "text-[var(--color-neutral)]"}`}>
+                        {conv.title || "New conversation"}
+                      </p>
+                      <p className="text-[10px] font-mono text-[var(--color-neutral)] uppercase mt-0.5">{fmtDate(conv.updated_at)}</p>
+                    </button>
+                  ))
               )}
             </div>
           </motion.aside>
@@ -636,10 +683,18 @@ export default function ChatPage() {
                   </div>
                   <div className="p-2 max-h-52 overflow-y-auto bg-[var(--color-paper)]">
                     {availableDocs.map((doc) => (
-                      <label key={doc.id} className="flex items-center gap-3 px-3 py-2 hover:bg-[var(--color-paper-2)] cursor-pointer">
-                        <input type="checkbox" className="rounded-none text-[var(--color-ink)] focus:ring-0 border-[var(--color-rule)]" checked={selectedDocs.includes(doc.filename)} onChange={() => toggleDocSelection(doc.filename)} />
-                        <span className="text-xs font-mono text-[var(--color-neutral)] truncate">{doc.filename}</span>
-                      </label>
+                      <div key={doc.id} className="flex items-center gap-1 px-1 py-1 hover:bg-[var(--color-paper-2)] group">
+                        <label className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer py-1 px-2">
+                          <input type="checkbox" className="rounded-none text-[var(--color-ink)] focus:ring-0 border-[var(--color-rule)] shrink-0" checked={selectedDocs.includes(doc.filename)} onChange={() => toggleDocSelection(doc.filename)} />
+                          <span className="text-xs font-mono text-[var(--color-neutral)] truncate">{doc.filename}</span>
+                        </label>
+                        <button
+                          onClick={() => { fetchGraphForDoc(doc.filename); setFilterOpen(false); }}
+                          title="View only this file in graph"
+                          className="shrink-0 px-2 py-1 text-[9px] font-mono uppercase tracking-widest border-[1px] border-[var(--color-rule)] bg-[var(--color-paper-2)] hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] text-[var(--color-neutral)] transition-colors cursor-pointer opacity-0 group-hover:opacity-100">
+                          Graph
+                        </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -679,37 +734,46 @@ export default function ChatPage() {
               )}
             </div>
           ) : (
-            <div className="max-w-2xl mx-auto space-y-8 flex flex-col">
+            <div className="max-w-2xl mx-auto w-full space-y-6 flex flex-col pb-2">
               {messages.map((m, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-                  className={`flex flex-col ${m.role === "user" ? "items-end" : "items-start w-full"}`}>
-                  
-                  {m.role === "user" ? (
-                    <div className="bg-[var(--color-paper-2)] rounded-none border-[1px] border-[var(--color-rule)] border-solid px-5 py-4 text-sm text-[var(--color-ink)] font-medium max-w-[85%] self-end shadow-sm leading-relaxed">
-                      {m.content}
-                    </div>
-                  ) : (
-                    <div className="max-w-[100%] self-start w-full px-2 py-4 border-b border-[var(--color-rule)]/20 pb-6">
-                      <div className="flex items-center gap-2 mb-3 text-[10px] font-mono uppercase tracking-widest font-bold text-[var(--color-neutral)]">
-                        <span className="w-5 h-5 rounded-none border-[1px] border-[var(--color-rule)] border-solid bg-[var(--color-ink)] text-[var(--color-paper)] flex items-center justify-center text-[9px] font-bold">GW</span>
-                        Graph Assistant
-                      </div>
-                      <div className="prose prose-neutral max-w-none prose-sm leading-relaxed text-[var(--color-ink)] font-body">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
-                      </div>
+                <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                  className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
+
+                  {/* Avatar */}
+                  {m.role === "assistant" && (
+                    <div className="shrink-0 w-7 h-7 mt-0.5 bg-[var(--color-ink)] text-[var(--color-paper)] flex items-center justify-center text-[9px] font-bold font-mono border-[1px] border-[var(--color-rule)]">
+                      GW
                     </div>
                   )}
 
-                  {m.role === "assistant" && m.suggestions && m.suggestions.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-4 ml-7">
-                      {m.suggestions.map((sug, idx) => (
-                        <button key={idx} onClick={() => handleSend(sug)} disabled={loading}
-                          className="px-3 py-1.5 rounded-none bg-[var(--color-paper-2)] hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] border-[1px] border-[var(--color-rule)] border-solid text-[var(--color-ink)] text-xs font-mono font-bold uppercase transition-colors shadow-sm cursor-pointer">
-                          {sug}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  <div className={`flex flex-col gap-2 ${m.role === "user" ? "items-end max-w-[80%]" : "items-start flex-1 min-w-0"}`}>
+                    {m.role === "user" ? (
+                      /* User bubble — dark filled, right side */
+                      <div className="bg-[var(--color-ink)] text-[var(--color-paper)] px-4 py-3 text-sm leading-relaxed font-medium">
+                        {m.content}
+                      </div>
+                    ) : (
+                      /* AI response — clean, left side, no border */
+                      <div className="w-full">
+                        <div className="prose prose-neutral max-w-none prose-sm leading-relaxed text-[var(--color-ink)] font-body
+                          prose-headings:font-bold prose-headings:text-[var(--color-ink)] prose-headings:mt-4 prose-headings:mb-2
+                          prose-p:my-1.5 prose-li:my-0.5 prose-code:text-[var(--color-ink)] prose-code:bg-[var(--color-paper-2)] prose-code:px-1 prose-code:py-0.5 prose-code:text-xs prose-code:font-mono">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                        </div>
+                        {/* Suggestions — follow-up chips */}
+                        {m.suggestions && m.suggestions.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mt-3">
+                            {m.suggestions.map((sug, idx) => (
+                              <button key={idx} onClick={() => handleSend(sug)} disabled={loading}
+                                className="px-3 py-1.5 bg-[var(--color-paper-2)] hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] border-[1px] border-[var(--color-rule)] text-[var(--color-ink)] text-[11px] font-mono transition-colors cursor-pointer disabled:opacity-40 text-left leading-snug">
+                                {sug}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -806,6 +870,16 @@ export default function ChatPage() {
           )}
         </div>
 
+        {/* Graph doc filter banner */}
+        {graphDocFilter && (
+          <div className="flex items-center justify-between px-4 py-2 bg-[var(--color-ink)] text-[var(--color-paper)] text-[10px] font-mono uppercase tracking-widest shrink-0">
+            <span className="truncate">Showing: {graphDocFilter}</span>
+            <button onClick={clearGraphDocFilter} className="flex items-center gap-1 shrink-0 ml-3 opacity-70 hover:opacity-100 cursor-pointer">
+              <X className="w-3 h-3" /> Show All
+            </button>
+          </div>
+        )}
+
         {/* Path finder bar */}
         <AnimatePresence>
           {pathOpen && (
@@ -896,7 +970,12 @@ export default function ChatPage() {
                 <div className="flex-1 flex items-center justify-center">
                   <div className="w-6 h-6 border-2 border-[var(--color-rule)] border-t-[var(--color-ink)] rounded-none animate-spin" />
                 </div>
-              ) : stats ? (
+              ) : !stats ? (
+                <div className="flex-1 flex flex-col items-center justify-center gap-2 opacity-40 p-8 text-center">
+                  <BarChart2 className="w-6 h-6 text-[var(--color-ink)]" />
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--color-neutral)]">No stats available</span>
+                </div>
+              ) : (
                 <div className="p-4 space-y-6 text-xs">
                   <div className="grid grid-cols-2 gap-3">
                     {[{ label: "Entities", value: stats.nodeCount }, { label: "Relations", value: stats.linkCount }].map(({ label, value }) => (
