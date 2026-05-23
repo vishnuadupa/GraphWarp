@@ -36,7 +36,8 @@
       "Bash(node -e \"require\\('lucide-react'\\)\")",
       "Bash(python fix_escapes.py)",
       "Bash(npx tsc *)",
-      "Bash(cd /mnt/d/Graph/web && npx tsc --noEmit 2>&1 | head -60)"
+      "Bash(cd /mnt/d/Graph/web && npx tsc --noEmit 2>&1 | head -60)",
+      "Bash(mkdir -p \"D:\\\\Graph\\\\web\\\\src\\\\app\\\\api\\\\conversations\\\\[id]\" \"D:\\\\Graph\\\\web\\\\src\\\\app\\\\api\\\\conversations\\\\[id]\\\\messages\" && echo done)"
     ]
   }
 }

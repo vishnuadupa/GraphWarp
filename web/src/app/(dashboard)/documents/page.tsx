@@ -234,11 +234,11 @@ export default function DocumentsPage() {
                           onClick={() => handleDelete(doc)}
                           disabled={deleting.has(doc.id)}
                           title="Delete document"
-                          className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-white/40 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         >
                           {deleting.has(doc.id)
-                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            : <Trash2 className="w-3.5 h-3.5" />}
+                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Deleting...</>
+                            : <><Trash2 className="w-3.5 h-3.5" /> Delete</>}
                         </button>
                       </div>
                     </td>

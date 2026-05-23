@@ -7,6 +7,11 @@ import * as mammoth from 'mammoth';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
+/** Update the processing_step column for live UI feedback */
+async function setStep(documentId: string, step: string | null) {
+  await supabaseAdmin.from('documents').update({ processing_step: step }).eq('id', documentId);
+}
+
 /** Embed a single entity — returns null on failure (non-fatal). */
 async function embedEntity(model: any, entity: string): Promise<number[] | null> {
   try {
@@ -27,6 +32,7 @@ export const processDocument = inngest.createFunction(
     const { documentId, filePath, userId, filename } = event.data;
 
     // 1. Download the file from Supabase Storage
+    await setStep(documentId, 'downloading');
     const fileData = await step.run("download-file", async () => {
       const { data, error } = await supabaseAdmin.storage
         .from('documents')
@@ -43,6 +49,7 @@ export const processDocument = inngest.createFunction(
     });
 
     // 2. Extract entities + types + relationships via Gemini
+    await setStep(documentId, 'extracting');
     const extractedData = await step.run("extract-graph", async () => {
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
@@ -98,6 +105,7 @@ export const processDocument = inngest.createFunction(
     });
 
     // 3. Generate embeddings — batch 5 at a time to respect rate limits
+    await setStep(documentId, 'embedding');
     const embeddingsData = await step.run("generate-embeddings", async () => {
       if (!extractedData.length) return {};
 
@@ -124,6 +132,7 @@ export const processDocument = inngest.createFunction(
     });
 
     // 4. Write to Neo4j
+    await setStep(documentId, 'saving');
     await step.run("save-to-neo4j", async () => {
       if (!extractedData.length) return { inserted: 0 };
 
@@ -183,6 +192,7 @@ export const processDocument = inngest.createFunction(
       await supabaseAdmin
         .from('documents')
         .update({
+          processing_step: null,
           status:        'Completed',
           entity_count:  uniqueEntities.size,
           relation_count: extractedData.length,
