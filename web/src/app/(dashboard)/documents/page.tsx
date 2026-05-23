@@ -111,6 +111,7 @@ export default function DocumentsPage() {
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "documents" },
         (payload: any) => {
+          if (payload.new?.user_id !== userId) return;
           setDocuments((prev) =>
             prev.map((d) => (d.id === payload.new.id ? { ...d, ...payload.new } : d))
           );
@@ -120,7 +121,11 @@ export default function DocumentsPage() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "documents" },
         (payload: any) => {
-          setDocuments((prev) => [payload.new as Doc, ...prev]);
+          if (payload.new?.user_id !== userId) return;
+          setDocuments((prev) => {
+            if (prev.some((d) => d.id === payload.new.id)) return prev;
+            return [payload.new as Doc, ...prev];
+          });
         }
       )
       .subscribe();

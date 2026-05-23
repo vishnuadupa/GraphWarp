@@ -873,6 +873,7 @@ export default function ChatPage() {
             activeNodeIds={activeNodeIds}
             highlightNodeIds={searchResults.size > 0 ? searchResults : undefined}
             pathNodeIds={pathNodeIds.size > 0 ? pathNodeIds : undefined}
+            pathLinkIds={pathNodeIds.size > 0 ? pathNodeIds : undefined}
             hiddenTypes={hiddenTypes.size > 0 ? hiddenTypes : undefined}
             onNodeClick={handleNodeClick}
           />

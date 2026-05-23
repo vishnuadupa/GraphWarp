@@ -19,6 +19,11 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
       if (!files) return;
       const arr = Array.from(files);
       const validFiles = arr.filter(f => {
+        const ext = "." + f.name.split(".").pop()?.toLowerCase();
+        if (!ACCEPTED_TYPES.includes(ext)) {
+          alert(`File ${f.name} has an unsupported format. Accepted formats: ${ACCEPTED_TYPES.join(", ")}`);
+          return false;
+        }
         if (f.size > MAX_FILE_SIZE) {
           alert(`File ${f.name} exceeds the 1MB limit.`);
           return false;

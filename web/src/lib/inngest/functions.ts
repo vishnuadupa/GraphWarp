@@ -39,6 +39,28 @@ async function embedEntity(model: any, entity: string): Promise<number[] | null>
   }
 }
 
+/** Embed a list of entities in batch using Gemini's batchEmbedContents — falls back to single embeddings if it fails. */
+async function embedEntitiesBatch(model: any, entities: string[]): Promise<(number[] | null)[]> {
+  try {
+    return await withRetry(async () => {
+      const res = await model.batchEmbedContents({
+        requests: entities.map((e) => ({
+          model: "models/text-embedding-004",
+          content: { parts: [{ text: e }] }
+        }))
+      });
+      return res.embeddings.map((emb: any) => emb.values || null);
+    });
+  } catch (err: any) {
+    console.error(`[ingest] Batch embedding failed, falling back to sequential:`, err?.message);
+    const fallbackVectors = [];
+    for (const entity of entities) {
+      fallbackVectors.push(await embedEntity(model, entity));
+    }
+    return fallbackVectors;
+  }
+}
+
 export const processDocument = inngest.createFunction(
   {
     id: "process-document",
@@ -122,7 +144,7 @@ export const processDocument = inngest.createFunction(
         }
       });
 
-      // 3. Generate embeddings — batch 5 at a time to respect rate limits
+      // 3. Generate embeddings — batch 30 at a time to respect rate limits
       await setStep(documentId, 'embedding');
       const embeddingsData = await step.run("generate-embeddings", async () => {
         if (!extractedData.length) return {};
@@ -135,22 +157,49 @@ export const processDocument = inngest.createFunction(
 
         const embedModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
         const uniqueEntities = Object.keys(entityMap);
-        const BATCH = 5;
+        const BATCH = 30;
         const result: Record<string, number[]> = {};
 
         for (let i = 0; i < uniqueEntities.length; i += BATCH) {
           const batch = uniqueEntities.slice(i, i + BATCH);
-          const vectors = await Promise.all(batch.map((e) => embedEntity(embedModel, e)));
+          const vectors = await embedEntitiesBatch(embedModel, batch);
           batch.forEach((entity, idx) => {
             if (vectors[idx]) result[entity] = vectors[idx]!;
           });
           // Pacing delay to avoid slamming Gemini rate limits (15 RPM limit)
           if (i + BATCH < uniqueEntities.length) {
-            await new Promise((r) => setTimeout(r, 400));
+            await new Promise((r) => setTimeout(r, 1000));
           }
         }
 
         return result;
+      });
+
+      // 3.5. Write embeddings to Supabase Postgres (pgvector)
+      await step.run("save-to-postgres-pgvector", async () => {
+        if (!extractedData.length) return { inserted: 0 };
+
+        const uniqueEntities = new Set(extractedData.flatMap((d: any) => [d.source, d.target]));
+        const inserts = Array.from(uniqueEntities)
+          .map((entity) => ({
+            document_id: documentId,
+            user_id: userId,
+            content: entity,
+            embedding: embeddingsData[entity] || null,
+          }))
+          .filter(item => item.embedding !== null);
+
+        if (inserts.length === 0) return { inserted: 0 };
+
+        const { error } = await supabaseAdmin
+          .from('document_embeddings')
+          .insert(inserts);
+
+        if (error) {
+          console.error(`[ingest] Failed to write embeddings to Supabase Postgres:`, error.message);
+        }
+
+        return { inserted: inserts.length };
       });
 
       // 4. Write to Neo4j
@@ -168,10 +217,10 @@ export const processDocument = inngest.createFunction(
             "CREATE CONSTRAINT entity_user_unique IF NOT EXISTS FOR (e:Entity) REQUIRE (e.name, e.user_id) IS NODE KEY"
           );
 
-          // Write entities and relationships in a transaction
+          // Write entities and relationships concurrently in a transaction
           await session.executeWrite(async (tx) => {
-            for (const item of extractedData) {
-              await tx.run(
+            const queries = extractedData.map((item) =>
+              tx.run(
                 `
                 MERGE (s:Entity {name: $source, user_id: $userId})
                 ON CREATE SET s.type = $sourceType, s.embedding = $sourceEmbedding, s.created_at = datetime()
@@ -200,8 +249,9 @@ export const processDocument = inngest.createFunction(
                   sourceEmbedding: embeddingsData[item.source] ?? null,
                   targetEmbedding: embeddingsData[item.target] ?? null,
                 }
-              );
-            }
+              )
+            );
+            await Promise.all(queries);
           });
         } finally {
           await session.close();
