@@ -6,11 +6,13 @@ import { driver } from '../neo4j/neo4j';
 import * as mammoth from 'mammoth';
 import Papa from 'papaparse';
 
-// OpenRouter client — one key, swap model string per task
-const openrouter = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY || '',
-});
+// Lazy client — instantiated at call time so missing env vars don't crash the build
+function getOpenRouter() {
+  return new OpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY || 'placeholder',
+  });
+}
 
 
 // ── Relationship column keyword map ────────────────────────────────────────────
@@ -264,7 +266,7 @@ export const processDocument = inngest.createFunction(
 
         try {
           const result = await withRetry(() =>
-            openrouter.chat.completions.create({
+            getOpenRouter().chat.completions.create({
               model: 'qwen/qwen3.5-plus-20260420',
               messages: [
                 { role: 'system', content: EXTRACT_PROMPT },

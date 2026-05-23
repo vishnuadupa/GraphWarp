@@ -3,11 +3,13 @@ import { createClient } from '@/lib/supabase/server';
 import OpenAI from 'openai';
 import { driver } from '@/lib/neo4j/neo4j';
 
-// OpenRouter — single key routes to any model
-const openrouter = new OpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY || '',
-});
+// Lazy client — instantiated per-request so missing env vars don't crash the build
+function getOpenRouter() {
+  return new OpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey: process.env.OPENROUTER_API_KEY || 'placeholder',
+  });
+}
 
 async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 4, baseDelayMs = 2000): Promise<T> {
   let lastError: unknown;
@@ -66,7 +68,7 @@ export async function POST(req: NextRequest) {
           send({ type: 'phase', data: 'searching' });
 
           const extractResult = await withRetry(() =>
-            openrouter.chat.completions.create({
+            getOpenRouter().chat.completions.create({
               model: 'deepseek/deepseek-v4-flash',
               messages: [{
                 role: 'user',
@@ -262,7 +264,7 @@ Current question: ${question}
 AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q3?"]</suggestions>`;
 
           const synthStream = await withRetry(() =>
-            openrouter.chat.completions.create({
+            getOpenRouter().chat.completions.create({
               model: 'deepseek/deepseek-v4-flash',
               messages: [{ role: 'user', content: synthPrompt }],
               stream: true,
