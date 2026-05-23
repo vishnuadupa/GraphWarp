@@ -45,30 +45,39 @@ function StatusBadge({ status, processingStep }: { status: string; processingSte
   // Show stepper when we have a processing_step
   if (processingStep) {
     const currentIdx = PROCESSING_STEPS.findIndex((s) => s.key === processingStep);
+    const activeStep = PROCESSING_STEPS.find((s) => s.key === processingStep);
     return (
-      <div className="flex items-center gap-1">
-        {PROCESSING_STEPS.map((s, idx) => {
-          const isDone    = idx < currentIdx;
-          const isCurrent = idx === currentIdx;
-          return (
-            <div key={s.key} className="flex items-center gap-1">
-              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-none text-[10px] font-mono font-bold transition-all ${
-                isCurrent
-                  ? "bg-amber-50 text-amber-800 border border-amber-300"
-                  : isDone
-                  ? "text-[var(--color-neutral)] opacity-70"
-                  : "text-[var(--color-rule)]"
-              }`}>
-                {isCurrent && <Loader2 className="w-2.5 h-2.5 animate-spin shrink-0" />}
-                {isDone && <CheckCircle2 className="w-2.5 h-2.5 shrink-0 text-green-600/80" />}
-                <span>{s.label.toUpperCase()}</span>
+      <div className="flex items-center gap-1 shrink-0">
+        {/* Mobile: Compact single active-step badge */}
+        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none text-xs font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200 md:hidden shrink-0">
+          <Loader2 className="w-3 h-3 animate-spin shrink-0" /> {activeStep ? activeStep.label.toUpperCase() : "PROCESSING"}
+        </span>
+
+        {/* Desktop: Full step-by-step indicator */}
+        <div className="hidden md:flex items-center gap-1">
+          {PROCESSING_STEPS.map((s, idx) => {
+            const isDone    = idx < currentIdx;
+            const isCurrent = idx === currentIdx;
+            return (
+              <div key={s.key} className="flex items-center gap-1">
+                <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-none text-[10px] font-mono font-bold transition-all ${
+                  isCurrent
+                    ? "bg-amber-50 text-amber-800 border border-amber-300"
+                    : isDone
+                    ? "text-[var(--color-neutral)] opacity-70"
+                    : "text-[var(--color-rule)]"
+                }`}>
+                  {isCurrent && <Loader2 className="w-2.5 h-2.5 animate-spin shrink-0" />}
+                  {isDone && <CheckCircle2 className="w-2.5 h-2.5 shrink-0 text-green-600/80" />}
+                  <span>{s.label.toUpperCase()}</span>
+                </div>
+                {idx < PROCESSING_STEPS.length - 1 && (
+                  <span className="text-[var(--color-rule)] text-[10px]">›</span>
+                )}
               </div>
-              {idx < PROCESSING_STEPS.length - 1 && (
-                <span className="text-[var(--color-rule)] text-[10px]">›</span>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     );
   }
@@ -260,8 +269,8 @@ export default function DocumentsPage() {
           </motion.div>
         ) : (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            className="rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper)] overflow-hidden">
-            <table className="w-full text-left">
+            className="rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper)] overflow-x-auto">
+            <table className="w-full min-w-[800px] text-left">
               <thead className="bg-[var(--color-paper-2)] border-b-[2px] border-[var(--color-rule)]">
                 <tr>
                   <th className="px-6 py-4 text-xs font-bold text-[var(--color-neutral)] font-mono uppercase tracking-wider">File</th>
