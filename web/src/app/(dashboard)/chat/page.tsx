@@ -78,7 +78,7 @@ export default function ChatPage() {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || \`API \${res.status}\`);
+        throw new Error(errorData.error || `API \${res.status}`);
       }
       if (!res.body) throw new Error("No response body");
 
@@ -95,7 +95,7 @@ export default function ChatPage() {
         done = readerDone;
         if (value) {
           buffer += decoder.decode(value, { stream: true });
-          const blocks = buffer.split('\\n\\n');
+          const blocks = buffer.split('\n\n');
           buffer = blocks.pop() || "";
           
           for (const block of blocks) {
@@ -145,10 +145,10 @@ export default function ChatPage() {
         const last = prev[prev.length - 1];
         if (last && last.role === 'assistant' && last.content === '') {
           const newMessages = [...prev];
-          newMessages[newMessages.length - 1].content = \`Error: \${msg}\`;
+          newMessages[newMessages.length - 1].content = `Error: \${msg}`;
           return newMessages;
         } else {
-          return [...prev, { role: "assistant", content: \`Error: \${msg}\` }];
+          return [...prev, { role: "assistant", content: `Error: \${msg}` }];
         }
       });
     } finally {
@@ -167,7 +167,7 @@ export default function ChatPage() {
     setInput(e.target.value);
     const el = e.target;
     el.style.height = "auto";
-    el.style.height = \`\${Math.min(el.scrollHeight, 160)}px\`;
+    el.style.height = `\${Math.min(el.scrollHeight, 160)}px`;
   };
 
   const handleNodeClick = useCallback(async (node: any) => {
@@ -240,7 +240,7 @@ export default function ChatPage() {
                   menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
                 }}
               >
-                Filters: {selectedDocs.length === 0 ? "All Docs" : \`\${selectedDocs.length} Selected\`} ▾
+                Filters: {selectedDocs.length === 0 ? "All Docs" : `\${selectedDocs.length} Selected`} ▾
               </button>
               <div 
                 className="doc-menu"
@@ -287,7 +287,7 @@ export default function ChatPage() {
             ) : (
               messages.map((m, i) => (
                 <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
-                  <div className={\`chat-msg chat-msg--\${m.role}\`}>
+                  <div className={`chat-msg chat-msg--\${m.role}`}>
                     {m.role === 'user' ? (
                        m.content 
                     ) : (

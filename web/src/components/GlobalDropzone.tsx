@@ -57,7 +57,7 @@ export function GlobalDropzone({ children }: { children: ReactNode }) {
 
     try {
       for (const file of files) {
-        const path = \`\${user.id}/\${Date.now()}-\${file.name}\`;
+        const path = `\${user.id}/\${Date.now()}-\${file.name}`;
         
         const { error: uploadError } = await supabase.storage
           .from("documents")
@@ -71,9 +71,9 @@ export function GlobalDropzone({ children }: { children: ReactNode }) {
           body: JSON.stringify({ filePath: path, filename: file.name }),
         });
       }
-      alert(\`Successfully uploaded \${files.length} file(s). They are now being ingested into the Graph.\`);
+      alert(`Successfully uploaded \${files.length} file(s). They are now being ingested into the Graph.`);
     } catch (err: any) {
-      alert(\`Upload failed: \${err.message}\`);
+      alert(`Upload failed: \${err.message}`);
     } finally {
       setIsUploading(false);
     }
