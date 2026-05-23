@@ -60,6 +60,7 @@ Keep entity names concise and capitalized. Question: ${question}`;
             entities = m ? JSON.parse(m[0]) : JSON.parse(txt);
           } catch { /* fall back */ }
           if (!Array.isArray(entities) || entities.length === 0) entities = [question];
+          console.log('[chat] extracted entities:', entities);
 
           // Embed entities
           const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
@@ -146,6 +147,7 @@ Keep entity names concise and capitalized. Question: ${question}`;
             await session.close();
           }
 
+          console.log('[chat] graph results: nodes=%d links=%d subgraph_chars=%d', nodes.length, links.length, subgraphData.length);
           // Only send graph update when we actually found nodes — empty payload would clear the client graph
           if (nodes.length > 0) {
             send({ type: 'graph', data: { nodes, links }, activeNodeIds: nodes.map((n) => n.id) });
