@@ -2,6 +2,7 @@ import { inngest } from './client';
 import { supabaseAdmin } from '../supabase/service';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { driver } from '../neo4j/neo4j';
+import * as mammoth from 'mammoth';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -10,8 +11,8 @@ export const processDocument = inngest.createFunction(
   async ({ event, step }) => {
     const { documentId, filePath, userId, filename } = event.data;
 
-    // 1. Download the file from Supabase Storage as ArrayBuffer
-    const { base64Data, mimeType } = await step.run("download-file", async () => {
+    // 1. Download the file from Supabase Storage as Buffer
+    const fileData = await step.run("download-file", async () => {
       const { data, error } = await supabaseAdmin.storage
         .from('documents')
         .download(filePath);
@@ -22,22 +23,14 @@ export const processDocument = inngest.createFunction(
       
       const arrayBuffer = await data.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      const base64Data = buffer.toString('base64');
-      
       const ext = filename?.split('.').pop()?.toLowerCase() || '';
-      let mimeType = 'text/plain';
-      if (ext === 'pdf') mimeType = 'application/pdf';
-      else if (['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
-        mimeType = `image/${ext === 'jpg' ? 'jpeg' : ext}`;
-      }
-      
-      return { base64Data, mimeType };
+      return { buffer: buffer.toString('base64'), ext }; // Sending as base64 to survive Inngest serialization
     });
 
-    // 2. Call Gemini API to extract entities and relationships across the entire document
+    // 2. Call Gemini API using intelligent multi-format routing
     const extractedData = await step.run("extract-graph", async () => {
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
+        model: "gemini-3.1-flash-lite", // UPGRADED MODEL
         generationConfig: {
           responseMimeType: "application/json"
         }
@@ -50,12 +43,25 @@ export const processDocument = inngest.createFunction(
         Extract as many meaningful relationships as possible to build a comprehensive knowledge graph.
       `;
 
+      let promptInput: any;
+      const rawBuffer = Buffer.from(fileData.buffer, 'base64');
+
+      if (['pdf', 'png', 'jpg', 'jpeg', 'webp'].includes(fileData.ext)) {
+        let mimeType = 'application/pdf';
+        if (['png', 'jpg', 'jpeg', 'webp'].includes(fileData.ext)) {
+          mimeType = `image/${fileData.ext === 'jpg' ? 'jpeg' : fileData.ext}`;
+        }
+        promptInput = { inlineData: { data: fileData.buffer, mimeType } };
+      } else if (fileData.ext === 'docx') {
+        const result = await mammoth.extractRawText({ buffer: rawBuffer });
+        promptInput = result.value;
+      } else {
+        // Fallback for TXT, CSV, MD, etc.
+        promptInput = rawBuffer.toString('utf8');
+      }
+
       try {
-        const result = await model.generateContent([
-          prompt,
-          { inlineData: { data: base64Data, mimeType } }
-        ]);
-        
+        const result = await model.generateContent([ prompt, promptInput ]);
         const responseText = result.response.text();
         const jsonMatch = responseText.match(/\[[\s\S]*\]/);
         const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(responseText);

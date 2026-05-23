@@ -5,10 +5,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser-client";
 import { ForceGraph, type GraphData } from "@/components/ForceGraph";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+  suggestions?: string[];
 }
 
 const EMPTY_GRAPH: GraphData = { nodes: [], links: [] };
@@ -20,6 +23,9 @@ export default function ChatPage() {
   const [graph, setGraph] = useState<GraphData>(EMPTY_GRAPH);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [availableDocs, setAvailableDocs] = useState<any[]>([]);
+  const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -27,16 +33,31 @@ export default function ChatPage() {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) router.replace("/login");
-      else setReady(true);
+      else {
+        setReady(true);
+        fetchDocuments();
+      }
     });
   }, [router]);
+
+  const fetchDocuments = async () => {
+    try {
+      const res = await fetch("/api/documents");
+      if (res.ok) {
+        const data = await res.json();
+        setAvailableDocs(data.documents || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
-    const text = input.trim();
+  const handleSend = async (textOverride?: string) => {
+    const text = textOverride || input.trim();
     if (!text || loading) return;
 
     const userMessage: Message = { role: "user", content: text };
@@ -52,12 +73,12 @@ export default function ChatPage() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: text }),
+        body: JSON.stringify({ question: text, selectedDocs }),
       });
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || `API ${res.status}`);
+        throw new Error(errorData.error || \`API \${res.status}\`);
       }
       if (!res.body) throw new Error("No response body");
 
@@ -87,16 +108,32 @@ export default function ChatPage() {
                   setGraph(parsed.data);
                 } else if (parsed.type === 'text') {
                   assistantMessage += parsed.data;
+                  
+                  // Extract <suggestions> block
+                  let displayContent = assistantMessage;
+                  let suggestions: string[] = [];
+                  const suggestionMatch = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
+                  if (suggestionMatch) {
+                     displayContent = assistantMessage.replace(suggestionMatch[0], '').trim();
+                     try {
+                       suggestions = JSON.parse(suggestionMatch[1]);
+                     } catch(e) {}
+                  }
+
                   setMessages((prev) => {
                     const newMessages = [...prev];
-                    newMessages[newMessages.length - 1].content = assistantMessage;
+                    const lastMsg = newMessages[newMessages.length - 1];
+                    lastMsg.content = displayContent;
+                    if (suggestions.length > 0) {
+                      lastMsg.suggestions = suggestions;
+                    }
                     return newMessages;
                   });
                 } else if (parsed.type === 'error') {
                   throw new Error(parsed.data);
                 }
               } catch (e) {
-                // Ignore partial JSON parse errors just in case
+                // Ignore partial JSON parse errors
               }
             }
           }
@@ -108,10 +145,10 @@ export default function ChatPage() {
         const last = prev[prev.length - 1];
         if (last && last.role === 'assistant' && last.content === '') {
           const newMessages = [...prev];
-          newMessages[newMessages.length - 1].content = `Error: ${msg}`;
+          newMessages[newMessages.length - 1].content = \`Error: \${msg}\`;
           return newMessages;
         } else {
-          return [...prev, { role: "assistant", content: `Error: ${msg}` }];
+          return [...prev, { role: "assistant", content: \`Error: \${msg}\` }];
         }
       });
     } finally {
@@ -130,7 +167,7 @@ export default function ChatPage() {
     setInput(e.target.value);
     const el = e.target;
     el.style.height = "auto";
-    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+    el.style.height = \`\${Math.min(el.scrollHeight, 160)}px\`;
   };
 
   const handleNodeClick = useCallback(async (node: any) => {
@@ -172,12 +209,67 @@ export default function ChatPage() {
     }
   }, []);
 
+  const toggleDocSelection = (filename: string) => {
+    setSelectedDocs(prev => 
+      prev.includes(filename) 
+        ? prev.filter(d => d !== filename)
+        : [...prev, filename]
+    );
+  };
+
   if (!ready) return null;
 
   return (
     <div className="dash-shell">
       <header className="dash-topbar">
         <Link href="/" className="dash-wordmark">GraphWeave</Link>
+        <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+          {availableDocs.length > 0 && (
+            <div className="doc-selector" style={{position: 'relative'}}>
+              <button 
+                style={{
+                  background: 'var(--gray-100)', 
+                  border: '1px solid var(--gray-200)',
+                  padding: '4px 12px',
+                  borderRadius: '16px',
+                  fontSize: '12px',
+                  cursor: 'pointer'
+                }}
+                onClick={(e) => {
+                  const menu = e.currentTarget.nextElementSibling as HTMLElement;
+                  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                }}
+              >
+                Filters: {selectedDocs.length === 0 ? "All Docs" : \`\${selectedDocs.length} Selected\`} ▾
+              </button>
+              <div 
+                className="doc-menu"
+                style={{
+                  display: 'none', position: 'absolute', top: '100%', right: 0, marginTop: '8px',
+                  background: 'white', border: '1px solid var(--gray-200)', borderRadius: '8px',
+                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', zIndex: 50, padding: '8px',
+                  minWidth: '200px', maxHeight: '300px', overflowY: 'auto'
+                }}
+              >
+                <label style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', fontSize: '14px', cursor: 'pointer'}}>
+                  <input type="checkbox" checked={selectedDocs.length === 0} onChange={() => setSelectedDocs([])} />
+                  All Documents
+                </label>
+                <hr style={{margin: '4px 0', borderColor: 'var(--gray-100)'}} />
+                {availableDocs.map(doc => (
+                  <label key={doc.id} style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px', fontSize: '14px', cursor: 'pointer'}}>
+                    <input 
+                      type="checkbox" 
+                      checked={selectedDocs.includes(doc.filename)}
+                      onChange={() => toggleDocSelection(doc.filename)}
+                    />
+                    {doc.filename}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
         <nav className="dash-topbar-right">
           <Link href="/upload" className="dash-topbar-link">Upload</Link>
           <Link href="/documents" className="dash-topbar-link">My Documents</Link>
@@ -186,7 +278,6 @@ export default function ChatPage() {
       </header>
 
       <main className="dash-content">
-        {/* Left: chat panel */}
         <section className="chat-panel" aria-label="Chat">
           <div className="chat-messages" role="log" aria-live="polite">
             {messages.length === 0 ? (
@@ -195,11 +286,34 @@ export default function ChatPage() {
               </div>
             ) : (
               messages.map((m, i) => (
-                <div
-                  key={i}
-                  className={\`chat-msg chat-msg--\${m.role}\`}
-                >
-                  {m.content}
+                <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div className={\`chat-msg chat-msg--\${m.role}\`}>
+                    {m.role === 'user' ? (
+                       m.content 
+                    ) : (
+                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{m.content}</ReactMarkdown>
+                    )}
+                  </div>
+                  {m.role === 'assistant' && m.suggestions && m.suggestions.length > 0 && (
+                    <div className="chat-suggestions" style={{display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '8px', marginBottom: '16px'}}>
+                      {m.suggestions.map((sug, idx) => (
+                        <button 
+                          key={idx} 
+                          onClick={() => handleSend(sug)}
+                          disabled={loading}
+                          style={{
+                            background: 'var(--gray-50)', border: '1px solid var(--gray-200)',
+                            borderRadius: '16px', padding: '6px 12px', fontSize: '12px',
+                            color: 'var(--gray-600)', cursor: 'pointer', transition: 'all 0.2s'
+                          }}
+                          onMouseOver={(e) => { e.currentTarget.style.background = 'var(--gray-100)'; e.currentTarget.style.color = 'var(--gray-900)'; }}
+                          onMouseOut={(e) => { e.currentTarget.style.background = 'var(--gray-50)'; e.currentTarget.style.color = 'var(--gray-600)'; }}
+                        >
+                          {sug}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))
             )}
@@ -223,7 +337,7 @@ export default function ChatPage() {
             />
             <button
               className="chat-send"
-              onClick={handleSend}
+              onClick={() => handleSend()}
               disabled={!input.trim() || loading}
               aria-label="Send message"
             >
@@ -236,19 +350,8 @@ export default function ChatPage() {
           </div>
         </section>
 
-        {/* Right: graph panel */}
         <section className="graph-panel" aria-label="Knowledge graph">
           <ForceGraph data={graph} onNodeClick={handleNodeClick} />
-          <div className="graph-label" style={{
-            position: "absolute",
-            top: "var(--space-md)",
-            left: "var(--space-md)",
-            pointerEvents: "none",
-          }}>
-            KNOWLEDGE GRAPH
-            <br />
-            <small style={{ opacity: 0.6 }}>Double-click nodes to expand</small>
-          </div>
         </section>
       </main>
     </div>

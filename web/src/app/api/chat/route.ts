@@ -43,14 +43,15 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const question: string = body.message ?? body.question;
+    const selectedDocs: string[] = body.selectedDocs || [];
 
     if (!question) {
       return NextResponse.json({ error: 'Message is required' }, { status: 400 });
     }
 
-    // 1. Extract Entities using Gemini 2.5 Flash
+    // 1. Extract Entities using Gemini 3.1 Flash Lite
     const extractModel = genAI.getGenerativeModel({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       generationConfig: {
         responseMimeType: 'application/json'
       }
@@ -88,10 +89,11 @@ export async function POST(req: NextRequest) {
             MATCH (n:Entity)-[r:RELATION]-(m:Entity)
             WHERE n.user_id = $userId AND toLower(n.name) IN [e IN $entities | toLower(e)]
             AND m.user_id = $userId
+            ${selectedDocs.length > 0 ? "AND r.source_file IN $selectedDocs" : ""}
             RETURN n, r, m
             LIMIT 100
             `,
-            { userId: user.id, entities }
+            { userId: user.id, entities, selectedDocs }
           );
         });
 
@@ -135,11 +137,12 @@ export async function POST(req: NextRequest) {
             const conditions = entities
               .map((_: string, i: number) => `toLower(n.name) CONTAINS $e${i}`)
               .join(' OR ');
-            const params: Record<string, string> = { userId: user.id };
+            const params: Record<string, any> = { userId: user.id, selectedDocs };
             entities.forEach((e: string, i: number) => { params[`e${i}`] = e.toLowerCase(); });
             return tx.run(
               `MATCH (n:Entity)-[r:RELATION]-(m:Entity)
                WHERE n.user_id = $userId AND m.user_id = $userId
+               ${selectedDocs.length > 0 ? "AND r.source_file IN $selectedDocs" : ""}
                AND (${conditions})
                RETURN n, r, m LIMIT 100`,
               params
@@ -189,34 +192,37 @@ export async function POST(req: NextRequest) {
             type: 'graph',
             data: { nodes, links }
           });
-          controller.enqueue(encoder.encode(\`data: \${graphPayload}\\n\\n\`));
+          controller.enqueue(encoder.encode(`data: ${graphPayload}\n\n`));
 
-          const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-          const synthPrompt = \`
+          const synthModel = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
+          const synthPrompt = `
             You are a helpful assistant. Answer the user's question based ONLY on the following knowledge graph context. 
             If the context doesn't contain the answer, say "I don't have enough information to answer that."
             IMPORTANT: You MUST cite your sources using the [Source File: filename] annotations provided in the context below.
             
-            Context (Knowledge Graph paths):
-            \${subgraphData || "No relevant information found in the graph."}
+            AT THE VERY END of your response, you MUST output exactly 3 suggested follow-up questions wrapped in a <suggestions> tag as a JSON array of strings. 
+            Example: <suggestions>["Question 1?", "Question 2?", "Question 3?"]</suggestions>
 
-            Question: \${question}
-          \`;
+            Context (Knowledge Graph paths):
+            ${subgraphData || "No relevant information found in the graph."}
+
+            Question: ${question}
+          `;
 
           const synthResult = await synthModel.generateContentStream(synthPrompt);
           for await (const chunk of synthResult.stream) {
             const chunkText = chunk.text();
             if (chunkText) {
               const textPayload = JSON.stringify({ type: 'text', data: chunkText });
-              controller.enqueue(encoder.encode(\`data: \${textPayload}\\n\\n\`));
+              controller.enqueue(encoder.encode(`data: ${textPayload}\n\n`));
             }
           }
-          
-          controller.enqueue(encoder.encode('data: [DONE]\\n\\n'));
+
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
         } catch (streamError: any) {
           console.error("Streaming error:", streamError);
           const errPayload = JSON.stringify({ type: 'error', data: streamError.message });
-          controller.enqueue(encoder.encode(\`data: \${errPayload}\\n\\n\`));
+          controller.enqueue(encoder.encode(`data: ${errPayload}\n\n`));
         } finally {
           controller.close();
         }

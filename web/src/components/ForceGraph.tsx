@@ -32,6 +32,7 @@ interface Props {
 
 export function ForceGraph({ data, onNodeClick }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const fgRef = useRef<any>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
@@ -51,6 +52,13 @@ export function ForceGraph({ data, onNodeClick }: Props) {
   // position:relative .graph-panel regardless of flex layout state.
   return (
     <div ref={containerRef} style={{ position: "absolute", inset: 0 }}>
+      {data.nodes.length > 0 && dims.width > 0 && (
+        <div style={{ position: 'absolute', bottom: '2rem', right: '2rem', zIndex: 10, display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'var(--gray-900)', padding: '0.5rem', borderRadius: '0.5rem', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.3)' }}>
+          <button onClick={() => fgRef.current?.zoom(fgRef.current.zoom() * 1.5, 400)} style={{ width: '32px', height: '32px', color: 'white', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }} onMouseOver={e=>e.currentTarget.style.background='var(--gray-800)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>+</button>
+          <button onClick={() => fgRef.current?.zoom(fgRef.current.zoom() / 1.5, 400)} style={{ width: '32px', height: '32px', color: 'white', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }} onMouseOver={e=>e.currentTarget.style.background='var(--gray-800)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>−</button>
+          <button onClick={() => fgRef.current?.zoomToFit(400)} style={{ width: '32px', height: '32px', color: 'white', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '4px' }} onMouseOver={e=>e.currentTarget.style.background='var(--gray-800)'} onMouseOut={e=>e.currentTarget.style.background='transparent'}>⌖</button>
+        </div>
+      )}
       {data.nodes.length === 0 ? (
         <div className="graph-empty">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
@@ -69,6 +77,7 @@ export function ForceGraph({ data, onNodeClick }: Props) {
         </div>
       ) : dims.width > 0 ? (
         <ForceGraph2D
+          ref={fgRef}
           width={dims.width}
           height={dims.height}
           graphData={data}
