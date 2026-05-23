@@ -41,7 +41,8 @@ export async function POST(request: Request) {
       data: {
         documentId: document.id,
         filePath,
-        userId: user.id
+        userId: user.id,
+        filename: document.filename
       }
     });
 

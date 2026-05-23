@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/browser-client";
@@ -52,32 +52,68 @@ export default function ChatPage() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: text,
-          history: messages,
-        }),
+        body: JSON.stringify({ question: text }),
       });
 
-      const data = await res.json();
       if (!res.ok) {
-        throw new Error(data?.details || data?.error || `API ${res.status}`);
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `API ${res.status}`);
       }
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: data.answer ?? "(no response)" },
-      ]);
-      // Only replace the graph when the response actually has nodes —
-      // an empty graph from a no-match query should not wipe the existing view.
-      if (data.graph?.nodes?.length > 0) setGraph(data.graph);
+      if (!res.body) throw new Error("No response body");
+
+      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let assistantMessage = "";
+      let buffer = "";
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+          const blocks = buffer.split('\\n\\n');
+          buffer = blocks.pop() || "";
+          
+          for (const block of blocks) {
+            if (block.startsWith('data: ')) {
+              const dataStr = block.slice(6);
+              if (dataStr === '[DONE]') continue;
+              try {
+                const parsed = JSON.parse(dataStr);
+                if (parsed.type === 'graph') {
+                  setGraph(parsed.data);
+                } else if (parsed.type === 'text') {
+                  assistantMessage += parsed.data;
+                  setMessages((prev) => {
+                    const newMessages = [...prev];
+                    newMessages[newMessages.length - 1].content = assistantMessage;
+                    return newMessages;
+                  });
+                } else if (parsed.type === 'error') {
+                  throw new Error(parsed.data);
+                }
+              } catch (e) {
+                // Ignore partial JSON parse errors just in case
+              }
+            }
+          }
+        }
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unknown error";
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: `Could not reach /api/chat — ${msg}. The backend may not be wired yet.`,
-        },
-      ]);
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last && last.role === 'assistant' && last.content === '') {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].content = `Error: ${msg}`;
+          return newMessages;
+        } else {
+          return [...prev, { role: "assistant", content: `Error: ${msg}` }];
+        }
+      });
     } finally {
       setLoading(false);
     }
@@ -97,14 +133,54 @@ export default function ChatPage() {
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   };
 
+  const handleNodeClick = useCallback(async (node: any) => {
+    try {
+      const res = await fetch("/api/graph/expand", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nodeId: node.id }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setGraph(prev => {
+          const newNodes = [...prev.nodes];
+          const newLinks = [...prev.links];
+          
+          const nodeMap = new Set(newNodes.map(n => n.id));
+          data.graph.nodes.forEach((n: any) => {
+            if (!nodeMap.has(n.id)) {
+              newNodes.push(n);
+              nodeMap.add(n.id);
+            }
+          });
+
+          data.graph.links.forEach((l: any) => {
+            const sId = typeof l.source === 'object' ? l.source.id : l.source;
+            const tId = typeof l.target === 'object' ? l.target.id : l.target;
+            const exists = newLinks.some((ex: any) => {
+               const exsId = typeof ex.source === 'object' ? ex.source.id : ex.source;
+               const extId = typeof ex.target === 'object' ? ex.target.id : ex.target;
+               return exsId === sId && extId === tId && ex.label === l.label;
+            });
+            if (!exists) newLinks.push(l);
+          });
+          return { nodes: newNodes, links: newLinks };
+        });
+      }
+    } catch(err) {
+      console.error("Failed to expand graph", err);
+    }
+  }, []);
+
   if (!ready) return null;
 
   return (
     <div className="dash-shell">
       <header className="dash-topbar">
-        <Link href="/" className="dash-wordmark">GraphRAG</Link>
+        <Link href="/" className="dash-wordmark">GraphWeave</Link>
         <nav className="dash-topbar-right">
           <Link href="/upload" className="dash-topbar-link">Upload</Link>
+          <Link href="/documents" className="dash-topbar-link">My Documents</Link>
           <LogoutButton router={router} />
         </nav>
       </header>
@@ -121,13 +197,13 @@ export default function ChatPage() {
               messages.map((m, i) => (
                 <div
                   key={i}
-                  className={`chat-msg chat-msg--${m.role}`}
+                  className={\`chat-msg chat-msg--\${m.role}\`}
                 >
                   {m.content}
                 </div>
               ))
             )}
-            {loading && (
+            {loading && messages[messages.length - 1]?.role !== 'assistant' && (
               <div className="chat-msg chat-msg--thinking">traversing graph…</div>
             )}
             <div ref={messagesEndRef} />
@@ -162,7 +238,7 @@ export default function ChatPage() {
 
         {/* Right: graph panel */}
         <section className="graph-panel" aria-label="Knowledge graph">
-          <ForceGraph data={graph} />
+          <ForceGraph data={graph} onNodeClick={handleNodeClick} />
           <div className="graph-label" style={{
             position: "absolute",
             top: "var(--space-md)",
@@ -170,6 +246,8 @@ export default function ChatPage() {
             pointerEvents: "none",
           }}>
             KNOWLEDGE GRAPH
+            <br />
+            <small style={{ opacity: 0.6 }}>Double-click nodes to expand</small>
           </div>
         </section>
       </main>

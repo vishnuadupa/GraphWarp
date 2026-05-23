@@ -95,9 +95,11 @@ export default function UploadPage() {
   return (
     <div className="dash-shell">
       <header className="dash-topbar">
-        <Link href="/" className="dash-wordmark">GraphRAG</Link>
+        <Link href="/" className="dash-wordmark">GraphWeave</Link>
         <nav className="dash-topbar-right">
-          <Link href="/chat" className="dash-topbar-link">Chat →</Link>
+          <Link href="/chat" className="dash-topbar-link">Chat</Link>
+          <Link href="/upload" className="dash-topbar-link">Upload</Link>
+          <Link href="/documents" className="dash-topbar-link">My Documents</Link>
           <LogoutButton />
         </nav>
       </header>

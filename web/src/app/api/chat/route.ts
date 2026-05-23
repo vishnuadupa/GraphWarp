@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    // Frontend sends `message`; accept both for compatibility
     const question: string = body.message ?? body.question;
 
     if (!question) {
@@ -108,13 +107,10 @@ export async function POST(req: NextRequest) {
           const nName = n.properties.name;
           const mName = m.properties.name;
           const rType = r.properties.type;
+          const sourceFile = r.properties.source_file || 'Unknown Source';
 
-          if (!nodeMap.has(nName)) {
-            nodeMap.set(nName, { id: nName, name: nName });
-          }
-          if (!nodeMap.has(mName)) {
-            nodeMap.set(mName, { id: mName, name: mName });
-          }
+          if (!nodeMap.has(nName)) nodeMap.set(nName, { id: nName, name: nName });
+          if (!nodeMap.has(mName)) nodeMap.set(mName, { id: mName, name: mName });
 
           const linkId = `${r.identity.toNumber()}`;
           if (!linkMap.has(linkId)) {
@@ -126,19 +122,16 @@ export async function POST(req: NextRequest) {
             linkMap.set(linkId, true);
           }
 
-          // Format for LLM context
           const sourceName = r.start.toNumber() === n.identity.toNumber() ? nName : mName;
           const targetName = r.start.toNumber() === n.identity.toNumber() ? mName : nName;
-          pathStrings.add(`${sourceName} -[${rType}]-> ${targetName}`);
+          pathStrings.add(`[Source File: ${sourceFile}] ${sourceName} -[${rType}]-> ${targetName}`);
         });
 
         nodes = Array.from(nodeMap.values());
         subgraphData = Array.from(pathStrings).join('\n');
 
-        // Fallback: if exact-ish match found nothing, do a CONTAINS search
         if (nodes.length === 0) {
           const fallbackResult = await session.executeRead(async (tx) => {
-            // Build OR conditions for each entity keyword
             const conditions = entities
               .map((_: string, i: number) => `toLower(n.name) CONTAINS $e${i}`)
               .join(' OR ');
@@ -160,6 +153,8 @@ export async function POST(req: NextRequest) {
             const nName = n.properties.name;
             const mName = m.properties.name;
             const rType = r.properties.type;
+            const sourceFile = r.properties.source_file || 'Unknown Source';
+
             if (!nodeMap.has(nName)) nodeMap.set(nName, { id: nName, name: nName });
             if (!nodeMap.has(mName)) nodeMap.set(mName, { id: mName, name: mName });
             const linkId = `${r.identity.toNumber()}`;
@@ -168,7 +163,7 @@ export async function POST(req: NextRequest) {
               const tgt = r.start.toNumber() === n.identity.toNumber() ? mName : nName;
               links.push({ source: src, target: tgt, label: rType });
               linkMap.set(linkId, true);
-              pathStrings.add(`${src} -[${rType}]-> ${tgt}`);
+              pathStrings.add(`[Source File: ${sourceFile}] ${src} -[${rType}]-> ${tgt}`);
             }
           });
 
@@ -183,27 +178,57 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 3. Synthesize Answer using Gemini 2.5 Flash
-    const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-    const synthPrompt = `
-      You are a helpful assistant. Answer the user's question based ONLY on the following knowledge graph context. 
-      If the context doesn't contain the answer, say "I don't have enough information to answer that."
+    // 3. Synthesize Answer using SSE Stream
+    const encoder = new TextEncoder();
 
-      Context (Knowledge Graph paths):
-      ${subgraphData || "No relevant information found in the graph."}
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          // Send graph data first
+          const graphPayload = JSON.stringify({
+            type: 'graph',
+            data: { nodes, links }
+          });
+          controller.enqueue(encoder.encode(\`data: \${graphPayload}\\n\\n\`));
 
-      Question: ${question}
-    `;
+          const synthModel = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+          const synthPrompt = \`
+            You are a helpful assistant. Answer the user's question based ONLY on the following knowledge graph context. 
+            If the context doesn't contain the answer, say "I don't have enough information to answer that."
+            IMPORTANT: You MUST cite your sources using the [Source File: filename] annotations provided in the context below.
+            
+            Context (Knowledge Graph paths):
+            \${subgraphData || "No relevant information found in the graph."}
 
-    const synthResult = await withRetry(() => synthModel.generateContent(synthPrompt));
-    const answer = synthResult.response.text();
+            Question: \${question}
+          \`;
 
-    return NextResponse.json({
-      answer,
-      graph: {
-        nodes,
-        links
+          const synthResult = await synthModel.generateContentStream(synthPrompt);
+          for await (const chunk of synthResult.stream) {
+            const chunkText = chunk.text();
+            if (chunkText) {
+              const textPayload = JSON.stringify({ type: 'text', data: chunkText });
+              controller.enqueue(encoder.encode(\`data: \${textPayload}\\n\\n\`));
+            }
+          }
+          
+          controller.enqueue(encoder.encode('data: [DONE]\\n\\n'));
+        } catch (streamError: any) {
+          console.error("Streaming error:", streamError);
+          const errPayload = JSON.stringify({ type: 'error', data: streamError.message });
+          controller.enqueue(encoder.encode(\`data: \${errPayload}\\n\\n\`));
+        } finally {
+          controller.close();
+        }
       }
+    });
+
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+      },
     });
 
   } catch (error: any) {

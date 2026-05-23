@@ -27,9 +27,10 @@ const ForceGraph2D = dynamic(
 
 interface Props {
   data: GraphData;
+  onNodeClick?: (node: any) => void;
 }
 
-export function ForceGraph({ data }: Props) {
+export function ForceGraph({ data, onNodeClick }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
 
@@ -93,6 +94,7 @@ export function ForceGraph({ data }: Props) {
           cooldownTicks={120}
           d3AlphaDecay={0.02}
           d3VelocityDecay={0.3}
+          onNodeClick={onNodeClick}
         />
       ) : null}
     </div>

@@ -5,25 +5,13 @@ import { driver } from '../neo4j/neo4j';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-// Sleep helper
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-function chunkText(text: string, chunkSize: number = 2000): string[] {
-  const chunks: string[] = [];
-  for (let i = 0; i < text.length; i += chunkSize) {
-    chunks.push(text.slice(i, i + chunkSize));
-  }
-  return chunks;
-}
-
 export const processDocument = inngest.createFunction(
   { id: "process-document", triggers: [{ event: "document.process" }] },
   async ({ event, step }) => {
-    const { documentId, filePath, userId } = event.data;
+    const { documentId, filePath, userId, filename } = event.data;
 
-    // 1. Download the file from Supabase Storage
-    const fileContent = await step.run("download-file", async () => {
-      // filePath is the storage path (e.g. "userId/ts-filename.pdf") — not a URL
+    // 1. Download the file from Supabase Storage as ArrayBuffer
+    const { base64Data, mimeType } = await step.run("download-file", async () => {
       const { data, error } = await supabaseAdmin.storage
         .from('documents')
         .download(filePath);
@@ -31,15 +19,22 @@ export const processDocument = inngest.createFunction(
       if (error || !data) {
         throw new Error(`Failed to download file: ${error?.message}`);
       }
-      return await data.text();
+      
+      const arrayBuffer = await data.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      const base64Data = buffer.toString('base64');
+      
+      const ext = filename?.split('.').pop()?.toLowerCase() || '';
+      let mimeType = 'text/plain';
+      if (ext === 'pdf') mimeType = 'application/pdf';
+      else if (['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
+        mimeType = `image/${ext === 'jpg' ? 'jpeg' : ext}`;
+      }
+      
+      return { base64Data, mimeType };
     });
 
-    // 2. Extract and chunk the text
-    const chunks = await step.run("chunk-text", async () => {
-      return chunkText(fileContent, 3000);
-    });
-
-    // 3. Call Gemini API to extract entities and relationships
+    // 2. Call Gemini API to extract entities and relationships across the entire document
     const extractedData = await step.run("extract-graph", async () => {
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-flash",
@@ -48,55 +43,44 @@ export const processDocument = inngest.createFunction(
         }
       });
 
-      const allRelationships: Array<{source: string; relation: string; target: string}> = [];
+      const prompt = `
+        Analyze the following document and extract all key entities and their relationships.
+        Output a JSON array of objects, where each object has exactly "source", "relation", and "target" string properties.
+        Keep entity names concise and capitalized appropriately.
+        Extract as many meaningful relationships as possible to build a comprehensive knowledge graph.
+      `;
 
-      for (let i = 0; i < chunks.length; i++) {
-        // Implement delay to respect Gemini's 15 RPM free-tier limit (wait ~4 seconds between calls)
-        if (i > 0) {
-          await sleep(4100); 
-        }
-
-        const chunk = chunks[i];
-        const prompt = `
-          Analyze the following text and extract entities and relationships.
-          Output a JSON array of objects, where each object has "source", "relation", and "target" properties.
-          Keep entity names concise and capitalized appropriately.
-          
-          Text:
-          ${chunk}
-        `;
-
-        try {
-          const result = await model.generateContent(prompt);
-          const responseText = result.response.text();
-          
-          // Parse the JSON array
-          const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-          const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(responseText);
-          
-          if (Array.isArray(parsed)) {
-            for (const item of parsed) {
-              if (item.source && item.relation && item.target) {
-                allRelationships.push({
-                  source: item.source.trim(),
-                  relation: item.relation.trim(),
-                  target: item.target.trim()
-                });
-              }
+      try {
+        const result = await model.generateContent([
+          prompt,
+          { inlineData: { data: base64Data, mimeType } }
+        ]);
+        
+        const responseText = result.response.text();
+        const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+        const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(responseText);
+        
+        const allRelationships = [];
+        if (Array.isArray(parsed)) {
+          for (const item of parsed) {
+            if (item.source && item.relation && item.target) {
+              allRelationships.push({
+                source: String(item.source).trim(),
+                relation: String(item.relation).trim(),
+                target: String(item.target).trim()
+              });
             }
           }
-        } catch (error) {
-          console.error(`Failed to process chunk ${i}:`, error);
-          // Continue with next chunks
         }
+        return allRelationships;
+      } catch (error: any) {
+        throw new Error(`Gemini Extraction Failed: ${error.message}`);
       }
-
-      return allRelationships;
     });
 
-    // 4. Connect to Neo4j and MERGE Nodes and Edges
+    // 3. Connect to Neo4j and MERGE Nodes and Edges with Source Citations
     await step.run("save-to-neo4j", async () => {
-      if (extractedData.length === 0) return { inserted: 0 };
+      if (!extractedData || extractedData.length === 0) return { inserted: 0 };
       
       const session = driver.session();
       try {
@@ -105,13 +89,14 @@ export const processDocument = inngest.createFunction(
             const query = `
               MERGE (s:Entity {name: $source, user_id: $userId})
               MERGE (t:Entity {name: $target, user_id: $userId})
-              MERGE (s)-[r:RELATION {type: $relation, user_id: $userId}]->(t)
+              MERGE (s)-[r:RELATION {type: $relation, user_id: $userId, source_file: $filename}]->(t)
             `;
             await tx.run(query, {
               source: item.source,
               target: item.target,
               relation: item.relation,
-              userId: userId
+              userId: userId,
+              filename: filename || 'Unknown Source'
             });
           }
         });
@@ -122,7 +107,7 @@ export const processDocument = inngest.createFunction(
       return { inserted: extractedData.length };
     });
 
-    // 5. Update document status to 'Completed'
+    // 4. Update document status to 'Completed'
     await step.run("update-status", async () => {
       await supabaseAdmin
         .from('documents')
@@ -130,6 +115,6 @@ export const processDocument = inngest.createFunction(
         .eq('id', documentId);
     });
 
-    return { success: true, processedChunks: chunks.length, relationsExtracted: extractedData.length };
+    return { success: true, relationsExtracted: extractedData?.length || 0 };
   }
 );
