@@ -80,52 +80,51 @@ Keep entity names concise and capitalized. Question: ${question}`;
           let links: any[] = [];
 
           try {
-            if (validEmbeddings.length > 0) {
-              subgraphData = await session.executeRead(async (tx) => {
-                const nodeMap = new Map<string, any>();
-                const linkMap = new Map<string, boolean>();
-                const pathStrings = new Set<string>();
-                const docFilter = selectedDocs.length > 0 ? 'AND r1.source_file IN $selectedDocs' : '';
+            subgraphData = await session.executeRead(async (tx) => {
+              const nodeMap = new Map<string, any>();
+              const linkMap = new Map<string, boolean>();
+              const pathStrings = new Set<string>();
 
-                for (const embedding of validEmbeddings) {
-                  const res = await tx.run(
-                    `CALL db.index.vector.queryNodes('entity_name_embeddings', 3, $embedding)
-                     YIELD node AS startNode, score
-                     WHERE startNode.user_id = $uid
-                     MATCH (startNode)-[r1:RELATION]-(m:Entity)
-                     OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                     WHERE m.user_id = $uid AND (k IS NULL OR k.user_id = $uid)
-                     ${docFilter}
-                     WITH startNode, r1, m, r2, k,
-                         COUNT { (startNode)-[:RELATION]-() } AS sDeg,
-                         COUNT { (m)-[:RELATION]-() } AS mDeg
-                     RETURN startNode, r1, m, r2, k, sDeg, mDeg
-                     LIMIT 50`,
-                    { uid: user.id, embedding, selectedDocs }
-                  );
+              // Normalize selectedDocs to check filenames resiliently
+              const docFilter = selectedDocs.length > 0
+                ? 'AND (r1.source_file IN $selectedDocs OR any(doc IN $selectedDocs WHERE r1.source_file CONTAINS doc))'
+                : '';
 
-                  res.records.forEach((record) => {
-                    const sNode = record.get('startNode'); const r1 = record.get('r1'); const mNode = record.get('m');
-                    const sDeg = record.get('sDeg')?.toNumber?.() ?? 1; const mDeg = record.get('mDeg')?.toNumber?.() ?? 1;
-                    const sName = sNode.properties.name; const mName = mNode.properties.name;
-                    const r1Type = r1.properties.type; const r1Src = r1.properties.source_file;
-                    const r1W = r1.properties.weight?.toNumber?.() ?? 1;
+              const lowerEntities = entities.map((e) => e.toLowerCase());
 
-                    if (!nodeMap.has(sName)) nodeMap.set(sName, { id: sName, name: sName, type: sNode.properties.type ?? 'Entity', degree: sDeg });
-                    if (!nodeMap.has(mName)) nodeMap.set(mName, { id: mName, name: mName, type: mNode.properties.type ?? 'Entity', degree: mDeg });
+              const processRecords = (records: any[]) => {
+                records.forEach((record) => {
+                  const sNode = record.get('startNode');
+                  const r1 = record.get('r1');
+                  const mNode = record.get('m');
+                  if (!sNode || !r1 || !mNode) return;
 
-                    const lid1 = r1.identity.toNumber().toString();
-                    if (!linkMap.has(lid1)) {
-                      const fwd = r1.start.toNumber() === sNode.identity.toNumber();
-                      links.push({ source: fwd ? sName : mName, target: fwd ? mName : sName, label: r1Type, weight: r1W });
-                      linkMap.set(lid1, true);
-                    }
-                    pathStrings.add(`[Source: ${r1Src}] ${sName} --[${r1Type}]--> ${mName}`);
+                  const sDeg = record.get('sDeg')?.toNumber?.() ?? 1;
+                  const mDeg = record.get('mDeg')?.toNumber?.() ?? 1;
+                  const sName = sNode.properties.name;
+                  const mName = mNode.properties.name;
+                  const r1Type = r1.properties.type;
+                  const r1Src = r1.properties.source_file || 'Unknown';
+                  const r1W = r1.properties.weight?.toNumber?.() ?? 1;
 
-                    const r2 = record.get('r2');
-                    if (r2) {
-                      const kNode = record.get('k'); const r2Type = r2.properties.type;
-                      const r2Src = r2.properties.source_file; const r2W = r2.properties.weight?.toNumber?.() ?? 1;
+                  if (!nodeMap.has(sName)) nodeMap.set(sName, { id: sName, name: sName, type: sNode.properties.type ?? 'Entity', degree: sDeg });
+                  if (!nodeMap.has(mName)) nodeMap.set(mName, { id: mName, name: mName, type: mNode.properties.type ?? 'Entity', degree: mDeg });
+
+                  const lid1 = r1.identity.toNumber().toString();
+                  if (!linkMap.has(lid1)) {
+                    const fwd = r1.start.toNumber() === sNode.identity.toNumber();
+                    links.push({ source: fwd ? sName : mName, target: fwd ? mName : sName, label: r1Type, weight: r1W });
+                    linkMap.set(lid1, true);
+                  }
+                  pathStrings.add(`[Source: ${r1Src}] ${sName} --[${r1Type}]--> ${mName}`);
+
+                  const r2 = record.get('r2');
+                  if (r2) {
+                    const kNode = record.get('k');
+                    if (kNode) {
+                      const r2Type = r2.properties.type;
+                      const r2Src = r2.properties.source_file || 'Unknown';
+                      const r2W = r2.properties.weight?.toNumber?.() ?? 1;
                       const kName = kNode.properties.name;
                       if (!nodeMap.has(kName)) nodeMap.set(kName, { id: kName, name: kName, type: kNode.properties.type ?? 'Entity', degree: 1 });
                       const lid2 = r2.identity.toNumber().toString();
@@ -136,13 +135,78 @@ Keep entity names concise and capitalized. Question: ${question}`;
                       }
                       pathStrings.add(`[Source: ${r2Src}] ${mName} --[${r2Type}]--> ${kName}`);
                     }
-                  });
-                }
+                  }
+                });
+              };
 
-                nodes = Array.from(nodeMap.values());
-                return Array.from(pathStrings).join('\n') + '\n';
-              });
-            }
+              // Step A: Find start nodes using case-insensitive exact text search (highly reliable fallback/addition)
+              if (lowerEntities.length > 0) {
+                const textRes = await tx.run(
+                  `MATCH (startNode:Entity)
+                   WHERE startNode.user_id = $uid AND toLower(startNode.name) IN $lowerEntities
+                   MATCH (startNode)-[r1:RELATION]-(m:Entity)
+                   OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
+                   WHERE m.user_id = $uid AND (k IS NULL OR k.user_id = $uid)
+                   ${docFilter}
+                   WITH startNode, r1, m, r2, k,
+                        COUNT { (startNode)-[:RELATION]-() } AS sDeg,
+                        COUNT { (m)-[:RELATION]-() } AS mDeg
+                   RETURN startNode, r1, m, r2, k, sDeg, mDeg
+                   LIMIT 50`,
+                  { uid: user.id, lowerEntities, selectedDocs }
+                );
+                processRecords(textRes.records);
+              }
+
+              // Step B: Substring containment search as fallback if exact match yielded no nodes
+              if (nodeMap.size === 0 && lowerEntities.length > 0) {
+                console.log('[chat] Exact match returned 0 results, trying substring fallback...');
+                const substringRes = await tx.run(
+                  `MATCH (startNode:Entity)
+                   WHERE startNode.user_id = $uid AND any(entity IN $lowerEntities WHERE toLower(startNode.name) CONTAINS entity OR entity CONTAINS toLower(startNode.name))
+                   MATCH (startNode)-[r1:RELATION]-(m:Entity)
+                   OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
+                   WHERE m.user_id = $uid AND (k IS NULL OR k.user_id = $uid)
+                   ${docFilter}
+                   WITH startNode, r1, m, r2, k,
+                        COUNT { (startNode)-[:RELATION]-() } AS sDeg,
+                        COUNT { (m)-[:RELATION]-() } AS mDeg
+                   RETURN startNode, r1, m, r2, k, sDeg, mDeg
+                   LIMIT 30`,
+                  { uid: user.id, lowerEntities, selectedDocs }
+                );
+                processRecords(substringRes.records);
+              }
+
+              // Step C: Vector similarity search (for semantic matches, wrapped safely)
+              if (validEmbeddings.length > 0) {
+                for (const embedding of validEmbeddings) {
+                  try {
+                    const vectorRes = await tx.run(
+                      `CALL db.index.vector.queryNodes('entity_name_embeddings', 3, $embedding)
+                       YIELD node AS startNode, score
+                       WHERE startNode.user_id = $uid
+                       MATCH (startNode)-[r1:RELATION]-(m:Entity)
+                       OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
+                       WHERE m.user_id = $uid AND (k IS NULL OR k.user_id = $uid)
+                       ${docFilter}
+                       WITH startNode, r1, m, r2, k,
+                            COUNT { (startNode)-[:RELATION]-() } AS sDeg,
+                            COUNT { (m)-[:RELATION]-() } AS mDeg
+                       RETURN startNode, r1, m, r2, k, sDeg, mDeg
+                       LIMIT 50`,
+                      { uid: user.id, embedding, selectedDocs }
+                    );
+                    processRecords(vectorRes.records);
+                  } catch (vErr) {
+                    console.error('[chat] Vector similarity search failed (index may not exist yet):', vErr);
+                  }
+                }
+              }
+
+              nodes = Array.from(nodeMap.values());
+              return Array.from(pathStrings).join('\n') + '\n';
+            });
           } finally {
             await session.close();
           }

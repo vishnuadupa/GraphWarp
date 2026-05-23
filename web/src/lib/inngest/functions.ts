@@ -12,12 +12,29 @@ async function setStep(documentId: string, step: string | null) {
   await supabaseAdmin.from('documents').update({ processing_step: step }).eq('id', documentId);
 }
 
+async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 3, baseDelayMs = 1500): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      if (attempt === maxAttempts) throw err;
+      await new Promise((r) => setTimeout(r, baseDelayMs * Math.pow(2, attempt - 1)));
+      lastError = err;
+    }
+  }
+  throw lastError;
+}
+
 /** Embed a single entity — returns null on failure (non-fatal). */
 async function embedEntity(model: any, entity: string): Promise<number[] | null> {
   try {
-    const res = await model.embedContent(entity);
-    return res.embedding.values;
-  } catch {
+    return await withRetry(async () => {
+      const res = await model.embedContent(entity);
+      return res.embedding.values;
+    });
+  } catch (err: any) {
+    console.error(`[ingest] Failed to embed entity "${entity}" after retries:`, err?.message);
     return null;
   }
 }
@@ -126,6 +143,10 @@ export const processDocument = inngest.createFunction(
         batch.forEach((entity, idx) => {
           if (vectors[idx]) result[entity] = vectors[idx]!;
         });
+        // Pacing delay to avoid slamming Gemini rate limits (15 RPM limit)
+        if (i + BATCH < uniqueEntities.length) {
+          await new Promise((r) => setTimeout(r, 400));
+        }
       }
 
       return result;

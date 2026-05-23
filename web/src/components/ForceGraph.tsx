@@ -134,6 +134,19 @@ export function ForceGraph({
     return { nodes: visibleNodes, links: visibleLinks };
   }, [data, hiddenTypes]);
 
+  // Configure forces to make the graph clean and prevent clumping (messiness)
+  useEffect(() => {
+    const fg = fgRef.current;
+    if (fg) {
+      // Pull nodes further apart (default is usually -30)
+      fg.d3Force("charge")?.strength(-120);
+      // Give relationships more breathing room (default is 30)
+      fg.d3Force("link")?.distance(75);
+      // Re-heat simulation
+      fg.d3ReheatSimulation?.();
+    }
+  }, [filteredData]);
+
   const drawNode = useCallback(
     (node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
       const n = node as GraphNode;
