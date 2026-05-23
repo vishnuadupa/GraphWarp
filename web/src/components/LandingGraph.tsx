@@ -27,25 +27,53 @@ export default function LandingGraph() {
 
     let animationFrameId: number;
     let nodes: Node[] = [];
-    const nodeCount = 38;
-    const connectionDist = 125;
+    const nodeCount = 95;
+    const connectionDist = 75;
 
     const initNodes = (w: number, h: number) => {
       nodes = [];
+      const colors = [
+        "#1a1a1a", // Charcoal Ink
+        "#2563eb", // Royal Blue
+        "#059669", // Emerald Green
+        "#d97706", // Amber Orange
+        "#4f46e5", // Electric Violet
+        "#e11d48", // Crimson Rose
+        "#0891b2", // Cyber Teal
+      ];
+
       for (let i = 0; i < nodeCount; i++) {
         // Distribute nodes randomly
         const x = Math.random() * w;
         const y = Math.random() * h;
-        const radius = 2.5 + Math.random() * 3;
+        
+        // Highly uneven, organic sizing distribution
+        const sizeRand = Math.random();
+        let radius = 2.0;
+        if (sizeRand < 0.6) {
+          radius = 1.0 + Math.random() * 1.5; // Tiny detail dots: 1.0px - 2.5px
+        } else if (sizeRand < 0.9) {
+          radius = 3.0 + Math.random() * 2.0; // Medium nodes: 3.0px - 5.0px
+        } else {
+          radius = 6.0 + Math.random() * 3.5; // Large anchor nodes: 6.0px - 9.5px
+        }
+
+        // Curated color distribution (50% charcoal ink to anchor theme, 50% color accents)
+        let color = colors[0];
+        const colorRand = Math.random();
+        if (colorRand >= 0.50) {
+          color = colors[Math.floor(Math.random() * (colors.length - 1)) + 1];
+        }
+
         nodes.push({
           x,
           y,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: (Math.random() - 0.5) * 0.35,
           baseX: x,
           baseY: y,
           radius,
-          color: i % 5 === 0 ? "#2563eb" : i % 7 === 0 ? "#059669" : "#1a1a1a",
+          color,
         });
       }
     };
