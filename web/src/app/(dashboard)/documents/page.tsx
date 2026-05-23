@@ -88,6 +88,7 @@ export default function DocumentsPage() {
   const [loading, setLoading] = useState(true);
   const [reprocessing, setReprocessing] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState<Set<string>>(new Set());
+  const [reprocessingAll, setReprocessingAll] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -181,21 +182,54 @@ export default function DocumentsPage() {
     }
   };
 
+  const stuckDocs = documents.filter((d) => d.status === "Processing" || d.status === "Failed");
+
+  const handleReprocessAll = async () => {
+    if (stuckDocs.length === 0) return;
+    setReprocessingAll(true);
+    for (const doc of stuckDocs) {
+      try {
+        const res = await fetch("/api/documents/reprocess", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ documentId: doc.id }),
+        });
+        if (res.ok) {
+          setDocuments((prev) =>
+            prev.map((d) => (d.id === doc.id ? { ...d, status: "Processing", processing_step: null } : d))
+          );
+        }
+      } catch { /* continue */ }
+    }
+    setReprocessingAll(false);
+  };
+
   if (!ready) return null;
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 lg:p-12">
+    <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-[#0A0A0B] text-white min-h-full">
       <div className="max-w-5xl mx-auto space-y-8">
 
         {/* Header */}
         <div className="flex justify-between items-end border-b border-white/[0.08] pb-6">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">Documents</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-white">Documents</h1>
             <p className="text-white/50 text-sm">
               {documents.length} file{documents.length !== 1 ? "s" : ""} ingested — live updates via Realtime
             </p>
           </motion.div>
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2">
+            {stuckDocs.length > 0 && (
+              <button
+                onClick={handleReprocessAll}
+                disabled={reprocessingAll}
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 rounded-xl font-medium transition-all text-sm disabled:opacity-50"
+              >
+                {reprocessingAll
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Queuing…</>
+                  : <><RefreshCw className="w-4 h-4" /> Reprocess All ({stuckDocs.length})</>}
+              </button>
+            )}
             <Link href="/upload" className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all text-sm">
               <Plus className="w-4 h-4" /> Add Document
             </Link>

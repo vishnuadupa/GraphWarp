@@ -633,7 +633,7 @@ body {
   overflow:       hidden;
   display:        flex;
   flex-direction: column;
-  background:     var(--color-paper);
+  background:     #0a0a0b;
 }
 
 .dash-topbar {
@@ -641,8 +641,10 @@ body {
   align-items:     center;
   justify-content: space-between;
   padding:         var(--space-md) clamp(var(--space-md), 4vw, var(--space-xl));
-  border-bottom:   1px solid var(--color-rule);
-  background:      var(--color-paper);
+  border-bottom:   1px solid rgba(255,255,255,0.07);
+  background:      rgba(8,8,10,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position:        sticky;
   top:             0;
   z-index:         var(--z-nav);
@@ -652,7 +654,7 @@ body {
   font-family:     var(--font-display);
   font-weight:     700;
   font-size:       var(--text-sm);
-  color:           var(--color-ink);
+  color:           rgba(255,255,255,0.90);
   text-decoration: none;
   letter-spacing:  0.02em;
   white-space:     nowrap;
@@ -667,18 +669,19 @@ body {
 .dash-topbar-link {
   font-family:     var(--font-body);
   font-size:       var(--text-sm);
-  color:           var(--color-neutral);
+  color:           rgba(255,255,255,0.45);
   text-decoration: none;
   white-space:     nowrap;
   transition:      color var(--dur-short) var(--ease-out);
 }
 
-.dash-topbar-link:hover { color: var(--color-ink); }
+.dash-topbar-link:hover { color: rgba(255,255,255,0.85); }
 
 .dash-content {
-  flex:    1;
-  display: flex;
-  overflow: hidden;
+  flex:       1;
+  display:    flex;
+  overflow:   hidden;
+  background: #0a0a0b;
 }
 
 /* ═══════════════════════════════════════════════════════════
