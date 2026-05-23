@@ -262,25 +262,31 @@ export const processDocument = inngest.createFunction(
           console.log(`[ingest] Text (${ext}) — ${promptInput.length} chars`);
         }
 
-        // Call Qwen3.5 Plus via OpenRouter (handles text + vision)
-        const userContent = typeof promptInput === 'string'
-          ? promptInput
-          : [{ type: 'text', text: EXTRACT_PROMPT }, promptInput];
+        // Call Qwen3.5 Plus via OpenRouter (handles text + vision).
+        // For images: instruction + image go in the SAME user message (vision models work better this way).
+        // No response_format constraint — it conflicts with JSON array output and breaks vision requests.
+        const isImage = typeof promptInput !== 'string';
+        const userContent = isImage
+          ? [{ type: 'text', text: EXTRACT_PROMPT + '\n\nOutput ONLY a raw JSON array, no markdown, no code blocks.' }, promptInput]
+          : promptInput;
 
         try {
           const result = await withRetry(() =>
             getOpenRouter().chat.completions.create({
               model: 'qwen/qwen3.5-plus-20260420',
-              messages: [
-                { role: 'system', content: EXTRACT_PROMPT },
-                { role: 'user', content: typeof promptInput === 'string' ? promptInput : [promptInput] },
-              ],
-              response_format: { type: 'json_object' },
+              messages: isImage
+                ? [{ role: 'user', content: userContent }]
+                : [
+                    { role: 'system', content: EXTRACT_PROMPT + '\n\nOutput ONLY a raw JSON array, no markdown, no code blocks.' },
+                    { role: 'user', content: userContent },
+                  ],
             })
           );
           const responseText = result.choices[0]?.message?.content || '[]';
-          const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-          const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(responseText);
+          // Strip markdown code blocks if model wraps output anyway
+          const cleaned = responseText.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
+          const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
+          const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(cleaned);
 
           return Array.isArray(parsed)
             ? parsed
