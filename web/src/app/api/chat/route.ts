@@ -9,9 +9,6 @@ const openrouter = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY || '',
 });
 
-// OpenAI directly for embeddings (OpenRouter has no /embeddings endpoint)
-const openaiEmbed = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' });
-
 async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 4, baseDelayMs = 2000): Promise<T> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -86,17 +83,9 @@ export async function POST(req: NextRequest) {
           if (!Array.isArray(entities) || entities.length === 0) entities = [question];
           console.log('[chat] extracted entities:', entities);
 
-          // Embed entities via OpenAI text-embedding-3-small
-          let validEmbeddings: number[][] = [];
-          try {
-            const embedRes = await openaiEmbed.embeddings.create({
-              model: 'text-embedding-3-small',
-              input: entities,
-            });
-            validEmbeddings = embedRes.data.map((d) => d.embedding);
-          } catch (embedErr: any) {
-            console.warn('[chat] Embedding failed (non-fatal):', embedErr?.message);
-          }
+          // Embeddings skipped — no separate embedding provider key.
+          // Chat uses exact match (Step A) + substring fallback (Step B), both work without embeddings.
+          const validEmbeddings: number[][] = [];
 
           // ── Phase 2: graph traversal ──────────────────────────────────────
           send({ type: 'phase', data: 'traversing' });

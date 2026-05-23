@@ -12,6 +12,7 @@ const openrouter = new OpenAI({
   apiKey: process.env.OPENROUTER_API_KEY || '',
 });
 
+
 // ── Relationship column keyword map ────────────────────────────────────────────
 // Keys are lowercase substrings to match against CSV/JSON column headers.
 const REL_COLUMN_MAP: Record<string, { relation: string; sourceType: string; targetType: string }> = {
@@ -356,23 +357,9 @@ export const processDocument = inngest.createFunction(
             if (!entityMap[d.target]) entityMap[d.target] = d.target_type;
           }
 
-          const uniqueEntities = Object.keys(entityMap);
-          const BATCH = 100; // text-embedding-3-small supports up to 2048 inputs per call
+          // Embeddings skipped — OpenRouter has no /embeddings endpoint and we have no separate key.
+          // Vector search in chat gracefully falls back to exact + substring match which works well.
           const embeddingsData: Record<string, number[]> = {};
-
-          // Use OpenAI text-embedding-3-small directly (OpenRouter doesn't support embeddings)
-          const openaiEmbed = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' });
-
-          for (let i = 0; i < uniqueEntities.length; i += BATCH) {
-            const batch = uniqueEntities.slice(i, i + BATCH);
-            try {
-              const res = await openaiEmbed.embeddings.create({ model: 'text-embedding-3-small', input: batch });
-              res.data.forEach((item, idx) => { embeddingsData[batch[idx]] = item.embedding; });
-            } catch (embedErr: any) {
-              console.warn(`[ingest] Embedding batch failed:`, embedErr?.message);
-            }
-            if (i + BATCH < uniqueEntities.length) await new Promise((r) => setTimeout(r, 200));
-          }
 
           // Write embeddings back to Neo4j nodes
           if (Object.keys(embeddingsData).length) {
