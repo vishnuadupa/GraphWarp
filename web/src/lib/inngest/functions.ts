@@ -5,7 +5,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import { driver } from '../neo4j/neo4j';
 import * as mammoth from 'mammoth';
 import Papa from 'papaparse';
-import pdfParse from 'pdf-parse';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
@@ -234,8 +233,9 @@ export const processDocument = inngest.createFunction(
           promptInput = { inlineData: { data: fileData.buffer, mimeType } };
           console.log(`[ingest] Image (${ext}) — sending to Gemini vision`);
         } else if (ext === 'pdf') {
-          // PDF: extract text with pdf-parse, send text (much cheaper than base64)
+          // PDF: extract text with pdf-parse (dynamic import — static import crashes at module init)
           try {
+            const { default: pdfParse } = await import('pdf-parse');
             const pdfData = await pdfParse(rawBuffer);
             promptInput = pdfData.text;
             console.log(`[ingest] PDF — extracted ${pdfData.text.length} chars of text`);
