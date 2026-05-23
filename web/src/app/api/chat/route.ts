@@ -5,14 +5,31 @@ import { driver } from '@/lib/neo4j/neo4j';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
-async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 3, baseDelayMs = 1500): Promise<T> {
+async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 4, baseDelayMs = 2000): Promise<T> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try { return await fn(); } catch (err: any) {
+    try {
+      return await fn();
+    } catch (err: any) {
       const msg: string = err?.message ?? '';
-      const retryable = msg.includes('503') || msg.includes('Service Unavailable') || msg.includes('overloaded') || msg.includes('high demand');
+      const retryable =
+        msg.includes('429') ||
+        msg.includes('quota') ||
+        msg.includes('limit') ||
+        msg.includes('503') ||
+        msg.includes('Service Unavailable') ||
+        msg.includes('overloaded') ||
+        msg.includes('high demand');
+
       if (!retryable || attempt === maxAttempts) throw err;
-      await new Promise((r) => setTimeout(r, baseDelayMs * Math.pow(2, attempt - 1)));
+
+      // Back off slightly longer for 429s to allow rate limits to reset
+      const delay = (msg.includes('429') || msg.includes('quota'))
+        ? baseDelayMs * 2 * Math.pow(1.5, attempt - 1)
+        : baseDelayMs * Math.pow(2, attempt - 1);
+
+      console.warn(`[chat] Temporary API error. Retrying in ${Math.round(delay)}ms (attempt ${attempt}/${maxAttempts})...`);
+      await new Promise((r) => setTimeout(r, delay));
       lastError = err;
     }
   }
@@ -242,7 +259,7 @@ Current question: ${question}
 
 AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q3?"]</suggestions>`;
 
-          const synthStream = await synthModel.generateContentStream(synthPrompt);
+          const synthStream = await withRetry(() => synthModel.generateContentStream(synthPrompt));
           for await (const chunk of synthStream.stream) {
             const text = chunk.text();
             if (text) send({ type: 'text', data: text });
