@@ -121,7 +121,9 @@ Keep entity names concise and capitalized. Question: ${question}`;
                   const sName = sNode.properties.name;
                   const mName = mNode.properties.name;
                   const r1Type = r1.properties.type;
-                  const r1Src = r1.properties.source_file || 'Unknown';
+                  const r1Src = r1.properties.source_file;
+                  const r1SrcValid = r1Src && r1Src !== 'Unknown' && r1Src !== 'Unknown Source';
+                  const r1Prefix = r1SrcValid ? `[Source: ${r1Src}] ` : '';
                   const r1W = r1.properties.weight?.toNumber?.() ?? 1;
 
                   if (!nodeMap.has(sName)) nodeMap.set(sName, { id: sName, name: sName, type: sNode.properties.type ?? 'Entity', degree: sDeg });
@@ -133,14 +135,16 @@ Keep entity names concise and capitalized. Question: ${question}`;
                     links.push({ source: fwd ? sName : mName, target: fwd ? mName : sName, label: r1Type, weight: r1W });
                     linkMap.set(lid1, true);
                   }
-                  pathStrings.add(`[Source: ${r1Src}] ${sName} --[${r1Type}]--> ${mName}`);
+                  pathStrings.add(`${r1Prefix}${sName} --[${r1Type}]--> ${mName}`);
 
                   const r2 = record.get('r2');
                   if (r2) {
                     const kNode = record.get('k');
                     if (kNode) {
                       const r2Type = r2.properties.type;
-                      const r2Src = r2.properties.source_file || 'Unknown';
+                      const r2Src = r2.properties.source_file;
+                      const r2SrcValid = r2Src && r2Src !== 'Unknown' && r2Src !== 'Unknown Source';
+                      const r2Prefix = r2SrcValid ? `[Source: ${r2Src}] ` : '';
                       const r2W = r2.properties.weight?.toNumber?.() ?? 1;
                       const kName = kNode.properties.name;
                       if (!nodeMap.has(kName)) nodeMap.set(kName, { id: kName, name: kName, type: kNode.properties.type ?? 'Entity', degree: 1 });
@@ -150,7 +154,7 @@ Keep entity names concise and capitalized. Question: ${question}`;
                         links.push({ source: fwd2 ? mName : kName, target: fwd2 ? kName : mName, label: r2Type, weight: r2W });
                         linkMap.set(lid2, true);
                       }
-                      pathStrings.add(`[Source: ${r2Src}] ${mName} --[${r2Type}]--> ${kName}`);
+                      pathStrings.add(`${r2Prefix}${mName} --[${r2Type}]--> ${kName}`);
                     }
                   }
                 });
