@@ -17,12 +17,12 @@ async function embedEntity(model: any, entity: string): Promise<number[] | null>
   }
 }
 
-// Inngest v4 createFunction types expect 2 args but runtime supports 3 (config, trigger, handler)
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const _createFn = inngest.createFunction.bind(inngest) as any;
-export const processDocument = _createFn(
-  { id: "process-document", retries: 2 },
-  { event: "document.process" },
+export const processDocument = inngest.createFunction(
+  { 
+    id: "process-document", 
+    retries: 2,
+    trigger: { event: "document.process" }
+  },
   async ({ event, step }: any) => {
     const { documentId, filePath, userId, filename } = event.data;
 
