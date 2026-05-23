@@ -56,15 +56,24 @@ export async function POST(req: NextRequest) {
       .eq('id', documentId);
 
     // 3. Re-fire Inngest event
-    await inngest.send({
-      name: 'document.process',
-      data: {
-        documentId:  doc.id,
-        filePath:    doc.storage_path,
-        userId:      user.id,
-        filename:    doc.filename,
-      },
-    });
+    console.log('[reprocess] INNGEST_EVENT_KEY set:', !!process.env.INNGEST_EVENT_KEY);
+    console.log('[reprocess] INNGEST_SIGNING_KEY set:', !!process.env.INNGEST_SIGNING_KEY);
+    console.log('[reprocess] Sending event document.process for doc:', doc.id);
+    try {
+      const inngestResult = await inngest.send({
+        name: 'document.process',
+        data: {
+          documentId:  doc.id,
+          filePath:    doc.storage_path,
+          userId:      user.id,
+          filename:    doc.filename,
+        },
+      });
+      console.log('[reprocess] inngest.send result:', JSON.stringify(inngestResult));
+    } catch (inngestErr: any) {
+      console.error('[reprocess] inngest.send FAILED:', inngestErr?.message, inngestErr?.status, JSON.stringify(inngestErr));
+      return NextResponse.json({ error: `Inngest send failed: ${inngestErr?.message}` }, { status: 502 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
