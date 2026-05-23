@@ -1049,7 +1049,7 @@ export default function ChatPage() {
                     </div>
                   </div>
                 </div>
-              ) : null}
+              )}
             </motion.aside>
           )}
         </AnimatePresence>
