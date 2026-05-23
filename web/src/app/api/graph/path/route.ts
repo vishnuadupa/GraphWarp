@@ -27,9 +27,11 @@ export async function POST(req: NextRequest) {
     try {
       const result = await session.executeRead((tx) =>
         tx.run(
-          `MATCH (a:Entity {name: $from, user_id: $userId}),
-                 (b:Entity {name: $to,   user_id: $userId}),
-                 p = shortestPath((a)-[:RELATION*..10]-(b))
+          `MATCH (a:Entity {user_id: $userId}),
+                 (b:Entity {user_id: $userId})
+           WHERE toLower(a.name) = toLower($from)
+             AND toLower(b.name) = toLower($to)
+           MATCH p = shortestPath((a)-[:RELATION*..10]-(b))
            WHERE all(n IN nodes(p) WHERE n.user_id = $userId)
            RETURN p LIMIT 1`,
           { from, to, userId: user.id }

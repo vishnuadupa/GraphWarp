@@ -464,33 +464,32 @@ export default function ChatPage() {
             if (!block.startsWith("data: ")) continue;
             const dataStr = block.slice(6);
             if (dataStr === "[DONE]") continue;
-            try {
-              const parsed = JSON.parse(dataStr);
-              if (parsed.type === "phase") {
-                setThinkingPhase(parsed.data as ThinkingPhase);
-              } else if (parsed.type === "graph") {
-                // Only replace the graph if we actually got nodes back — never clear a populated graph
-                if (parsed.data?.nodes?.length > 0) setGraph(parsed.data);
-                if (parsed.activeNodeIds?.length > 0) setActiveNodeIds(new Set<string>(parsed.activeNodeIds));
-              } else if (parsed.type === "text") {
-                assistantMessage += parsed.data;
-                let displayContent = assistantMessage;
-                const m = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
-                if (m) {
-                  displayContent = assistantMessage.replace(m[0], "").trim();
-                  try { finalSuggestions = JSON.parse(m[1]); } catch { /* */ }
-                }
-                setMessages((prev) => {
-                  const msgs = [...prev];
-                  const last = msgs[msgs.length - 1];
-                  last.content = displayContent;
-                  if (finalSuggestions.length > 0) last.suggestions = finalSuggestions;
-                  return msgs;
-                });
-              } else if (parsed.type === "error") {
-                throw new Error(parsed.data);
+            let parsed: any;
+            try { parsed = JSON.parse(dataStr); } catch { continue; } // skip malformed chunks
+            if (parsed.type === "phase") {
+              setThinkingPhase(parsed.data as ThinkingPhase);
+            } else if (parsed.type === "graph") {
+              // Only replace the graph if we actually got nodes back — never clear a populated graph
+              if (parsed.data?.nodes?.length > 0) setGraph(parsed.data);
+              if (parsed.activeNodeIds?.length > 0) setActiveNodeIds(new Set<string>(parsed.activeNodeIds));
+            } else if (parsed.type === "text") {
+              assistantMessage += parsed.data;
+              let displayContent = assistantMessage;
+              const m = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
+              if (m) {
+                displayContent = assistantMessage.replace(m[0], "").trim();
+                try { finalSuggestions = JSON.parse(m[1]); } catch { /* */ }
               }
-            } catch { /* partial json */ }
+              setMessages((prev) => {
+                const msgs = [...prev];
+                const last = msgs[msgs.length - 1];
+                last.content = displayContent;
+                if (finalSuggestions.length > 0) last.suggestions = finalSuggestions;
+                return msgs;
+              });
+            } else if (parsed.type === "error") {
+              throw new Error(parsed.data); // now correctly propagates to outer catch
+            }
           }
         }
       }

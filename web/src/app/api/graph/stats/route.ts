@@ -12,42 +12,41 @@ export async function GET() {
 
     const session = driver.session();
     try {
-      const [nodeRes, linkRes, typeRes, topRes, relTypeRes, docsRes] = await Promise.all([
-        session.executeRead((tx) =>
-          tx.run('MATCH (n:Entity {user_id: $uid}) RETURN count(n) AS c', { uid: user.id })
-        ),
-        session.executeRead((tx) =>
-          tx.run('MATCH ()-[r:RELATION {user_id: $uid}]->() RETURN count(r) AS c', { uid: user.id })
-        ),
-        session.executeRead((tx) =>
-          tx.run(
-            'MATCH (n:Entity {user_id: $uid}) RETURN n.type AS type, count(n) AS cnt ORDER BY cnt DESC',
-            { uid: user.id }
-          )
-        ),
-        session.executeRead((tx) =>
-          tx.run(
-            `MATCH (n:Entity {user_id: $uid})
-             WITH n, COUNT { (n)-[:RELATION]-() } AS deg
-             ORDER BY deg DESC LIMIT 8
-             RETURN n.name AS name, n.type AS type, deg`,
-            { uid: user.id }
-          )
-        ),
-        session.executeRead((tx) =>
-          tx.run(
-            'MATCH ()-[r:RELATION {user_id: $uid}]->() RETURN r.type AS type, count(r) AS cnt ORDER BY cnt DESC LIMIT 6',
-            { uid: user.id }
-          )
-        ),
-        session.executeRead((tx) =>
-          tx.run(
-            `MATCH ()-[r:RELATION {user_id: $uid}]->()
-             RETURN r.source_file AS doc, count(r) AS cnt ORDER BY cnt DESC`,
-            { uid: user.id }
-          )
-        ),
-      ]);
+      // Run sequentially — Neo4j sessions don't support concurrent transactions
+      const nodeRes    = await session.executeRead((tx) =>
+        tx.run('MATCH (n:Entity {user_id: $uid}) RETURN count(n) AS c', { uid: user.id })
+      );
+      const linkRes    = await session.executeRead((tx) =>
+        tx.run('MATCH ()-[r:RELATION {user_id: $uid}]->() RETURN count(r) AS c', { uid: user.id })
+      );
+      const typeRes    = await session.executeRead((tx) =>
+        tx.run(
+          'MATCH (n:Entity {user_id: $uid}) RETURN n.type AS type, count(n) AS cnt ORDER BY cnt DESC',
+          { uid: user.id }
+        )
+      );
+      const topRes     = await session.executeRead((tx) =>
+        tx.run(
+          `MATCH (n:Entity {user_id: $uid})
+           WITH n, COUNT { (n)-[:RELATION]-() } AS deg
+           ORDER BY deg DESC LIMIT 8
+           RETURN n.name AS name, n.type AS type, deg`,
+          { uid: user.id }
+        )
+      );
+      const relTypeRes = await session.executeRead((tx) =>
+        tx.run(
+          'MATCH ()-[r:RELATION {user_id: $uid}]->() RETURN r.type AS type, count(r) AS cnt ORDER BY cnt DESC LIMIT 6',
+          { uid: user.id }
+        )
+      );
+      const docsRes    = await session.executeRead((tx) =>
+        tx.run(
+          `MATCH ()-[r:RELATION {user_id: $uid}]->()
+           RETURN r.source_file AS doc, count(r) AS cnt ORDER BY cnt DESC`,
+          { uid: user.id }
+        )
+      );
 
       return NextResponse.json({
         nodeCount:  nodeRes.records[0]?.get('c')?.toNumber?.() ?? 0,

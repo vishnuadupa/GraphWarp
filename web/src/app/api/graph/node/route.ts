@@ -23,7 +23,8 @@ export async function POST(req: NextRequest) {
       // Run sequentially — Neo4j sessions don't support concurrent transactions
       const nodeRes = await session.executeRead((tx) =>
         tx.run(
-          `MATCH (n:Entity {name: $nodeId, user_id: $uid})
+          `MATCH (n:Entity {user_id: $uid})
+           WHERE toLower(n.name) = toLower($nodeId)
            WITH n, COUNT { (n)-[:RELATION]-() } AS degree
            RETURN n.name AS name, n.type AS type, degree`,
           { nodeId, uid: user.id }
@@ -31,7 +32,8 @@ export async function POST(req: NextRequest) {
       );
       const relRes = await session.executeRead((tx) =>
         tx.run(
-          `MATCH (n:Entity {name: $nodeId, user_id: $uid})-[r:RELATION]-(m:Entity {user_id: $uid})
+          `MATCH (n:Entity {user_id: $uid})-[r:RELATION]-(m:Entity {user_id: $uid})
+           WHERE toLower(n.name) = toLower($nodeId)
            RETURN
              r.type        AS relType,
              m.name        AS other,
