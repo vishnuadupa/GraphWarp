@@ -27,8 +27,8 @@ export default function LandingGraph() {
 
     let animationFrameId: number;
     let nodes: Node[] = [];
-    const nodeCount = 95;
-    const connectionDist = 75;
+    const nodeCount = 320;
+    const connectionDist = 42;
 
     const initNodes = (w: number, h: number) => {
       nodes = [];
@@ -47,29 +47,29 @@ export default function LandingGraph() {
         const x = Math.random() * w;
         const y = Math.random() * h;
         
-        // Highly uneven, organic sizing distribution
+        // Multi-tiered starry sizing: 75% tiny nodes, 20% medium categories, 5% large statements
         const sizeRand = Math.random();
-        let radius = 2.0;
-        if (sizeRand < 0.6) {
-          radius = 1.0 + Math.random() * 1.5; // Tiny detail dots: 1.0px - 2.5px
-        } else if (sizeRand < 0.9) {
-          radius = 3.0 + Math.random() * 2.0; // Medium nodes: 3.0px - 5.0px
+        let radius = 1.5;
+        if (sizeRand < 0.75) {
+          radius = 0.8 + Math.random() * 1.0; // Delicate detail dots: 0.8px - 1.8px
+        } else if (sizeRand < 0.95) {
+          radius = 2.5 + Math.random() * 1.7; // Medium category elements: 2.5px - 4.2px
         } else {
-          radius = 6.0 + Math.random() * 3.5; // Large anchor nodes: 6.0px - 9.5px
+          radius = 5.5 + Math.random() * 3.0; // Large focal nodes: 5.5px - 8.5px
         }
 
-        // Curated color distribution (50% charcoal ink to anchor theme, 50% color accents)
+        // Color distribution: Charcoal ink defaults (60%) to preserve minimalist design, colorful highlights (40%)
         let color = colors[0];
         const colorRand = Math.random();
-        if (colorRand >= 0.50) {
+        if (colorRand >= 0.60) {
           color = colors[Math.floor(Math.random() * (colors.length - 1)) + 1];
         }
 
         nodes.push({
           x,
           y,
-          vx: (Math.random() - 0.5) * 0.35,
-          vy: (Math.random() - 0.5) * 0.35,
+          vx: (Math.random() - 0.5) * 0.22,
+          vy: (Math.random() - 0.5) * 0.22,
           baseX: x,
           baseY: y,
           radius,
