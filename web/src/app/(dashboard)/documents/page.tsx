@@ -14,13 +14,21 @@ interface Doc {
   id: string;
   filename: string;
   status: string;
+  processing_step?: string | null;
   created_at: string;
   entity_count?: number;
   relation_count?: number;
   storage_path?: string;
 }
 
-function StatusBadge({ status }: { status: string }) {
+const PROCESSING_STEPS = [
+  { key: "downloading", label: "Download" },
+  { key: "extracting",  label: "Extract" },
+  { key: "embedding",   label: "Embed" },
+  { key: "saving",      label: "Save" },
+] as const;
+
+function StatusBadge({ status, processingStep }: { status: string; processingStep?: string | null }) {
   if (status === "Completed")
     return (
       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
@@ -33,6 +41,39 @@ function StatusBadge({ status }: { status: string }) {
         <AlertCircle className="w-3 h-3" /> Failed
       </span>
     );
+
+  // Show stepper when we have a processing_step
+  if (processingStep) {
+    const currentIdx = PROCESSING_STEPS.findIndex((s) => s.key === processingStep);
+    return (
+      <div className="flex items-center gap-1">
+        {PROCESSING_STEPS.map((s, idx) => {
+          const isDone    = idx < currentIdx;
+          const isCurrent = idx === currentIdx;
+          return (
+            <div key={s.key} className="flex items-center gap-1">
+              <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium transition-all ${
+                isCurrent
+                  ? "bg-yellow-500/20 text-yellow-300 border border-yellow-500/30"
+                  : isDone
+                  ? "text-white/30"
+                  : "text-white/15"
+              }`}>
+                {isCurrent && <Loader2 className="w-2.5 h-2.5 animate-spin shrink-0" />}
+                {isDone && <CheckCircle2 className="w-2.5 h-2.5 shrink-0 text-green-500/60" />}
+                <span>{s.label}</span>
+              </div>
+              {idx < PROCESSING_STEPS.length - 1 && (
+                <span className="text-white/15 text-[10px]">›</span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Fallback: generic processing badge
   return (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
       <Loader2 className="w-3 h-3 animate-spin" /> Processing
@@ -201,7 +242,7 @@ export default function DocumentsPage() {
                         <span className="font-medium text-white/90 text-sm truncate max-w-xs">{doc.filename}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4"><StatusBadge status={doc.status} /></td>
+                    <td className="px-6 py-4"><StatusBadge status={doc.status} processingStep={doc.processing_step} /></td>
                     <td className="px-6 py-4">
                       <span className="text-sm text-white/60 tabular-nums">
                         {doc.status === "Completed" ? (doc.entity_count ?? "—") : <span className="text-white/25">—</span>}

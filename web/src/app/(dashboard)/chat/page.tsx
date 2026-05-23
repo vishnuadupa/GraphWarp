@@ -17,12 +17,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Send, Filter, Network, ChevronDown, Search, X,
   BarChart2, Download, ExternalLink, ArrowRight,
+  MessageSquare, Plus, PanelLeft, GitMerge, Loader2,
 } from "lucide-react";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
   suggestions?: string[];
+}
+
+interface Conversation {
+  id: string;
+  title: string | null;
+  updated_at: string;
 }
 
 interface GraphStats {
@@ -45,7 +52,6 @@ const EMPTY_GRAPH: GraphData = { nodes: [], links: [] };
 const TYPE_DOT_COLOR = (type: string) =>
   TYPE_COLORS[type as keyof typeof TYPE_COLORS] ?? "#9090aa";
 
-// Generate starter questions from top entities
 function starterQuestions(entities: { name: string; type: string }[]): string[] {
   if (entities.length === 0) return [];
   const [a, b, c] = entities;
@@ -57,9 +63,28 @@ function starterQuestions(entities: { name: string; type: string }[]): string[] 
   return qs.slice(0, 4);
 }
 
+function fmtDate(iso: string) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  if (diff < 60_000) return "just now";
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
+  return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
 export default function ChatPage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
+  const userIdRef = useRef<string>("");
+
+  // Conversation state
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [currentConvId, setCurrentConvId] = useState<string | null>(null);
+  const [convLoading, setConvLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Messages & chat
   const [messages, setMessages] = useState<Message[]>([]);
   const [graph, setGraph] = useState<GraphData>(EMPTY_GRAPH);
   const [input, setInput] = useState("");
@@ -68,7 +93,7 @@ export default function ChatPage() {
   const [selectedDocs, setSelectedDocs] = useState<string[]>([]);
   const [filterOpen, setFilterOpen] = useState(false);
 
-  // Thinking animation state
+  // Thinking animation
   const [thinkingPhase, setThinkingPhase] = useState<ThinkingPhase>(null);
   const [activeNodeIds, setActiveNodeIds] = useState<Set<string>>(new Set());
 
@@ -76,6 +101,15 @@ export default function ChatPage() {
   const [graphSearch, setGraphSearch] = useState("");
   const [searchResults, setSearchResults] = useState<Set<string>>(new Set());
   const [hiddenTypes, setHiddenTypes] = useState<Set<string>>(new Set());
+
+  // Path finder
+  const [pathFrom, setPathFrom] = useState("");
+  const [pathTo, setPathTo] = useState("");
+  const [pathLoading, setPathLoading] = useState(false);
+  const [pathNodeIds, setPathNodeIds] = useState<Set<string>>(new Set());
+  const [pathLength, setPathLength] = useState<number | null>(null);
+  const [pathNotFound, setPathNotFound] = useState(false);
+  const [pathOpen, setPathOpen] = useState(false);
 
   // Stats panel
   const [statsOpen, setStatsOpen] = useState(false);
@@ -90,17 +124,41 @@ export default function ChatPage() {
   const textareaRef   = useRef<HTMLTextAreaElement>(null);
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ── Boot ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) router.replace("/login");
-      else {
-        setReady(true);
-        fetchDocuments();
-        fetchFullGraph();
-      }
+      if (!user) { router.replace("/login"); return; }
+      userIdRef.current = user.id;
+      setReady(true);
+      fetchDocuments();
+      fetchFullGraph(user.id);
+      fetchConversations();
     });
   }, [router]);
+
+  // ── Graph with localStorage cache ────────────────────────────────────────
+  const fetchFullGraph = async (uid: string) => {
+    // Load from cache immediately for snappy UX
+    try {
+      const cached = localStorage.getItem(`graph_cache_${uid}`);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.nodes?.length > 0) setGraph(parsed);
+      }
+    } catch { /* ignore */ }
+
+    try {
+      const res = await fetch("/api/graph/full");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.graph?.nodes?.length > 0) {
+          setGraph(data.graph);
+          try { localStorage.setItem(`graph_cache_${uid}`, JSON.stringify(data.graph)); } catch { /* quota */ }
+        }
+      }
+    } catch (err) { console.error("Failed to load graph:", err); }
+  };
 
   const fetchDocuments = async () => {
     try {
@@ -112,16 +170,86 @@ export default function ChatPage() {
     } catch (err) { console.error(err); }
   };
 
-  const fetchFullGraph = async () => {
+  // ── Conversation management ───────────────────────────────────────────────
+  const fetchConversations = async () => {
     try {
-      const res = await fetch("/api/graph/full");
+      const res = await fetch("/api/conversations");
       if (res.ok) {
         const data = await res.json();
-        if (data.graph?.nodes?.length > 0) setGraph(data.graph);
+        setConversations(data.conversations || []);
       }
-    } catch (err) { console.error("Failed to load graph:", err); }
+    } catch { /* silent */ }
   };
 
+  const createConversation = async (title: string): Promise<string | null> => {
+    try {
+      const res = await fetch("/api/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: title.slice(0, 80) }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const conv = data.conversation;
+        setConversations((prev) => [conv, ...prev]);
+        return conv.id;
+      }
+    } catch { /* silent */ }
+    return null;
+  };
+
+  const loadConversation = async (convId: string) => {
+    setConvLoading(true);
+    setNodeDetail(null);
+    setStatsOpen(false);
+    try {
+      const res = await fetch(`/api/conversations/${convId}`);
+      if (res.ok) {
+        const data = await res.json();
+        const msgs: Message[] = (data.messages || []).map((m: any) => ({
+          role: m.role,
+          content: m.content,
+          suggestions: m.suggestions ?? undefined,
+        }));
+        setMessages(msgs);
+        setCurrentConvId(convId);
+      }
+    } catch { /* silent */ }
+    finally { setConvLoading(false); }
+  };
+
+  const saveMessage = async (
+    convId: string,
+    role: "user" | "assistant",
+    content: string,
+    suggestions?: string[]
+  ) => {
+    try {
+      await fetch(`/api/conversations/${convId}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role, content, suggestions: suggestions ?? null }),
+      });
+      // Refresh conversations to bump updated_at sort
+      fetchConversations();
+    } catch { /* non-fatal */ }
+  };
+
+  const handleNewConversation = () => {
+    setCurrentConvId(null);
+    setMessages([]);
+    setNodeDetail(null);
+    setPathNodeIds(new Set());
+    setPathLength(null);
+    setPathNotFound(false);
+  };
+
+  const handleSelectConversation = (conv: Conversation) => {
+    if (conv.id === currentConvId) return;
+    loadConversation(conv.id);
+  };
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
   const fetchStats = useCallback(async () => {
     if (statsLoading) return;
     setStatsLoading(true);
@@ -132,14 +260,13 @@ export default function ChatPage() {
     finally { setStatsLoading(false); }
   }, [statsLoading]);
 
-  // Open stats panel
   const handleToggleStats = () => {
     if (!statsOpen) fetchStats();
     setStatsOpen((v) => !v);
     setNodeDetail(null);
   };
 
-  // Graph search — debounced
+  // ── Graph search ──────────────────────────────────────────────────────────
   const handleGraphSearch = (q: string) => {
     setGraphSearch(q);
     if (searchDebounce.current) clearTimeout(searchDebounce.current);
@@ -159,9 +286,58 @@ export default function ChatPage() {
     }, 250);
   };
 
-  // Node click → detail panel + graph expand
+  // ── Path finder ───────────────────────────────────────────────────────────
+  const handleFindPath = async () => {
+    if (!pathFrom.trim() || !pathTo.trim() || pathLoading) return;
+    setPathLoading(true);
+    setPathNodeIds(new Set());
+    setPathLength(null);
+    setPathNotFound(false);
+    try {
+      const res = await fetch("/api/graph/path", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ from: pathFrom.trim(), to: pathTo.trim() }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.found && data.graph?.nodes?.length > 0) {
+          // Merge path nodes into graph
+          setGraph((prev) => {
+            const nodeMap = new Set(prev.nodes.map((n) => n.id));
+            const linkExists = (l: any) => {
+              const sId = typeof l.source === "object" ? l.source.id : l.source;
+              const tId = typeof l.target === "object" ? l.target.id : l.target;
+              return prev.links.some((ex: any) => {
+                const exs = typeof ex.source === "object" ? ex.source.id : ex.source;
+                const ext = typeof ex.target === "object" ? ex.target.id : ex.target;
+                return exs === sId && ext === tId && ex.label === l.label;
+              });
+            };
+            const newNodes = [...prev.nodes, ...data.graph.nodes.filter((n: any) => !nodeMap.has(n.id))];
+            const newLinks = [...prev.links, ...data.graph.links.filter((l: any) => !linkExists(l))];
+            return { nodes: newNodes, links: newLinks };
+          });
+          setPathNodeIds(new Set<string>(data.graph.nodes.map((n: any) => n.id)));
+          setPathLength(data.length);
+        } else {
+          setPathNotFound(true);
+        }
+      }
+    } catch { /* silent */ }
+    finally { setPathLoading(false); }
+  };
+
+  const clearPath = () => {
+    setPathNodeIds(new Set());
+    setPathLength(null);
+    setPathNotFound(false);
+    setPathFrom("");
+    setPathTo("");
+  };
+
+  // ── Node click ────────────────────────────────────────────────────────────
   const handleNodeClick = useCallback(async (node: any) => {
-    // Expand graph
     fetch("/api/graph/expand", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -189,7 +365,6 @@ export default function ChatPage() {
         });
       });
 
-    // Fetch node detail
     setNodeDetail(null);
     setStatsOpen(false);
     setNodeDetailLoading(true);
@@ -204,7 +379,7 @@ export default function ChatPage() {
     finally { setNodeDetailLoading(false); }
   }, []);
 
-  // Type filter toggle
+  // ── Type filter ───────────────────────────────────────────────────────────
   const toggleType = (type: string) => {
     setHiddenTypes((prev) => {
       const s = new Set(prev);
@@ -213,7 +388,7 @@ export default function ChatPage() {
     });
   };
 
-  // Export graph as JSON
+  // ── Export ────────────────────────────────────────────────────────────────
   const handleExport = () => {
     const blob = new Blob([JSON.stringify(graph, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
@@ -222,26 +397,48 @@ export default function ChatPage() {
     URL.revokeObjectURL(url);
   };
 
+  // ── Scroll ────────────────────────────────────────────────────────────────
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // ── Send ──────────────────────────────────────────────────────────────────
   const handleSend = async (textOverride?: string) => {
     const text = textOverride || input.trim();
     if (!text || loading) return;
-    setMessages((prev) => [...prev, { role: "user", content: text }]);
+
+    const userMsg: Message = { role: "user", content: text };
+    const historyForApi = [...messages]; // snapshot before adding new user msg
+
+    setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
     setThinkingPhase("searching");
     setActiveNodeIds(new Set());
     setNodeDetail(null);
+    setPathNodeIds(new Set());
+    setPathLength(null);
     if (textareaRef.current) textareaRef.current.style.height = "auto";
+
+    // Ensure we have a conversation to save to
+    let convId = currentConvId;
+    if (!convId) {
+      convId = await createConversation(text);
+      if (convId) setCurrentConvId(convId);
+    }
+
+    // Save user message
+    if (convId) await saveMessage(convId, "user", text);
 
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: text, selectedDocs }),
+        body: JSON.stringify({
+          question: text,
+          selectedDocs,
+          messageHistory: historyForApi.map((m) => ({ role: m.role, content: m.content })),
+        }),
       });
       if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error || `API ${res.status}`); }
       if (!res.body) throw new Error("No response body");
@@ -251,6 +448,7 @@ export default function ChatPage() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let done = false; let assistantMessage = ""; let buffer = "";
+      let finalSuggestions: string[] = [];
 
       while (!done) {
         const { value, done: rd } = await reader.read();
@@ -271,17 +469,17 @@ export default function ChatPage() {
                 if (parsed.activeNodeIds?.length > 0) setActiveNodeIds(new Set<string>(parsed.activeNodeIds));
               } else if (parsed.type === "text") {
                 assistantMessage += parsed.data;
-                let displayContent = assistantMessage; let suggestions: string[] = [];
+                let displayContent = assistantMessage;
                 const m = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
                 if (m) {
                   displayContent = assistantMessage.replace(m[0], "").trim();
-                  try { suggestions = JSON.parse(m[1]); } catch { /* */ }
+                  try { finalSuggestions = JSON.parse(m[1]); } catch { /* */ }
                 }
                 setMessages((prev) => {
                   const msgs = [...prev];
                   const last = msgs[msgs.length - 1];
                   last.content = displayContent;
-                  if (suggestions.length > 0) last.suggestions = suggestions;
+                  if (finalSuggestions.length > 0) last.suggestions = finalSuggestions;
                   return msgs;
                 });
               } else if (parsed.type === "error") {
@@ -290,6 +488,13 @@ export default function ChatPage() {
             } catch { /* partial json */ }
           }
         }
+      }
+
+      // Save assistant message
+      if (convId) {
+        const m = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
+        const cleanContent = m ? assistantMessage.replace(m[0], "").trim() : assistantMessage.trim();
+        await saveMessage(convId, "assistant", cleanContent, finalSuggestions.length > 0 ? finalSuggestions : undefined);
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unknown error";
@@ -304,7 +509,6 @@ export default function ChatPage() {
       setLoading(false);
       setThinkingPhase(null);
       setTimeout(() => setActiveNodeIds(new Set()), 3000);
-      // Refresh stats if panel is open
       if (statsOpen) fetchStats();
     }
   };
@@ -331,12 +535,80 @@ export default function ChatPage() {
   return (
     <div className="flex-1 flex flex-col md:flex-row h-full overflow-hidden bg-[#0A0A0B]">
 
-      {/* ── Left Chat Panel ─────────────────────────────────────────────── */}
-      <section className="flex-1 flex flex-col min-w-[320px] max-w-2xl border-r border-white/[0.08] relative">
+      {/* ── Conversation Sidebar ─────────────────────────────────────────── */}
+      <AnimatePresence initial={false}>
+        {sidebarOpen && (
+          <motion.aside
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 240, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 320, damping: 32 }}
+            className="hidden md:flex flex-col shrink-0 border-r border-white/[0.07] bg-[#08080a] overflow-hidden"
+            style={{ minWidth: 0 }}
+          >
+            {/* Sidebar header */}
+            <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.07] shrink-0">
+              <span className="text-[11px] font-semibold text-white/40 uppercase tracking-widest">Conversations</span>
+              <button
+                onClick={handleNewConversation}
+                className="w-7 h-7 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 flex items-center justify-center transition-colors"
+                title="New conversation"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Conversations list */}
+            <div className="flex-1 overflow-y-auto py-2">
+              {conversations.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-32 gap-2 opacity-30">
+                  <MessageSquare className="w-5 h-5 text-white/40" />
+                  <span className="text-[10px] text-white/30 text-center">No conversations yet</span>
+                </div>
+              ) : (
+                conversations.map((conv) => (
+                  <button
+                    key={conv.id}
+                    onClick={() => handleSelectConversation(conv)}
+                    className={`w-full text-left px-3 py-2.5 transition-colors group relative ${
+                      conv.id === currentConvId
+                        ? "bg-indigo-500/10 border-r-2 border-indigo-500"
+                        : "hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <p className={`text-xs truncate leading-snug ${conv.id === currentConvId ? "text-white/90" : "text-white/60"}`}>
+                      {conv.title || "New conversation"}
+                    </p>
+                    <p className="text-[10px] text-white/25 mt-0.5">{fmtDate(conv.updated_at)}</p>
+                  </button>
+                ))
+              )}
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
+
+      {/* ── Chat Panel ──────────────────────────────────────────────────────── */}
+      <section className="flex-1 flex flex-col min-w-[280px] max-w-2xl border-r border-white/[0.08] relative">
 
         {/* Header */}
-        <div className="h-14 flex items-center justify-between px-5 border-b border-white/[0.08] bg-white/[0.01] shrink-0">
-          <h2 className="font-semibold text-white/90 text-sm">Semantic Graph Chat</h2>
+        <div className="h-14 flex items-center justify-between px-3 border-b border-white/[0.08] bg-white/[0.01] shrink-0 gap-2">
+          <div className="flex items-center gap-2">
+            {/* Sidebar toggle */}
+            <button
+              onClick={() => setSidebarOpen((v) => !v)}
+              className="hidden md:flex w-7 h-7 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-white/40 hover:text-white/70 items-center justify-center transition-colors"
+              title={sidebarOpen ? "Hide conversations" : "Show conversations"}
+            >
+              <PanelLeft className="w-3.5 h-3.5" />
+            </button>
+            <h2 className="font-semibold text-white/90 text-sm">
+              {currentConvId
+                ? conversations.find((c) => c.id === currentConvId)?.title || "Chat"
+                : "New Chat"}
+            </h2>
+          </div>
+
           {availableDocs.length > 0 && (
             <div className="relative">
               <button onClick={() => setFilterOpen(!filterOpen)}
@@ -369,13 +641,16 @@ export default function ChatPage() {
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
-          {messages.length === 0 ? (
+          {convLoading ? (
+            <div className="h-full flex items-center justify-center">
+              <Loader2 className="w-5 h-5 text-indigo-400 animate-spin" />
+            </div>
+          ) : messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center gap-6">
               <div className="opacity-30 flex flex-col items-center gap-3">
                 <Network className="w-10 h-10 text-indigo-400" />
                 <p className="text-center text-xs uppercase tracking-widest font-medium">Zero-Hallucination<br />Graph Context</p>
               </div>
-              {/* Starter questions */}
               {starterQs.length > 0 && (
                 <div className="w-full max-w-sm space-y-2">
                   <p className="text-xs text-white/30 text-center uppercase tracking-wider mb-3">Try asking</p>
@@ -450,13 +725,13 @@ export default function ChatPage() {
         </div>
       </section>
 
-      {/* ── Right Graph Panel ────────────────────────────────────────────── */}
+      {/* ── Graph Panel ──────────────────────────────────────────────────────── */}
       <section className="hidden md:flex flex-col flex-1 bg-[#050505] relative overflow-hidden">
 
         {/* Graph toolbar */}
-        <div className="h-14 flex items-center gap-2 px-4 border-b border-white/[0.06] bg-[#050505]/80 backdrop-blur-sm z-20 shrink-0">
-          {/* Search */}
-          <div className="flex-1 flex items-center gap-2 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-1.5 max-w-xs">
+        <div className="h-14 flex items-center gap-2 px-4 border-b border-white/[0.06] bg-[#050505]/80 backdrop-blur-sm z-20 shrink-0 flex-wrap">
+          {/* Node search */}
+          <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.07] rounded-lg px-3 py-1.5 max-w-[180px]">
             <Search className="w-3.5 h-3.5 text-white/30 shrink-0" />
             <input
               className="bg-transparent text-xs text-white placeholder-white/30 outline-none flex-1 min-w-0"
@@ -480,8 +755,14 @@ export default function ChatPage() {
             ))}
           </div>
 
-          {/* Divider */}
           <div className="w-px h-5 bg-white/[0.08]" />
+
+          {/* Path finder toggle */}
+          <button onClick={() => { setPathOpen((v) => !v); if (pathOpen) clearPath(); }} title="Find shortest path"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs transition-colors ${pathOpen ? "bg-teal-500/20 text-teal-300 border border-teal-500/30" : "bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] text-white/50 hover:text-white/80"}`}>
+            <GitMerge className="w-3.5 h-3.5" />
+            Path
+          </button>
 
           {/* Stats */}
           <button onClick={handleToggleStats} title="Graph statistics"
@@ -500,6 +781,58 @@ export default function ChatPage() {
           )}
         </div>
 
+        {/* Path finder bar */}
+        <AnimatePresence>
+          {pathOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="border-b border-teal-500/20 bg-teal-900/10 z-10 overflow-hidden shrink-0"
+            >
+              <div className="flex items-center gap-2 px-4 py-2.5">
+                <input
+                  className="flex-1 bg-white/[0.05] border border-white/[0.10] rounded-lg px-3 py-1.5 text-xs text-white placeholder-white/30 outline-none focus:border-teal-500/50"
+                  placeholder="From entity…"
+                  value={pathFrom}
+                  onChange={(e) => setPathFrom(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleFindPath()}
+                />
+                <span className="text-white/20 text-xs shrink-0">→</span>
+                <input
+                  className="flex-1 bg-white/[0.05] border border-white/[0.10] rounded-lg px-3 py-1.5 text-xs text-white placeholder-white/30 outline-none focus:border-teal-500/50"
+                  placeholder="To entity…"
+                  value={pathTo}
+                  onChange={(e) => setPathTo(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleFindPath()}
+                />
+                <button
+                  onClick={handleFindPath}
+                  disabled={!pathFrom.trim() || !pathTo.trim() || pathLoading}
+                  className="px-3 py-1.5 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/30 text-teal-300 text-xs font-medium transition-colors disabled:opacity-40 flex items-center gap-1.5 shrink-0"
+                >
+                  {pathLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <GitMerge className="w-3 h-3" />}
+                  Find
+                </button>
+                {pathNodeIds.size > 0 && (
+                  <button onClick={clearPath} className="text-white/30 hover:text-white/60">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+              {/* Path result status */}
+              {pathNotFound && (
+                <div className="px-4 pb-2 text-[10px] text-red-400/70">No path found between these entities.</div>
+              )}
+              {pathLength !== null && (
+                <div className="px-4 pb-2 text-[10px] text-teal-400/80">
+                  Path found — {pathLength} hop{pathLength !== 1 ? "s" : ""} · {pathNodeIds.size} nodes highlighted
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Search result count */}
         {searchResults.size > 0 && (
           <div className="absolute top-16 left-1/2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/25 text-amber-300 text-xs">
@@ -517,6 +850,7 @@ export default function ChatPage() {
             thinkingPhase={thinkingPhase}
             activeNodeIds={activeNodeIds}
             highlightNodeIds={searchResults.size > 0 ? searchResults : undefined}
+            pathNodeIds={pathNodeIds.size > 0 ? pathNodeIds : undefined}
             hiddenTypes={hiddenTypes.size > 0 ? hiddenTypes : undefined}
             onNodeClick={handleNodeClick}
           />
@@ -541,13 +875,8 @@ export default function ChatPage() {
                 </div>
               ) : stats ? (
                 <div className="p-4 space-y-6 text-xs">
-
-                  {/* Counts */}
                   <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { label: "Entities", value: stats.nodeCount },
-                      { label: "Relations", value: stats.linkCount },
-                    ].map(({ label, value }) => (
+                    {[{ label: "Entities", value: stats.nodeCount }, { label: "Relations", value: stats.linkCount }].map(({ label, value }) => (
                       <div key={label} className="rounded-xl bg-white/[0.04] border border-white/[0.06] p-3">
                         <div className="text-2xl font-bold text-white tabular-nums">{value.toLocaleString()}</div>
                         <div className="text-white/40 mt-0.5">{label}</div>
@@ -555,7 +884,6 @@ export default function ChatPage() {
                     ))}
                   </div>
 
-                  {/* Entity type distribution */}
                   <div>
                     <div className="text-white/40 uppercase tracking-wider mb-2">Entity Types</div>
                     <div className="space-y-1.5">
@@ -579,7 +907,6 @@ export default function ChatPage() {
                     </div>
                   </div>
 
-                  {/* Top entities */}
                   <div>
                     <div className="text-white/40 uppercase tracking-wider mb-2">Top Entities by Degree</div>
                     <div className="space-y-1.5">
@@ -596,7 +923,6 @@ export default function ChatPage() {
                     </div>
                   </div>
 
-                  {/* Top relation types */}
                   <div>
                     <div className="text-white/40 uppercase tracking-wider mb-2">Common Relations</div>
                     <div className="space-y-1">
@@ -609,7 +935,6 @@ export default function ChatPage() {
                     </div>
                   </div>
 
-                  {/* Document contributions */}
                   <div>
                     <div className="text-white/40 uppercase tracking-wider mb-2">Relations per Document</div>
                     <div className="space-y-1">
@@ -651,10 +976,17 @@ export default function ChatPage() {
                       <p className="text-xs text-white/40 mt-0.5">{nodeDetail.node.degree} connections</p>
                     </div>
                     <div className="flex gap-1 shrink-0">
-                      <button onClick={() => handleSend(`Tell me about ${nodeDetail.node.name}`)}
-                        title="Ask about this entity"
+                      <button onClick={() => handleSend(`Tell me about ${nodeDetail.node.name}`)} title="Ask about this entity"
                         className="w-7 h-7 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 flex items-center justify-center transition-colors">
                         <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
+                      {/* Pre-fill path finder with this node */}
+                      <button
+                        onClick={() => { setPathOpen(true); setPathFrom(nodeDetail.node.name); }}
+                        title="Find path from this node"
+                        className="w-7 h-7 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 flex items-center justify-center transition-colors"
+                      >
+                        <GitMerge className="w-3 h-3" />
                       </button>
                       <button onClick={() => setNodeDetail(null)} className="text-white/30 hover:text-white/70 w-7 h-7 flex items-center justify-center">
                         <X className="w-4 h-4" />
@@ -663,29 +995,22 @@ export default function ChatPage() {
                   </div>
 
                   <div className="p-4 space-y-5 text-xs flex-1">
-                    {/* Source docs */}
                     {nodeDetail.sourceDocs.length > 0 && (
                       <div>
                         <div className="text-white/35 uppercase tracking-wider mb-2">Source Documents</div>
                         <div className="space-y-1">
                           {nodeDetail.sourceDocs.map((doc) => (
-                            <div key={doc} className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.05] text-white/60 text-[10px] truncate">
-                              {doc}
-                            </div>
+                            <div key={doc} className="px-3 py-1.5 rounded-lg bg-white/[0.04] border border-white/[0.05] text-white/60 text-[10px] truncate">{doc}</div>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* Relationships */}
                     <div>
-                      <div className="text-white/35 uppercase tracking-wider mb-2">
-                        Relationships ({nodeDetail.relationships.length})
-                      </div>
+                      <div className="text-white/35 uppercase tracking-wider mb-2">Relationships ({nodeDetail.relationships.length})</div>
                       <div className="space-y-1.5">
                         {nodeDetail.relationships.map((r, idx) => (
-                          <button key={idx}
-                            onClick={() => handleNodeClick({ id: r.other })}
+                          <button key={idx} onClick={() => handleNodeClick({ id: r.other })}
                             className="w-full text-left px-3 py-2 rounded-lg bg-white/[0.03] hover:bg-white/[0.07] transition-colors group">
                             <div className="flex items-center gap-1.5 text-white/30 text-[10px] mb-1">
                               {r.isOutgoing ? (

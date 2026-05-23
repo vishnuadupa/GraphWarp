@@ -49,6 +49,8 @@ interface Props {
   thinkingPhase?: ThinkingPhase;
   activeNodeIds?: Set<string>;
   highlightNodeIds?: Set<string>;   // search result highlights
+  pathNodeIds?: Set<string>;        // path finder node highlights (gold)
+  pathLinkIds?: Set<string>;        // path finder link highlights
   hiddenTypes?: Set<string>;        // entity types to hide
   onNodeClick?: (node: any) => void;
   onNodeHover?: (node: any | null) => void;
@@ -59,6 +61,8 @@ export function ForceGraph({
   thinkingPhase,
   activeNodeIds,
   highlightNodeIds,
+  pathNodeIds,
+  pathLinkIds,
   hiddenTypes,
   onNodeClick,
   onNodeHover,
@@ -71,10 +75,14 @@ export function ForceGraph({
   const phaseRef       = useRef<ThinkingPhase>(null);
   const activeRef      = useRef<Set<string>>(new Set());
   const highlightRef   = useRef<Set<string>>(new Set());
+  const pathNodeRef    = useRef<Set<string>>(new Set());
+  const pathLinkRef    = useRef<Set<string>>(new Set());
 
   useEffect(() => { phaseRef.current     = thinkingPhase ?? null; },   [thinkingPhase]);
   useEffect(() => { activeRef.current    = activeNodeIds ?? new Set(); }, [activeNodeIds]);
   useEffect(() => { highlightRef.current = highlightNodeIds ?? new Set(); }, [highlightNodeIds]);
+  useEffect(() => { pathNodeRef.current  = pathNodeIds ?? new Set(); }, [pathNodeIds]);
+  useEffect(() => { pathLinkRef.current  = pathLinkIds ?? new Set(); }, [pathLinkIds]);
 
   // Resume animation when thinking starts
   useEffect(() => {
@@ -87,6 +95,13 @@ export function ForceGraph({
       fgRef.current?.resumeAnimation?.();
     }
   }, [highlightNodeIds]);
+
+  // Resume when path highlights appear
+  useEffect(() => {
+    if (pathNodeIds && pathNodeIds.size > 0) {
+      fgRef.current?.resumeAnimation?.();
+    }
+  }, [pathNodeIds]);
 
   // RAF clock
   useEffect(() => {
@@ -128,7 +143,9 @@ export function ForceGraph({
       const phase = phaseRef.current;
       const isActive    = activeRef.current.has(n.id);
       const isHighlight = highlightRef.current.size > 0 && highlightRef.current.has(n.id);
-      const isDimmed    = highlightRef.current.size > 0 && !highlightRef.current.has(n.id);
+      const isOnPath    = pathNodeRef.current.has(n.id);
+      const isDimmed    = (highlightRef.current.size > 0 && !highlightRef.current.has(n.id)) ||
+                          (pathNodeRef.current.size > 0 && !isOnPath);
       const t = animTimeRef.current;
 
       // Phase animations
@@ -161,21 +178,35 @@ export function ForceGraph({
         ctx.strokeStyle = `rgba(251,191,36,${pulse})`; ctx.lineWidth = 2 / globalScale; ctx.stroke();
       }
 
+      // Path finder halo (teal/cyan)
+      if (isOnPath) {
+        const pulse = 0.5 + 0.5 * Math.sin(t * 3);
+        ctx.beginPath(); ctx.arc(x, y, r + 8, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(20,184,166,${0.5 + pulse * 0.4})`;
+        ctx.lineWidth = 2.5 / globalScale; ctx.stroke();
+        const grd = ctx.createRadialGradient(x, y, r, x, y, r + 14);
+        grd.addColorStop(0, "rgba(20,184,166,0.25)"); grd.addColorStop(1, "rgba(20,184,166,0)");
+        ctx.beginPath(); ctx.arc(x, y, r + 14, 0, Math.PI * 2); ctx.fillStyle = grd; ctx.fill();
+      }
+
       // Node fill
-      ctx.globalAlpha = isDimmed ? 0.2 : 1;
+      ctx.globalAlpha = isDimmed ? 0.15 : 1;
       ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-      if ((isActive && phase) || isHighlight) { ctx.shadowColor = isHighlight ? "#fbbf24" : color; ctx.shadowBlur = 10; }
+      if ((isActive && phase) || isHighlight || isOnPath) {
+        ctx.shadowColor = isOnPath ? "#14b8a6" : isHighlight ? "#fbbf24" : color;
+        ctx.shadowBlur = 10;
+      }
       ctx.fillStyle = color; ctx.fill(); ctx.shadowBlur = 0;
 
       // Border
       ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.strokeStyle = isHighlight ? "rgba(251,191,36,0.9)" : isActive && phase ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.18)";
-      ctx.lineWidth = (isHighlight || (isActive && phase) ? 1.5 : 0.6) / globalScale; ctx.stroke();
+      ctx.strokeStyle = isOnPath ? "rgba(20,184,166,0.95)" : isHighlight ? "rgba(251,191,36,0.9)" : isActive && phase ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.18)";
+      ctx.lineWidth = (isOnPath || isHighlight || (isActive && phase) ? 1.5 : 0.6) / globalScale; ctx.stroke();
 
       // Label
       const fontSize = Math.max(9 / globalScale, 2);
-      ctx.font = `${fontSize}px "Geist", system-ui, sans-serif`;
-      ctx.fillStyle = isHighlight ? "rgba(251,191,36,0.95)" : isActive && phase ? "rgba(255,255,255,0.95)" : isDimmed ? "rgba(200,200,225,0.25)" : "rgba(200,200,225,0.65)";
+      ctx.font = `${isOnPath ? "bold " : ""}${fontSize}px "Geist", system-ui, sans-serif`;
+      ctx.fillStyle = isOnPath ? "rgba(20,184,166,0.95)" : isHighlight ? "rgba(251,191,36,0.95)" : isActive && phase ? "rgba(255,255,255,0.95)" : isDimmed ? "rgba(200,200,225,0.12)" : "rgba(200,200,225,0.65)";
       ctx.textAlign = "center"; ctx.textBaseline = "top";
       ctx.fillText(n.name ?? "", x, y + r + 2 / globalScale);
       ctx.globalAlpha = 1;
@@ -269,6 +300,12 @@ export function ForceGraph({
             const sId = typeof link.source === "object" ? link.source.id : link.source;
             const tId = typeof link.target === "object" ? link.target.id : link.target;
             const phase = phaseRef.current;
+            // Path finder links take top priority
+            if (pathLinkRef.current.size > 0) {
+              const lid = link.__pathId ?? `${sId}-${tId}`;
+              if (pathLinkRef.current.has(sId) && pathLinkRef.current.has(tId)) return "rgba(20,184,166,0.85)";
+              return "rgba(255,255,255,0.03)";
+            }
             if (phase && activeRef.current.has(sId) && activeRef.current.has(tId)) {
               return phase === "answering" ? "rgba(52,211,153,0.55)" : "rgba(99,102,241,0.55)";
             }
@@ -278,7 +315,12 @@ export function ForceGraph({
             if (highlightRef.current.size > 0) return "rgba(255,255,255,0.03)";
             return "rgba(255,255,255,0.07)";
           }}
-          linkWidth={(link: any) => Math.max(0.5, Math.min(4, ((link as GraphLink).weight ?? 1) * 0.8))}
+          linkWidth={(link: any) => {
+            const sId = typeof link.source === "object" ? link.source.id : link.source;
+            const tId = typeof link.target === "object" ? link.target.id : link.target;
+            if (pathLinkRef.current.size > 0 && pathLinkRef.current.has(sId) && pathLinkRef.current.has(tId)) return 2.5;
+            return Math.max(0.5, Math.min(4, ((link as GraphLink).weight ?? 1) * 0.8));
+          }}
           linkDirectionalArrowLength={3}
           linkDirectionalArrowRelPos={1}
           linkLabel="label"
