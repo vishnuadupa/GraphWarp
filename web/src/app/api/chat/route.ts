@@ -64,130 +64,118 @@ export async function POST(req: NextRequest) {
       Question: ${question}
     `;
 
-    const extractResult = await withRetry(() => extractModel.generateContent(extractPrompt));
-    const extractText = extractResult.response.text();
-    
+    const result = await withRetry(() => extractModel.generateContent(extractPrompt));
     let entities: string[] = [];
     try {
-      entities = JSON.parse(extractText);
+      const responseText = result.response.text();
+      const jsonMatch = responseText.match(/\[.*\]/);
+      entities = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(responseText);
     } catch (e) {
-      console.warn('Failed to parse entities:', extractText);
-      entities = [];
+      console.warn('Failed to parse entities, falling back to empty list.');
     }
 
-    // 2. Query Neo4j for the Subgraph
+    if (!Array.isArray(entities) || entities.length === 0) {
+      // Fallback: use the raw question if extraction failed
+      entities = [question];
+    }
+
+    // 2. Embed the extracted entities
+    const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+    const embeddedEntities = await Promise.all(
+      entities.map(async (entity) => {
+        try {
+          const res = await embedModel.embedContent(entity);
+          return res.embedding.values;
+        } catch (e) {
+          console.warn(`Failed to embed search term: ${entity}`);
+          return null;
+        }
+      })
+    );
+
+    const validEmbeddings = embeddedEntities.filter(e => e !== null);
+
+    // 3. Query Neo4j using Vector Search for Semantic Entity Resolution
+    let subgraphData = '';
+    const session = driver.session();
     let nodes: any[] = [];
     let links: any[] = [];
-    let subgraphData = '';
+    try {
+      if (validEmbeddings.length > 0) {
+        subgraphData = await session.executeRead(async (tx) => {
+          let allGraphText = '';
+          const nodeMap = new Map();
+          const linkMap = new Map();
+          const pathStrings = new Set<string>();
 
-    if (entities.length > 0) {
-      const session = driver.session();
-      try {
-        const result = await session.executeRead(async (tx) => {
-          return tx.run(
-            `
-            MATCH (n:Entity)-[r:RELATION]-(m:Entity)
-            WHERE n.user_id = $userId AND toLower(n.name) IN [e IN $entities | toLower(e)]
-            AND m.user_id = $userId
-            ${selectedDocs.length > 0 ? "AND r.source_file IN $selectedDocs" : ""}
-            RETURN n, r, m
-            LIMIT 100
-            `,
-            { userId: user.id, entities, selectedDocs }
-          );
-        });
-
-        const nodeMap = new Map();
-        const linkMap = new Map();
-        const pathStrings = new Set();
-
-        result.records.forEach((record) => {
-          const n = record.get('n');
-          const r = record.get('r');
-          const m = record.get('m');
-
-          const nName = n.properties.name;
-          const mName = m.properties.name;
-          const rType = r.properties.type;
-          const sourceFile = r.properties.source_file || 'Unknown Source';
-
-          if (!nodeMap.has(nName)) nodeMap.set(nName, { id: nName, name: nName });
-          if (!nodeMap.has(mName)) nodeMap.set(mName, { id: mName, name: mName });
-
-          const linkId = `${r.identity.toNumber()}`;
-          if (!linkMap.has(linkId)) {
-            links.push({
-              source: r.start.toNumber() === n.identity.toNumber() ? nName : mName,
-              target: r.start.toNumber() === n.identity.toNumber() ? mName : nName,
-              label: rType,
-            });
-            linkMap.set(linkId, true);
-          }
-
-          const sourceName = r.start.toNumber() === n.identity.toNumber() ? nName : mName;
-          const targetName = r.start.toNumber() === n.identity.toNumber() ? mName : nName;
-          pathStrings.add(`[Source File: ${sourceFile}] ${sourceName} -[${rType}]-> ${targetName}`);
-        });
-
-        nodes = Array.from(nodeMap.values());
-        subgraphData = Array.from(pathStrings).join('\n');
-
-        if (nodes.length === 0) {
-          const fallbackResult = await session.executeRead(async (tx) => {
-            const conditions = entities
-              .map((_: string, i: number) => `toLower(n.name) CONTAINS $e${i}`)
-              .join(' OR ');
-            const params: Record<string, any> = { userId: user.id, selectedDocs };
-            entities.forEach((e: string, i: number) => { params[`e${i}`] = e.toLowerCase(); });
-            return tx.run(
-              `MATCH (n:Entity)-[r:RELATION]-(m:Entity)
-               WHERE n.user_id = $userId AND m.user_id = $userId
-               ${selectedDocs.length > 0 ? "AND r.source_file IN $selectedDocs" : ""}
-               AND (${conditions})
-               RETURN n, r, m LIMIT 100`,
-              params
+          for (const embedding of validEmbeddings) {
+            // Find top 3 closest nodes for each extracted entity and traverse 2 hops
+            const result = await tx.run(
+              `
+              CALL db.index.vector.queryNodes('entity_name_embeddings', 3, $embedding)
+              YIELD node AS startNode, score
+              WHERE startNode.user_id = $userId
+              MATCH (startNode)-[r1:RELATION]-(m:Entity)
+              OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
+              WHERE m.user_id = $userId AND (k IS NULL OR k.user_id = $userId)
+              ${selectedDocs.length > 0 ? "AND r1.source_file IN $selectedDocs" : ""}
+              RETURN startNode, r1, m, r2, k
+              LIMIT 50
+              `,
+              { userId: user.id, embedding, selectedDocs }
             );
-          });
 
-          fallbackResult.records.forEach((record) => {
-            const n = record.get('n');
-            const r = record.get('r');
-            const m = record.get('m');
-            const nName = n.properties.name;
-            const mName = m.properties.name;
-            const rType = r.properties.type;
-            const sourceFile = r.properties.source_file || 'Unknown Source';
-
-            if (!nodeMap.has(nName)) nodeMap.set(nName, { id: nName, name: nName });
-            if (!nodeMap.has(mName)) nodeMap.set(mName, { id: mName, name: mName });
-            const linkId = `${r.identity.toNumber()}`;
-            if (!linkMap.has(linkId)) {
-              const src = r.start.toNumber() === n.identity.toNumber() ? nName : mName;
-              const tgt = r.start.toNumber() === n.identity.toNumber() ? mName : nName;
-              links.push({ source: src, target: tgt, label: rType });
-              linkMap.set(linkId, true);
-              pathStrings.add(`[Source File: ${sourceFile}] ${src} -[${rType}]-> ${tgt}`);
-            }
-          });
-
+            result.records.forEach(record => {
+              const startNode = record.get('startNode').properties.name;
+              const r1 = record.get('r1').properties.type;
+              const r1Source = record.get('r1').properties.source_file;
+              const m = record.get('m').properties.name;
+              
+              if (!nodeMap.has(startNode)) nodeMap.set(startNode, { id: startNode, name: startNode });
+              if (!nodeMap.has(m)) nodeMap.set(m, { id: m, name: m });
+              
+              const linkId1 = record.get('r1').identity.toNumber().toString();
+              if (!linkMap.has(linkId1)) {
+                 const src = record.get('r1').start.toNumber() === record.get('startNode').identity.toNumber() ? startNode : m;
+                 const tgt = record.get('r1').start.toNumber() === record.get('startNode').identity.toNumber() ? m : startNode;
+                 links.push({ source: src, target: tgt, label: r1 });
+                 linkMap.set(linkId1, true);
+              }
+              
+              pathStrings.add(`[Source File: ${r1Source}] ${startNode} --[${r1}]--> ${m}`);
+              
+              if (record.get('r2')) {
+                 const r2 = record.get('r2').properties.type;
+                 const r2Source = record.get('r2').properties.source_file;
+                 const k = record.get('k').properties.name;
+                 
+                 if (!nodeMap.has(k)) nodeMap.set(k, { id: k, name: k });
+                 const linkId2 = record.get('r2').identity.toNumber().toString();
+                 if (!linkMap.has(linkId2)) {
+                    const src2 = record.get('r2').start.toNumber() === record.get('m').identity.toNumber() ? m : k;
+                    const tgt2 = record.get('r2').start.toNumber() === record.get('m').identity.toNumber() ? k : m;
+                    links.push({ source: src2, target: tgt2, label: r2 });
+                    linkMap.set(linkId2, true);
+                 }
+                 pathStrings.add(`[Source File: ${r2Source}] ${m} --[${r2}]--> ${k}`);
+              }
+            });
+          }
+          
           nodes = Array.from(nodeMap.values());
-          subgraphData = Array.from(pathStrings).join('\n');
-        }
-
-      } catch (error) {
-        console.error('Neo4j Query Error:', error);
-      } finally {
-        await session.close();
+          return Array.from(pathStrings).join('\n') + '\n';
+        });
       }
+    } finally {
+      await session.close();
     }
 
-    // 3. Synthesize Answer using SSE Stream
+    // 4. Synthesize Answer using SSE Stream
     const encoder = new TextEncoder();
 
     const stream = new ReadableStream({
       async start(controller) {
         try {
-          // Send graph data first
           const graphPayload = JSON.stringify({
             type: 'graph',
             data: { nodes, links }
@@ -196,8 +184,8 @@ export async function POST(req: NextRequest) {
 
           const synthModel = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
           const synthPrompt = `
-            You are a helpful assistant. Answer the user's question based ONLY on the following knowledge graph context. 
-            If the context doesn't contain the answer, say "I don't have enough information to answer that."
+            You are a strict, factual assistant. Answer the user's question based strictly and ONLY on the following knowledge graph context. 
+            If the context does not explicitly contain the answer, you must say "I don't have enough information to answer that." Do NOT infer outside knowledge.
             IMPORTANT: You MUST cite your sources using the [Source File: filename] annotations provided in the context below.
             
             AT THE VERY END of your response, you MUST output exactly 3 suggested follow-up questions wrapped in a <suggestions> tag as a JSON array of strings. 

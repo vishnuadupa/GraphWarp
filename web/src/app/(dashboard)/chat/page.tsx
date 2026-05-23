@@ -36,6 +36,7 @@ export default function ChatPage() {
       else {
         setReady(true);
         fetchDocuments();
+        fetchFullGraph();
       }
     });
   }, [router]);
@@ -49,6 +50,18 @@ export default function ChatPage() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const fetchFullGraph = async () => {
+    try {
+      const res = await fetch("/api/graph/full");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.graph?.nodes?.length > 0) setGraph(data.graph);
+      }
+    } catch (err) {
+      console.error("Failed to load full graph:", err);
     }
   };
 

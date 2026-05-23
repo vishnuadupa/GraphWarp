@@ -20,6 +20,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing filePath or filename' }, { status: 400 });
     }
 
+    if (!filePath.startsWith(`${user.id}/`)) {
+      return NextResponse.json({ error: 'Forbidden: Invalid storage path' }, { status: 403 });
+    }
+
     const { data: document, error: insertError } = await supabase
       .from('documents')
       .insert({

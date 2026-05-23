@@ -53,10 +53,20 @@ export function GlobalDropzone({ children }: { children: ReactNode }) {
       return;
     }
 
+    const validFiles = files.filter(f => {
+      if (f.size > 1 * 1024 * 1024) {
+        alert(`File ${f.name} exceeds the 1MB limit.`);
+        return false;
+      }
+      return true;
+    });
+
+    if (validFiles.length === 0) return;
+
     setIsUploading(true);
 
     try {
-      for (const file of files) {
+      for (const file of validFiles) {
         const path = `\${user.id}/\${Date.now()}-\${file.name}`;
         
         const { error: uploadError } = await supabase.storage

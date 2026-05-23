@@ -84,17 +84,44 @@ export const processDocument = inngest.createFunction(
       }
     });
 
-    // 3. Connect to Neo4j and MERGE Nodes and Edges with Source Citations
+    // 3. Connect to Neo4j and MERGE Nodes and Edges with Source Citations & Embeddings
     await step.run("save-to-neo4j", async () => {
       if (!extractedData || extractedData.length === 0) return { inserted: 0 };
       
+      const uniqueEntities = Array.from(new Set(extractedData.flatMap((d: any) => [d.source, d.target])));
+      
+      // Generate embeddings
+      const embedModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
+      const entityEmbeddings: Record<string, number[]> = {};
+      
+      // Process sequentially to respect rate limits
+      for (const entity of uniqueEntities) {
+        try {
+          const res = await embedModel.embedContent(entity);
+          entityEmbeddings[entity] = res.embedding.values;
+        } catch (e) {
+          console.warn(`Failed to embed entity ${entity}`, e);
+        }
+      }
+
       const session = driver.session();
       try {
         await session.executeWrite(async (tx) => {
+          // Ensure vector index exists
+          await tx.run(`CREATE VECTOR INDEX entity_name_embeddings IF NOT EXISTS FOR (e:Entity) ON (e.embedding) OPTIONS {indexConfig: { \`vector.dimensions\`: 768, \`vector.similarity_function\`: 'cosine' }}`);
+          // Enforce uniqueness
+          await tx.run(`CREATE CONSTRAINT entity_user_unique IF NOT EXISTS FOR (e:Entity) REQUIRE (e.name, e.user_id) IS NODE KEY`);
+          
           for (const item of extractedData) {
             const query = `
               MERGE (s:Entity {name: $source, user_id: $userId})
+              ON CREATE SET s.embedding = $sourceEmbedding
+              ON MATCH SET s.embedding = coalesce(s.embedding, $sourceEmbedding)
+              
               MERGE (t:Entity {name: $target, user_id: $userId})
+              ON CREATE SET t.embedding = $targetEmbedding
+              ON MATCH SET t.embedding = coalesce(t.embedding, $targetEmbedding)
+              
               MERGE (s)-[r:RELATION {type: $relation, user_id: $userId, source_file: $filename}]->(t)
             `;
             await tx.run(query, {
@@ -102,7 +129,9 @@ export const processDocument = inngest.createFunction(
               target: item.target,
               relation: item.relation,
               userId: userId,
-              filename: filename || 'Unknown Source'
+              filename: filename || 'Unknown Source',
+              sourceEmbedding: entityEmbeddings[item.source] || null,
+              targetEmbedding: entityEmbeddings[item.target] || null
             });
           }
         });

@@ -8,6 +8,7 @@ interface UploadDropzoneProps {
 }
 
 const ACCEPTED_TYPES = [".pdf", ".docx", ".txt", ".md", ".csv"];
+const MAX_FILE_SIZE = 1 * 1024 * 1024; // 1MB
 
 export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -17,8 +18,16 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
     (files: FileList | null) => {
       if (!files) return;
       const arr = Array.from(files);
-      setQueued((prev) => [...prev, ...arr]);
-      onFilesSelected?.(arr);
+      const validFiles = arr.filter(f => {
+        if (f.size > MAX_FILE_SIZE) {
+          alert(`File ${f.name} exceeds the 1MB limit.`);
+          return false;
+        }
+        return true;
+      });
+      if (validFiles.length === 0) return;
+      setQueued((prev) => [...prev, ...validFiles]);
+      onFilesSelected?.(validFiles);
     },
     [onFilesSelected]
   );
@@ -106,7 +115,7 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
             </span>
           </p>
           <p className="text-xs text-white/25 pt-1">
-            {ACCEPTED_TYPES.join("  ·  ")}
+            {ACCEPTED_TYPES.join("  ·  ")} (Max 1MB)
           </p>
         </div>
 
