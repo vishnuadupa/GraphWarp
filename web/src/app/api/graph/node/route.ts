@@ -20,30 +20,29 @@ export async function POST(req: NextRequest) {
 
     const session = driver.session();
     try {
-      const [nodeRes, relRes] = await Promise.all([
-        session.executeRead((tx) =>
-          tx.run(
-            `MATCH (n:Entity {name: $nodeId, user_id: $uid})
-             WITH n, COUNT { (n)-[:RELATION]-() } AS degree
-             RETURN n.name AS name, n.type AS type, degree`,
-            { nodeId, uid: user.id }
-          )
-        ),
-        session.executeRead((tx) =>
-          tx.run(
-            `MATCH (n:Entity {name: $nodeId, user_id: $uid})-[r:RELATION]-(m:Entity {user_id: $uid})
-             RETURN
-               r.type        AS relType,
-               m.name        AS other,
-               m.type        AS otherType,
-               r.source_file AS sourceFile,
-               r.weight      AS weight,
-               startNode(r) = n AS isOutgoing
-             ORDER BY r.weight DESC, relType`,
-            { nodeId, uid: user.id }
-          )
-        ),
-      ]);
+      // Run sequentially — Neo4j sessions don't support concurrent transactions
+      const nodeRes = await session.executeRead((tx) =>
+        tx.run(
+          `MATCH (n:Entity {name: $nodeId, user_id: $uid})
+           WITH n, COUNT { (n)-[:RELATION]-() } AS degree
+           RETURN n.name AS name, n.type AS type, degree`,
+          { nodeId, uid: user.id }
+        )
+      );
+      const relRes = await session.executeRead((tx) =>
+        tx.run(
+          `MATCH (n:Entity {name: $nodeId, user_id: $uid})-[r:RELATION]-(m:Entity {user_id: $uid})
+           RETURN
+             r.type        AS relType,
+             m.name        AS other,
+             m.type        AS otherType,
+             r.source_file AS sourceFile,
+             r.weight      AS weight,
+             startNode(r) = n AS isOutgoing
+           ORDER BY r.weight DESC, relType`,
+          { nodeId, uid: user.id }
+        )
+      );
 
       if (nodeRes.records.length === 0) {
         return NextResponse.json({ error: 'Node not found' }, { status: 404 });
