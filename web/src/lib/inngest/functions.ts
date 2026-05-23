@@ -188,15 +188,18 @@ async function setStep(documentId: string, step: string | null) {
   await supabaseAdmin.from('documents').update({ processing_step: step }).eq('id', documentId);
 }
 
-// ── Gemini extraction prompt ───────────────────────────────────────────────────
+const VALID_ENTITY_TYPES = new Set(['Person', 'Organization', 'Location', 'Event', 'Concept', 'Technology', 'Entity']);
+
+// ── Extraction prompt ──────────────────────────────────────────────────────────
 const EXTRACT_PROMPT = `Analyze the following document and extract all key entities and their relationships.
 Output a JSON array of objects. Each object MUST have exactly these string properties:
-  - "source": the source entity name (concise, capitalized)
-  - "source_type": one of [Person, Organization, Location, Event, Concept, Technology, Entity]
-  - "relation": the relationship verb/phrase
-  - "target": the target entity name (concise, capitalized)
-  - "target_type": one of [Person, Organization, Location, Event, Concept, Technology, Entity]
-Keep entity names concise and consistent. Extract as many meaningful relationships as possible.`;
+  - "source": entity name, 2–100 characters, no leading/trailing spaces, capitalized (e.g. "Alice Smith", "Apple Inc")
+  - "source_type": MUST be one of exactly: Person, Organization, Location, Event, Concept, Technology, Entity
+  - "relation": relationship phrase, 2–50 characters, lowercase (e.g. "works at", "founded", "located in")
+  - "target": entity name, same rules as source
+  - "target_type": MUST be one of exactly: Person, Organization, Location, Event, Concept, Technology, Entity
+Rules: source and target must be different. No empty strings, no pure numbers, no punctuation-only names.
+Extract as many meaningful relationships as possible.`;
 
 // ── Main Inngest function ──────────────────────────────────────────────────────
 export const processDocument = inngest.createFunction(
@@ -281,14 +284,21 @@ export const processDocument = inngest.createFunction(
 
           return Array.isArray(parsed)
             ? parsed
-                .filter((item: any) => item.source && item.relation && item.target)
                 .map((item: any) => ({
-                  source:      String(item.source).trim(),
-                  source_type: String(item.source_type || 'Entity').trim(),
-                  relation:    String(item.relation).trim(),
-                  target:      String(item.target).trim(),
-                  target_type: String(item.target_type || 'Entity').trim(),
+                  source:      String(item.source ?? '').trim(),
+                  source_type: VALID_ENTITY_TYPES.has(String(item.source_type ?? '').trim()) ? String(item.source_type).trim() : 'Entity',
+                  relation:    String(item.relation ?? '').trim().toLowerCase(),
+                  target:      String(item.target ?? '').trim(),
+                  target_type: VALID_ENTITY_TYPES.has(String(item.target_type ?? '').trim()) ? String(item.target_type).trim() : 'Entity',
                 }))
+                .filter((item: any) =>
+                  item.source.length >= 2 &&
+                  item.target.length >= 2 &&
+                  item.relation.length >= 2 &&
+                  item.source !== item.target &&
+                  !/^\d+$/.test(item.source) &&  // reject pure numbers
+                  !/^\d+$/.test(item.target)
+                )
             : [];
         } catch (err: any) {
           throw new Error(`Qwen extraction failed: ${err.message}`);
@@ -303,12 +313,20 @@ export const processDocument = inngest.createFunction(
         if (!extractedData.length) return { inserted: 0 };
         const session = driver.session();
         try {
-          await session.run(
-            "CREATE VECTOR INDEX entity_name_embeddings IF NOT EXISTS FOR (e:Entity) ON (e.embedding) OPTIONS {indexConfig: { `vector.dimensions`: 768, `vector.similarity_function`: 'cosine' }}"
-          );
-          await session.run(
-            'CREATE CONSTRAINT entity_user_unique IF NOT EXISTS FOR (e:Entity) REQUIRE (e.name, e.user_id) IS NODE KEY'
-          );
+          try {
+            await session.run(
+              "CREATE VECTOR INDEX entity_name_embeddings IF NOT EXISTS FOR (e:Entity) ON (e.embedding) OPTIONS {indexConfig: { `vector.dimensions`: 768, `vector.similarity_function`: 'cosine' }}"
+            );
+          } catch (idxErr: any) {
+            console.warn('[ingest] Vector index creation skipped (may be unsupported):', idxErr?.message);
+          }
+          try {
+            await session.run(
+              'CREATE CONSTRAINT entity_user_unique IF NOT EXISTS FOR (e:Entity) REQUIRE (e.name, e.user_id) IS NODE KEY'
+            );
+          } catch (conErr: any) {
+            console.warn('[ingest] Constraint creation skipped:', conErr?.message);
+          }
           await session.executeWrite(async (tx) => {
             const queries = extractedData.map((item) =>
               tx.run(
@@ -347,55 +365,11 @@ export const processDocument = inngest.createFunction(
         }).eq('id', documentId);
       });
 
-      // 5. Embeddings — optional, only for unstructured files (PDF/DOCX/image/text).
-      //    CSV and JSON are structured data parsed directly — no Gemini anywhere in their pipeline.
+      // 5. Embeddings — no embedding provider configured (OpenRouter has no /embeddings endpoint).
+      //    Chat uses exact match + substring search which works without embeddings.
+      //    Using fileData.ext (not a local `ext` variable) to avoid closure capture bug.
       await step.run('generate-embeddings', async () => {
-        if (!extractedData.length) return { embedded: 0 };
-        if (['csv', 'json'].includes(ext)) return { embedded: 0, skipped: 'structured file' };
-        try {
-          const entityMap: Record<string, string> = {};
-          for (const d of extractedData) {
-            if (!entityMap[d.source]) entityMap[d.source] = d.source_type;
-            if (!entityMap[d.target]) entityMap[d.target] = d.target_type;
-          }
-
-          // Embeddings skipped — OpenRouter has no /embeddings endpoint and we have no separate key.
-          // Vector search in chat gracefully falls back to exact + substring match which works well.
-          const embeddingsData: Record<string, number[]> = {};
-
-          // Write embeddings back to Neo4j nodes
-          if (Object.keys(embeddingsData).length) {
-            const session = driver.session();
-            try {
-              await session.executeWrite(async (tx) => {
-                const queries = Object.entries(embeddingsData).map(([name, embedding]) =>
-                  tx.run(
-                    `MATCH (e:Entity {name: $name, user_id: $userId}) SET e.embedding = $embedding`,
-                    { name, userId, embedding }
-                  )
-                );
-                await Promise.all(queries);
-              });
-            } finally {
-              await session.close();
-            }
-          }
-
-          // Save to pgvector
-          const pgInserts = Object.entries(embeddingsData).map(([entity, embedding]) => ({
-            document_id: documentId, user_id: userId, content: entity, embedding,
-          }));
-          if (pgInserts.length) {
-            const { error } = await supabaseAdmin.from('document_embeddings').insert(pgInserts);
-            if (error) console.error(`[ingest] pgvector insert error:`, error.message);
-          }
-
-          return { embedded: Object.keys(embeddingsData).length };
-        } catch (err: any) {
-          // Embeddings are optional — log and move on
-          console.warn(`[ingest] Embedding step failed (non-fatal):`, err?.message);
-          return { embedded: 0, skipped: true };
-        }
+        return { embedded: 0, status: 'skipped — no embedding provider configured' };
       });
 
       return { success: true, relationsExtracted: extractedData.length };

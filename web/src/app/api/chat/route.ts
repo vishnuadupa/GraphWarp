@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
     const question: string      = body.message ?? body.question;
@@ -119,8 +119,9 @@ export async function POST(req: NextRequest) {
 
                   const sDeg = record.get('sDeg')?.toNumber?.() ?? 1;
                   const mDeg = record.get('mDeg')?.toNumber?.() ?? 1;
-                  const sName = sNode.properties.name;
-                  const mName = mNode.properties.name;
+                  const sName = (sNode.properties.name ?? '').trim();
+                  const mName = (mNode.properties.name ?? '').trim();
+                  if (!sName || !mName) return; // skip nodes with empty/null names
                   const r1Type = r1.properties.type;
                   const r1Src = r1.properties.source_file;
                   const r1SrcValid = r1Src && r1Src !== 'Unknown' && r1Src !== 'Unknown Source';
@@ -142,8 +143,8 @@ export async function POST(req: NextRequest) {
                   const r2 = record.get('r2');
                   if (r2) {
                     const kNode = record.get('k');
-                    // Skip k if it loops back to the start node (prevents circular path strings)
-                    if (kNode && kNode.identity.toNumber() !== sNode.identity.toNumber()) {
+                    // Skip k if it loops back to start node or is the same as m (prevents circular/self-loop path strings)
+                    if (kNode && kNode.identity.toNumber() !== sNode.identity.toNumber() && kNode.identity.toNumber() !== mNode.identity.toNumber()) {
                       const r2Type = r2.properties.type;
                       const r2Src = r2.properties.source_file;
                       const r2SrcValid = r2Src && r2Src !== 'Unknown' && r2Src !== 'Unknown Source';
@@ -273,9 +274,43 @@ AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q
               stream: true,
             })
           );
+
+          // Buffer the full response so we can extract the <suggestions> tag cleanly.
+          // Streaming partial tags would break client-side parsing.
+          let fullText = '';
+          let suggestionBuffer = ''; // accumulates once we see <suggestions>
+          let inSuggestions = false;
+
           for await (const chunk of synthStream) {
             const text = chunk.choices[0]?.delta?.content || '';
-            if (text) send({ type: 'text', data: text });
+            if (!text) continue;
+            fullText += text;
+
+            if (inSuggestions) {
+              suggestionBuffer += text;
+            } else {
+              // Check if this chunk starts or crosses into <suggestions>
+              const combined = suggestionBuffer + text;
+              const tagStart = combined.indexOf('<suggestions>');
+              if (tagStart !== -1) {
+                // Send everything before the tag
+                const before = combined.slice(0, tagStart);
+                if (before) send({ type: 'text', data: before });
+                suggestionBuffer = combined.slice(tagStart);
+                inSuggestions = true;
+              } else {
+                send({ type: 'text', data: text });
+              }
+            }
+          }
+
+          // Extract and send suggestions after stream completes
+          const sugMatch = fullText.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
+          if (sugMatch) {
+            try {
+              const suggestions = JSON.parse(sugMatch[1].trim());
+              send({ type: 'suggestions', data: suggestions });
+            } catch { /* malformed suggestions — skip */ }
           }
 
           send({ type: 'phase', data: null });
