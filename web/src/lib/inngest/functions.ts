@@ -332,9 +332,11 @@ export const processDocument = inngest.createFunction(
         }).eq('id', documentId);
       });
 
-      // 5. Embeddings — optional, runs after graph is visible, failure does NOT fail the function
+      // 5. Embeddings — optional, only for unstructured files (PDF/DOCX/image/text).
+      //    CSV and JSON are structured data parsed directly — no Gemini anywhere in their pipeline.
       await step.run('generate-embeddings', async () => {
         if (!extractedData.length) return { embedded: 0 };
+        if (['csv', 'json'].includes(ext)) return { embedded: 0, skipped: 'structured file' };
         try {
           const entityMap: Record<string, string> = {};
           for (const d of extractedData) {
