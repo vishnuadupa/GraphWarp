@@ -33,7 +33,10 @@
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
       "Bash(node -e \"require\\('framer-motion'\\)\")",
-      "Bash(node -e \"require\\('lucide-react'\\)\")"
+      "Bash(node -e \"require\\('lucide-react'\\)\")",
+      "Bash(python fix_escapes.py)",
+      "Bash(npx tsc *)",
+      "Bash(cd /mnt/d/Graph/web && npx tsc --noEmit 2>&1 | head -60)"
     ]
   }
 }
