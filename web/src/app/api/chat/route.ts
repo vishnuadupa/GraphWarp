@@ -131,17 +131,19 @@ export async function POST(req: NextRequest) {
                   if (!nodeMap.has(mName)) nodeMap.set(mName, { id: mName, name: mName, type: mNode.properties.type ?? 'Entity', degree: mDeg });
 
                   const lid1 = r1.identity.toNumber().toString();
+                  const fwd = r1.start.toNumber() === sNode.identity.toNumber();
                   if (!linkMap.has(lid1)) {
-                    const fwd = r1.start.toNumber() === sNode.identity.toNumber();
                     links.push({ source: fwd ? sName : mName, target: fwd ? mName : sName, label: r1Type, weight: r1W });
                     linkMap.set(lid1, true);
                   }
-                  pathStrings.add(`${r1Prefix}${sName} --[${r1Type}]--> ${mName}`);
+                  // Use actual relationship direction in path string
+                  pathStrings.add(`${r1Prefix}${fwd ? sName : mName} --[${r1Type}]--> ${fwd ? mName : sName}`);
 
                   const r2 = record.get('r2');
                   if (r2) {
                     const kNode = record.get('k');
-                    if (kNode) {
+                    // Skip k if it loops back to the start node (prevents circular path strings)
+                    if (kNode && kNode.identity.toNumber() !== sNode.identity.toNumber()) {
                       const r2Type = r2.properties.type;
                       const r2Src = r2.properties.source_file;
                       const r2SrcValid = r2Src && r2Src !== 'Unknown' && r2Src !== 'Unknown Source';
@@ -150,12 +152,13 @@ export async function POST(req: NextRequest) {
                       const kName = kNode.properties.name;
                       if (!nodeMap.has(kName)) nodeMap.set(kName, { id: kName, name: kName, type: kNode.properties.type ?? 'Entity', degree: 1 });
                       const lid2 = r2.identity.toNumber().toString();
+                      const fwd2 = r2.start.toNumber() === mNode.identity.toNumber();
                       if (!linkMap.has(lid2)) {
-                        const fwd2 = r2.start.toNumber() === mNode.identity.toNumber();
                         links.push({ source: fwd2 ? mName : kName, target: fwd2 ? kName : mName, label: r2Type, weight: r2W });
                         linkMap.set(lid2, true);
                       }
-                      pathStrings.add(`${r2Prefix}${mName} --[${r2Type}]--> ${kName}`);
+                      // Use actual relationship direction in path string
+                      pathStrings.add(`${r2Prefix}${fwd2 ? mName : kName} --[${r2Type}]--> ${fwd2 ? kName : mName}`);
                     }
                   }
                 });
@@ -168,7 +171,7 @@ export async function POST(req: NextRequest) {
                    WHERE startNode.user_id = $uid AND toLower(startNode.name) IN $lowerEntities
                    MATCH (startNode)-[r1:RELATION]-(m:Entity)
                    OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                   WHERE m.user_id = $uid AND (k IS NULL OR k.user_id = $uid)
+                   WHERE m.user_id = $uid AND (k IS NULL OR (k.user_id = $uid AND k <> startNode))
                    ${docFilter}
                    WITH startNode, r1, m, r2, k,
                         COUNT { (startNode)-[:RELATION]-() } AS sDeg,
@@ -188,7 +191,7 @@ export async function POST(req: NextRequest) {
                    WHERE startNode.user_id = $uid AND any(entity IN $lowerEntities WHERE toLower(startNode.name) CONTAINS entity OR entity CONTAINS toLower(startNode.name))
                    MATCH (startNode)-[r1:RELATION]-(m:Entity)
                    OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                   WHERE m.user_id = $uid AND (k IS NULL OR k.user_id = $uid)
+                   WHERE m.user_id = $uid AND (k IS NULL OR (k.user_id = $uid AND k <> startNode))
                    ${docFilter}
                    WITH startNode, r1, m, r2, k,
                         COUNT { (startNode)-[:RELATION]-() } AS sDeg,
