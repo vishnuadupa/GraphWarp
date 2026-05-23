@@ -202,16 +202,20 @@ export default function ChatPage() {
     setConvLoading(true);
     setNodeDetail(null);
     setStatsOpen(false);
+    // Restore the full graph whenever switching conversations
+    fetchFullGraph(userIdRef.current);
     try {
       const res = await fetch(`/api/conversations/${convId}`);
       if (res.ok) {
         const data = await res.json();
         const msgs: Message[] = (data.messages || []).map((m: any) => ({
           role: m.role,
-          content: m.content,
+          content: m.content || (m.role === "assistant" ? "_No response was recorded for this message._" : ""),
           suggestions: m.suggestions ?? undefined,
         }));
-        setMessages(msgs);
+        // Filter out assistant messages with no meaningful content
+        const filteredMsgs = msgs.filter((m) => m.role === "user" || m.content);
+        setMessages(filteredMsgs);
         setCurrentConvId(convId);
       }
     } catch { /* silent */ }
@@ -491,11 +495,13 @@ export default function ChatPage() {
         }
       }
 
-      // Save assistant message
+      // Save assistant message (only if there's actual content)
       if (convId) {
         const m = assistantMessage.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
         const cleanContent = m ? assistantMessage.replace(m[0], "").trim() : assistantMessage.trim();
-        await saveMessage(convId, "assistant", cleanContent, finalSuggestions.length > 0 ? finalSuggestions : undefined);
+        if (cleanContent) {
+          await saveMessage(convId, "assistant", cleanContent, finalSuggestions.length > 0 ? finalSuggestions : undefined);
+        }
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unknown error";
