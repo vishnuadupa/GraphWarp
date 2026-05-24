@@ -58,6 +58,10 @@ export async function POST(req: NextRequest) {
           if (!Array.isArray(entities) || entities.length === 0) entities = [question];
           console.log('[chat] extracted entities:', entities);
 
+          // Broadcast extracted entity names so the client can immediately highlight
+          // matching nodes in the already-loaded graph (no Neo4j round-trip needed).
+          send({ type: 'entities', data: entities });
+
           // Embeddings skipped — no separate embedding provider key.
           // Chat uses exact match (Step A) + substring fallback (Step B), both work without embeddings.
           const validEmbeddings: number[][] = [];
@@ -69,6 +73,8 @@ export async function POST(req: NextRequest) {
           const session = driver.session();
           let nodes: any[] = [];
           let links: any[] = [];
+          // matchedNodeIds = direct entity hits (start nodes); activeNodeIds = full subgraph
+          let matchedNodeIds = new Set<string>();
 
           try {
             subgraphData = await session.executeRead(async (tx) => {
@@ -138,6 +144,17 @@ export async function POST(req: NextRequest) {
                 });
               };
 
+              // Helper to capture which start nodes directly matched the query
+              const captureMatchedNodes = (records: any[]) => {
+                records.forEach((record) => {
+                  const sNode = record.get('startNode');
+                  if (sNode) {
+                    const name = (sNode.properties.name ?? '').trim();
+                    if (name) matchedNodeIds.add(name);
+                  }
+                });
+              };
+
               // Step A: Find start nodes using case-insensitive exact text search (highly reliable fallback/addition)
               if (lowerEntities.length > 0) {
                 const textRes = await tx.run(
@@ -155,6 +172,7 @@ export async function POST(req: NextRequest) {
                   { uid: user.id, lowerEntities, selectedDocs }
                 );
                 processRecords(textRes.records);
+                captureMatchedNodes(textRes.records);
               }
 
               // Step B: Substring containment search as fallback if exact match yielded no nodes
@@ -175,6 +193,7 @@ export async function POST(req: NextRequest) {
                   { uid: user.id, lowerEntities, selectedDocs }
                 );
                 processRecords(substringRes.records);
+                captureMatchedNodes(substringRes.records);
               }
 
               // Step C: Vector similarity search (for semantic matches, wrapped safely)
@@ -213,7 +232,12 @@ export async function POST(req: NextRequest) {
           console.log('[chat] graph results: nodes=%d links=%d subgraph_chars=%d', nodes.length, links.length, subgraphData.length);
           // Only send graph update when we actually found nodes — empty payload would clear the client graph
           if (nodes.length > 0) {
-            send({ type: 'graph', data: { nodes, links }, activeNodeIds: nodes.map((n) => n.id) });
+            send({
+              type: 'graph',
+              data: { nodes, links },
+              matchedNodeIds: Array.from(matchedNodeIds), // direct entity hits (start nodes)
+              activeNodeIds: nodes.map((n) => n.id),     // full subgraph
+            });
           }
 
           // ── Phase 3: synthesis with multi-turn context ────────────────────

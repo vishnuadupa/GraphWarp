@@ -7,6 +7,7 @@ import {
   ForceGraph,
   type GraphData,
   type GraphNode,
+  type GraphLayout,
   type ThinkingPhase,
   TYPE_COLORS,
   ALL_TYPES,
@@ -17,7 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Send, Filter, Network, ChevronDown, Search, X,
   BarChart2, Download, ExternalLink, ArrowRight,
-  MessageSquare, Plus, PanelLeft, GitMerge, Loader2,
+  MessageSquare, Plus, PanelLeft, GitMerge, Loader2, Sliders,
 } from "lucide-react";
 
 interface Message {
@@ -96,6 +97,7 @@ export default function ChatPage() {
   // Thinking animation
   const [thinkingPhase, setThinkingPhase] = useState<ThinkingPhase>(null);
   const [activeNodeIds, setActiveNodeIds] = useState<Set<string>>(new Set());
+  const [matchedNodeIds, setMatchedNodeIds] = useState<Set<string>>(new Set());
 
   // Graph controls
   const [graphSearch, setGraphSearch] = useState("");
@@ -111,8 +113,8 @@ export default function ChatPage() {
   const [pathNotFound, setPathNotFound] = useState(false);
   const [pathOpen, setPathOpen] = useState(false);
 
-  // Stats panel
-  const [statsOpen, setStatsOpen] = useState(false);
+  // Unified right panel: "stats" = Analytics tab, "node" = Details tab, null = closed
+  const [rightPanel, setRightPanel] = useState<"stats" | "node" | null>(null);
   const [stats, setStats] = useState<GraphStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
 
@@ -120,15 +122,53 @@ export default function ChatPage() {
   const [nodeDetail, setNodeDetail] = useState<NodeDetail | null>(null);
   const [nodeDetailLoading, setNodeDetailLoading] = useState(false);
 
+  // View popover (layout + type filters)
+  const [viewOpen, setViewOpen] = useState(false);
+
   const [convSearch, setConvSearch] = useState("");
   const [graphDocFilter, setGraphDocFilter] = useState<string | null>(null);
+  const [graphLayout, setGraphLayout] = useState<GraphLayout>("force");
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const textareaRef    = useRef<HTMLTextAreaElement>(null);
-  const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const messagesEndRef          = useRef<HTMLDivElement>(null);
+  const textareaRef             = useRef<HTMLTextAreaElement>(null);
+  const searchDebounce          = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevSelectedDocsLength  = useRef<number>(0);
+  const viewPopoverRef          = useRef<HTMLDivElement>(null);
+  // Always-current graph ref so stream callbacks don't read stale state
+  const graphRef                = useRef<GraphData>(EMPTY_GRAPH);
 
   // Cleanup debounce on unmount
   useEffect(() => () => { if (searchDebounce.current) clearTimeout(searchDebounce.current); }, []);
+
+  // Keep graphRef current so stream handlers never read stale graph state
+  useEffect(() => { graphRef.current = graph; }, [graph]);
+
+  // Close View popover on outside click
+  useEffect(() => {
+    if (!viewOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (viewPopoverRef.current && !viewPopoverRef.current.contains(e.target as Node)) {
+        setViewOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [viewOpen]);
+
+  // Auto-sync graph panel with the selected doc
+  // When exactly 1 doc is checked, show only that doc's subgraph.
+  // When going from 1 → 0 or 1 → multiple, restore the full graph.
+  useEffect(() => {
+    if (!ready) return;
+    const prev = prevSelectedDocsLength.current;
+    prevSelectedDocsLength.current = selectedDocs.length;
+    if (selectedDocs.length === 1) {
+      fetchGraphForDoc(selectedDocs[0]);
+    } else if (prev === 1 && selectedDocs.length !== 1) {
+      clearGraphDocFilter();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDocs, ready]);
 
   // ── Boot ──────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -207,7 +247,7 @@ export default function ChatPage() {
   const loadConversation = async (convId: string) => {
     setConvLoading(true);
     setNodeDetail(null);
-    setStatsOpen(false);
+    setRightPanel(null);
     // Restore the full graph whenever switching conversations
     fetchFullGraph(userIdRef.current);
     try {
@@ -259,7 +299,7 @@ export default function ChatPage() {
     setGraphDocFilter(null);
     setGraphSearch("");
     setSearchResults(new Set());
-    setStatsOpen(false);
+    setRightPanel(null);
     fetchFullGraph(userIdRef.current);
   };
 
@@ -296,9 +336,12 @@ export default function ChatPage() {
   }, [statsLoading]);
 
   const handleToggleStats = () => {
-    if (!statsOpen) fetchStats();
-    setStatsOpen((v) => !v);
-    setNodeDetail(null);
+    if (rightPanel !== "stats") {
+      fetchStats();
+      setRightPanel("stats");
+    } else {
+      setRightPanel(null);
+    }
   };
 
   // ── Graph search ──────────────────────────────────────────────────────────
@@ -401,7 +444,7 @@ export default function ChatPage() {
       });
 
     setNodeDetail(null);
-    setStatsOpen(false);
+    setRightPanel("node");
     setNodeDetailLoading(true);
     try {
       const res = await fetch("/api/graph/node", {
@@ -450,6 +493,7 @@ export default function ChatPage() {
     setLoading(true);
     setThinkingPhase("searching");
     setActiveNodeIds(new Set());
+    setMatchedNodeIds(new Set());
     setNodeDetail(null);
     setPathNodeIds(new Set());
     setPathLength(null);
@@ -499,9 +543,22 @@ export default function ChatPage() {
             try { parsed = JSON.parse(dataStr); } catch { continue; } // skip malformed chunks
             if (parsed.type === "phase") {
               setThinkingPhase(parsed.data as ThinkingPhase);
+            } else if (parsed.type === "entities") {
+              // Server just finished extracting entity names — immediately highlight any
+              // matching nodes already in the loaded graph (avoids waiting for Neo4j).
+              const names: string[] = parsed.data ?? [];
+              const lowerNames = names.map((e: string) => e.toLowerCase());
+              const matched = new Set<string>(
+                graphRef.current.nodes
+                  .filter((n) => lowerNames.some((e) => n.name.toLowerCase() === e || n.name.toLowerCase().includes(e)))
+                  .map((n) => n.id)
+              );
+              if (matched.size > 0) setMatchedNodeIds(matched);
             } else if (parsed.type === "graph") {
               // Only replace the graph if we actually got nodes back — never clear a populated graph
               if (parsed.data?.nodes?.length > 0) setGraph(parsed.data);
+              // matchedNodeIds = direct entity hits; activeNodeIds = full subgraph
+              if (parsed.matchedNodeIds?.length > 0) setMatchedNodeIds(new Set<string>(parsed.matchedNodeIds));
               if (parsed.activeNodeIds?.length > 0) setActiveNodeIds(new Set<string>(parsed.activeNodeIds));
             } else if (parsed.type === "text") {
               assistantMessage += parsed.data;
@@ -548,8 +605,8 @@ export default function ChatPage() {
     } finally {
       setLoading(false);
       setThinkingPhase(null);
-      setTimeout(() => setActiveNodeIds(new Set()), 3000);
-      if (statsOpen) fetchStats();
+      setTimeout(() => { setActiveNodeIds(new Set()); setMatchedNodeIds(new Set()); }, 3000);
+      if (rightPanel === "stats") fetchStats();
     }
   };
 
@@ -632,10 +689,10 @@ export default function ChatPage() {
                           : "hover:bg-[var(--color-paper-3)]"
                       }`}
                     >
-                      <p className={`text-xs truncate font-mono uppercase tracking-wider font-bold leading-snug ${conv.id === currentConvId ? "text-[var(--color-ink)]" : "text-[var(--color-neutral)]"}`}>
+                      <p className={`text-xs truncate font-mono font-bold leading-snug ${conv.id === currentConvId ? "text-[var(--color-ink)]" : "text-[var(--color-neutral)]"}`}>
                         {conv.title || "New conversation"}
                       </p>
-                      <p className="text-[10px] font-mono text-[var(--color-neutral)] uppercase mt-0.5">{fmtDate(conv.updated_at)}</p>
+                      <p className="text-[10px] font-mono text-[var(--color-neutral)] mt-0.5">{fmtDate(conv.updated_at)}</p>
                     </button>
                   ))
               )}
@@ -670,7 +727,11 @@ export default function ChatPage() {
               <button onClick={() => setFilterOpen(!filterOpen)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-[var(--color-paper)] border-[2px] border-[var(--color-rule)] hover:bg-[var(--color-paper-3)] text-xs text-[var(--color-ink)] font-mono font-bold uppercase transition-colors shadow-sm cursor-pointer border-solid">
                 <Filter className="w-3 h-3" />
-                {selectedDocs.length === 0 ? "All Docs" : `${selectedDocs.length} Selected`}
+                {selectedDocs.length === 0
+                  ? "All Docs"
+                  : selectedDocs.length === 1
+                  ? <span className="max-w-[120px] truncate block">{selectedDocs[0]}</span>
+                  : `${selectedDocs.length} docs`}
                 <ChevronDown className="w-3 h-3 opacity-60" />
               </button>
               {filterOpen && (
@@ -848,13 +909,79 @@ export default function ChatPage() {
             )}
           </div>
 
-          {/* Type filters */}
-          <div className="flex items-center gap-1.5">
-            {ALL_TYPES.filter((t) => graph.nodes.some((n) => (n.type ?? "Entity") === t)).map((type) => (
-              <button key={type} onClick={() => toggleType(type)} title={type}
-                className={`w-5 h-5 rounded-none border transition-all cursor-pointer ${hiddenTypes.has(type) ? "opacity-25 border-[var(--color-rule)] border-solid" : "opacity-100 border-[var(--color-rule)] border-solid ring-2 ring-[var(--color-ink)]/20"}`}
-                style={{ background: TYPE_DOT_COLOR(type) }} />
-            ))}
+          {/* View popover — layout + entity type filters */}
+          <div className="relative shrink-0" ref={viewPopoverRef}>
+            <button
+              onClick={() => setViewOpen((v) => !v)}
+              title="Layout & type filters"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none border-[2px] border-[var(--color-rule)] border-solid text-xs font-mono uppercase tracking-widest font-bold transition-all cursor-pointer ${
+                viewOpen || hiddenTypes.size > 0 || graphLayout !== "force"
+                  ? "bg-[var(--color-ink)] text-[var(--color-paper)] shadow-md"
+                  : "bg-[var(--color-paper)] hover:bg-[var(--color-paper-2)] text-[var(--color-ink)] shadow-sm"
+              }`}
+            >
+              <Sliders className="w-3.5 h-3.5" />
+              View
+              {(hiddenTypes.size > 0 || graphLayout !== "force") && (
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+              )}
+            </button>
+
+            {viewOpen && (
+              <div className="absolute left-0 top-full mt-2 w-52 bg-[var(--color-paper)] border-[2px] border-[var(--color-rule)] border-solid shadow-md z-50 overflow-hidden">
+                {/* Layout section */}
+                <div className="p-3 border-b-[1px] border-[var(--color-rule)] border-solid">
+                  <div className="text-[9px] font-mono uppercase tracking-widest text-[var(--color-neutral)] font-bold mb-2">Layout</div>
+                  <div className="grid grid-cols-3 gap-1">
+                    {(
+                      [
+                        { key: "force",        label: "Force"  },
+                        { key: "circular",     label: "Circle" },
+                        { key: "radial",       label: "Radial" },
+                        { key: "hierarchical", label: "Tree"   },
+                        { key: "grid",         label: "Grid"   },
+                      ] as { key: GraphLayout; label: string }[]
+                    ).map(({ key, label }) => (
+                      <button
+                        key={key}
+                        onClick={() => setGraphLayout(key)}
+                        className={`px-1.5 py-1 text-[9px] font-mono uppercase tracking-widest font-bold border-[1px] border-[var(--color-rule)] border-solid transition-all cursor-pointer ${
+                          graphLayout === key
+                            ? "bg-[var(--color-ink)] text-[var(--color-paper)] border-[var(--color-ink)]"
+                            : "bg-[var(--color-paper-2)] text-[var(--color-neutral)] hover:text-[var(--color-ink)]"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Entity type filters */}
+                {ALL_TYPES.filter((t) => graph.nodes.some((n) => (n.type ?? "Entity") === t)).length > 0 && (
+                  <div className="p-3">
+                    <div className="text-[9px] font-mono uppercase tracking-widest text-[var(--color-neutral)] font-bold mb-2">Entity Types</div>
+                    <div className="space-y-1">
+                      {ALL_TYPES.filter((t) => graph.nodes.some((n) => (n.type ?? "Entity") === t)).map((type) => (
+                        <button
+                          key={type}
+                          onClick={() => toggleType(type)}
+                          className={`w-full flex items-center gap-2.5 px-2 py-1.5 text-[10px] font-mono font-bold transition-all cursor-pointer border-[1px] border-solid ${
+                            hiddenTypes.has(type)
+                              ? "border-[var(--color-rule)] bg-[var(--color-paper-2)] text-[var(--color-neutral)] opacity-50"
+                              : "border-[var(--color-rule)] bg-[var(--color-paper-2)] text-[var(--color-ink)] hover:bg-[var(--color-paper-3)]"
+                          }`}
+                        >
+                          <span className="w-2.5 h-2.5 rounded-none border-[1px] border-[var(--color-rule)] border-solid shrink-0" style={{ background: TYPE_DOT_COLOR(type) }} />
+                          <span className="flex-1 text-left">{type}</span>
+                          {hiddenTypes.has(type) && <span className="text-[8px] text-[var(--color-neutral)] font-mono">hidden</span>}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="w-[2px] h-5 bg-[var(--color-rule)]" />
@@ -868,7 +995,7 @@ export default function ChatPage() {
 
           {/* Stats */}
           <button onClick={handleToggleStats} title="Graph statistics"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none border-[2px] border-[var(--color-rule)] border-solid text-xs font-mono uppercase tracking-widest font-bold transition-all cursor-pointer ${statsOpen ? "bg-[var(--color-ink)] text-[var(--color-paper)] shadow-md" : "bg-[var(--color-paper)] hover:bg-[var(--color-paper-2)] text-[var(--color-ink)] shadow-sm"}`}>
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-none border-[2px] border-[var(--color-rule)] border-solid text-xs font-mono uppercase tracking-widest font-bold transition-all cursor-pointer ${rightPanel === "stats" ? "bg-[var(--color-ink)] text-[var(--color-paper)] shadow-md" : "bg-[var(--color-paper)] hover:bg-[var(--color-paper-2)] text-[var(--color-ink)] shadow-sm"}`}>
             <BarChart2 className="w-3.5 h-3.5" />
             Stats
           </button>
@@ -956,7 +1083,9 @@ export default function ChatPage() {
         <div className="absolute inset-0 top-14 bg-white">
           <ForceGraph
             data={graph}
+            layout={graphLayout}
             thinkingPhase={thinkingPhase}
+            matchedNodeIds={matchedNodeIds.size > 0 ? matchedNodeIds : undefined}
             activeNodeIds={activeNodeIds}
             highlightNodeIds={searchResults.size > 0 ? searchResults : undefined}
             pathNodeIds={pathNodeIds.size > 0 ? pathNodeIds : undefined}
@@ -966,186 +1095,205 @@ export default function ChatPage() {
           />
         </div>
 
-        {/* ── Stats panel ─────────────────────────────────────────────── */}
+        {/* ── Unified right panel (Details | Analytics) ──────────────── */}
         <AnimatePresence>
-          {statsOpen && (
+          {rightPanel !== null && (
             <motion.aside
               initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: "100%", opacity: 0 }}
               transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="absolute right-0 top-14 bottom-0 w-80 bg-[var(--color-paper)] border-l-[2px] border-[var(--color-rule)] border-solid z-30 overflow-y-auto flex flex-col shadow-lg"
+              className="absolute right-0 top-14 bottom-0 w-80 bg-[var(--color-paper)] border-l-[2px] border-[var(--color-rule)] border-solid z-30 flex flex-col shadow-lg"
             >
-              <div className="flex items-center justify-between px-4 py-3 border-b-[2px] border-[var(--color-rule)] border-solid bg-[var(--color-paper-2)] shrink-0">
-                <span className="text-xs font-bold font-mono text-[var(--color-ink)] uppercase tracking-wider">Graph Analytics</span>
-                <button onClick={() => setStatsOpen(false)} className="text-[var(--color-neutral)] hover:text-[var(--color-ink)] cursor-pointer"><X className="w-4 h-4" /></button>
+              {/* Tab bar */}
+              <div className="flex items-center shrink-0 border-b-[2px] border-[var(--color-rule)] border-solid bg-[var(--color-paper-2)]">
+                <button
+                  onClick={() => setRightPanel("node")}
+                  disabled={!nodeDetail && !nodeDetailLoading}
+                  className={`px-4 h-10 text-[10px] font-mono uppercase tracking-widest font-bold border-b-[2px] transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-30 ${
+                    rightPanel === "node"
+                      ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+                      : "border-transparent text-[var(--color-neutral)] hover:text-[var(--color-ink)]"
+                  }`}
+                >
+                  Details
+                </button>
+                <button
+                  onClick={() => { setRightPanel("stats"); if (!stats) fetchStats(); }}
+                  className={`px-4 h-10 text-[10px] font-mono uppercase tracking-widest font-bold border-b-[2px] transition-colors cursor-pointer ${
+                    rightPanel === "stats"
+                      ? "border-[var(--color-ink)] text-[var(--color-ink)]"
+                      : "border-transparent text-[var(--color-neutral)] hover:text-[var(--color-ink)]"
+                  }`}
+                >
+                  Analytics
+                </button>
+                <button onClick={() => setRightPanel(null)} className="ml-auto mr-3 text-[var(--color-neutral)] hover:text-[var(--color-ink)] cursor-pointer">
+                  <X className="w-4 h-4" />
+                </button>
               </div>
 
-              {statsLoading ? (
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-[var(--color-rule)] border-t-[var(--color-ink)] rounded-none animate-spin" />
-                </div>
-              ) : !stats ? (
-                <div className="flex-1 flex flex-col items-center justify-center gap-2 opacity-40 p-8 text-center">
-                  <BarChart2 className="w-6 h-6 text-[var(--color-ink)]" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--color-neutral)]">No stats available</span>
-                </div>
-              ) : (
-                <div className="p-4 space-y-6 text-xs">
-                  <div className="grid grid-cols-2 gap-3">
-                    {[{ label: "Entities", value: stats.nodeCount }, { label: "Relations", value: stats.linkCount }].map(({ label, value }) => (
-                      <div key={label} className="rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid p-3.5">
-                        <div className="text-2xl font-bold font-mono text-[var(--color-ink)] tabular-nums">{value.toLocaleString()}</div>
-                        <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest text-[9px] font-bold mt-1">{label}</div>
-                      </div>
-                    ))}
-                  </div>
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto">
 
-                  <div>
-                    <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Entity Types</div>
-                    <div className="space-y-2">
-                      {stats.typeDistribution.map(({ type, count }) => {
-                        const pct = Math.round((count / Math.max(stats.nodeCount, 1)) * 100);
-                        return (
-                          <div key={type} className="bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid p-2">
-                            <div className="flex justify-between mb-1">
-                              <span className="flex items-center gap-2">
-                                <span className="w-2.5 h-2.5 rounded-none border-[1px] border-[var(--color-rule)] border-solid" style={{ background: TYPE_DOT_COLOR(type) }} />
-                                <span className="text-[var(--color-ink)] font-mono font-bold text-[10px] uppercase">{type}</span>
-                              </span>
-                              <span className="text-[var(--color-neutral)] font-mono font-bold tabular-nums">{count}</span>
-                            </div>
-                            <div className="h-1.5 rounded-none bg-[var(--color-paper-3)] border-[1px] border-[var(--color-rule)] border-solid overflow-hidden">
-                              <div className="h-full rounded-none transition-all" style={{ width: `${pct}%`, background: TYPE_DOT_COLOR(type) }} />
+                {/* ── Details tab ─────────────────────────────────── */}
+                {rightPanel === "node" && (
+                  nodeDetailLoading ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="w-6 h-6 border-2 border-[var(--color-rule)] border-t-[var(--color-ink)] rounded-none animate-spin" />
+                    </div>
+                  ) : nodeDetail ? (
+                    <div className="flex flex-col text-xs">
+                      {/* Node header */}
+                      <div className="p-4 border-b-[1px] border-[var(--color-rule)] border-solid bg-[var(--color-paper-2)]">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="w-2.5 h-2.5 rounded-none border-[1px] border-[var(--color-rule)] border-solid shrink-0" style={{ background: TYPE_DOT_COLOR(nodeDetail.node.type) }} />
+                          <span className="text-[9px] font-bold font-mono text-[var(--color-neutral)] uppercase tracking-wider">{nodeDetail.node.type}</span>
+                        </div>
+                        <h3 className="text-xs font-bold font-mono text-[var(--color-ink)] uppercase tracking-wide">{nodeDetail.node.name}</h3>
+                        <p className="text-[10px] font-mono text-[var(--color-neutral)] uppercase tracking-widest mt-0.5">{nodeDetail.node.degree} connections</p>
+                        <div className="flex gap-1.5 mt-3">
+                          <button onClick={() => handleSend(`Tell me about ${nodeDetail.node.name}`)} title="Ask about this entity"
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-none bg-[var(--color-paper)] border-[1px] border-[var(--color-rule)] border-solid hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] text-[var(--color-ink)] text-[9px] font-mono uppercase tracking-widest font-bold transition-all cursor-pointer">
+                            <ExternalLink className="w-3 h-3" />Ask
+                          </button>
+                          <button onClick={() => { setPathOpen(true); setPathFrom(nodeDetail.node.name); }} title="Find path from this node"
+                            className="flex items-center gap-1.5 px-2.5 py-1 rounded-none bg-[var(--color-paper)] border-[1px] border-[var(--color-rule)] border-solid hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] text-[var(--color-ink)] text-[9px] font-mono uppercase tracking-widest font-bold transition-all cursor-pointer">
+                            <GitMerge className="w-3 h-3" />Path
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="p-4 space-y-5">
+                        {nodeDetail.sourceDocs.length > 0 && (
+                          <div>
+                            <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Source Documents</div>
+                            <div className="space-y-1">
+                              {nodeDetail.sourceDocs.map((doc) => (
+                                <div key={doc} className="px-3 py-2 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid text-[var(--color-ink)] text-[9px] font-mono truncate">{doc}</div>
+                              ))}
                             </div>
                           </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Top Entities by Degree</div>
-                    <div className="space-y-1.5">
-                      {stats.topEntities.map(({ name, type, degree }) => (
-                        <button key={name} onClick={() => { setStatsOpen(false); handleNodeClick({ id: name }); }}
-                          className="w-full flex items-center justify-between px-3 py-2.5 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid hover:bg-[var(--color-paper-3)] transition-colors group cursor-pointer text-left">
-                          <span className="flex items-center gap-2 min-w-0">
-                            <span className="w-2.5 h-2.5 rounded-none border-[1px] border-[var(--color-rule)] border-solid shrink-0" style={{ background: TYPE_DOT_COLOR(type) }} />
-                            <span className="text-[var(--color-ink)] group-hover:text-[var(--color-ink)] font-bold font-mono text-[10px] truncate">{name}</span>
-                          </span>
-                          <span className="text-[var(--color-neutral)] font-mono text-[9px] uppercase font-bold tabular-nums shrink-0 ml-2">{degree} links</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Common Relations</div>
-                    <div className="space-y-1">
-                      {stats.topRelationTypes.map(({ type, count }) => (
-                        <div key={type} className="flex items-center justify-between px-3 py-2 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid text-[10px] font-mono font-bold text-[var(--color-ink)]">
-                          <span className="truncate">{type}</span>
-                          <span className="text-[var(--color-neutral)] tabular-nums shrink-0 ml-2">{count}×</span>
+                        )}
+                        <div>
+                          <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Relationships ({nodeDetail.relationships.length})</div>
+                          <div className="space-y-1.5">
+                            {nodeDetail.relationships.map((r, idx) => (
+                              <button key={idx} onClick={() => handleNodeClick({ id: r.other })}
+                                className="w-full text-left px-3 py-2.5 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid hover:bg-[var(--color-paper-3)] transition-colors group cursor-pointer">
+                                <div className="flex items-center gap-1 text-[var(--color-neutral)] text-[9px] font-mono uppercase mb-1">
+                                  {r.isOutgoing ? (
+                                    <><span className="text-[var(--color-ink)] font-bold">{nodeDetail.node.name.slice(0,10)}..</span> → <span className="font-bold text-[var(--color-ink)]">{r.relType}</span> →</>
+                                  ) : (
+                                    <>← <span className="font-bold text-[var(--color-ink)]">{r.relType}</span> ← <span className="text-[var(--color-ink)] font-bold">{nodeDetail.node.name.slice(0,10)}..</span></>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-none border-[1px] border-[var(--color-rule)] border-solid shrink-0" style={{ background: TYPE_DOT_COLOR(r.otherType) }} />
+                                  <span className="text-[var(--color-ink)] font-mono font-bold text-[10px] truncate">{r.other}</span>
+                                  {r.weight > 1 && <span className="ml-auto text-[var(--color-neutral)] font-mono shrink-0">{r.weight}×</span>}
+                                </div>
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Relations per Document</div>
-                    <div className="space-y-1">
-                      {stats.docContributions.map(({ doc, count }) => (
-                        <div key={doc} className="flex items-center justify-between px-3 py-2 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid text-[10px] font-mono text-[var(--color-ink)]">
-                          <span className="truncate text-[9px] font-mono">{doc}</span>
-                          <span className="text-[var(--color-neutral)] font-bold tabular-nums shrink-0 ml-2">{count}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </motion.aside>
-          )}
-        </AnimatePresence>
-
-        {/* ── Node detail panel ────────────────────────────────────────── */}
-        <AnimatePresence>
-          {(nodeDetail || nodeDetailLoading) && (
-            <motion.aside
-              initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: "100%", opacity: 0 }}
-              transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="absolute right-0 top-14 bottom-0 w-80 bg-[var(--color-paper)] border-l-[2px] border-[var(--color-rule)] border-solid z-30 overflow-y-auto flex flex-col shadow-lg"
-            >
-              {nodeDetailLoading ? (
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="w-6 h-6 border-2 border-[var(--color-rule)] border-t-[var(--color-ink)] rounded-none animate-spin" />
-                </div>
-              ) : nodeDetail ? (
-                <>
-                  <div className="flex items-start justify-between px-4 py-3 border-b-[2px] border-[var(--color-rule)] border-solid bg-[var(--color-paper-2)] shrink-0">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <span className="w-2.5 h-2.5 rounded-none border-[1px] border-[var(--color-rule)] border-solid shrink-0" style={{ background: TYPE_DOT_COLOR(nodeDetail.node.type) }} />
-                        <span className="text-[9px] font-bold font-mono text-[var(--color-neutral)] uppercase tracking-wider">{nodeDetail.node.type}</span>
                       </div>
-                      <h3 className="text-xs font-bold font-mono text-[var(--color-ink)] uppercase tracking-wide truncate">{nodeDetail.node.name}</h3>
-                      <p className="text-[10px] font-mono text-[var(--color-neutral)] uppercase tracking-widest mt-0.5">{nodeDetail.node.degree} connections</p>
                     </div>
-                    <div className="flex gap-1 shrink-0 ml-3">
-                      <button onClick={() => handleSend(`Tell me about ${nodeDetail.node.name}`)} title="Ask about this entity"
-                        className="w-7 h-7 rounded-none bg-[var(--color-paper)] border-[1px] border-[var(--color-rule)] border-solid hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] text-[var(--color-ink)] flex items-center justify-center transition-all cursor-pointer">
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </button>
-                      {/* Pre-fill path finder with this node */}
-                      <button
-                        onClick={() => { setPathOpen(true); setPathFrom(nodeDetail.node.name); }}
-                        title="Find path from this node"
-                        className="w-7 h-7 rounded-none bg-[var(--color-paper)] border-[1px] border-[var(--color-rule)] border-solid hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] text-[var(--color-ink)] flex items-center justify-center transition-all cursor-pointer"
-                      >
-                        <GitMerge className="w-3 h-3" />
-                      </button>
-                      <button onClick={() => setNodeDetail(null)} className="text-[var(--color-neutral)] hover:text-[var(--color-ink)] w-7 h-7 flex items-center justify-center cursor-pointer">
-                        <X className="w-4 h-4" />
-                      </button>
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center gap-2 opacity-40 p-8 text-center">
+                      <Network className="w-5 h-5 text-[var(--color-ink)]" />
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--color-neutral)]">Click any node<br />to inspect</span>
                     </div>
-                  </div>
+                  )
+                )}
 
-                  <div className="p-4 space-y-5 text-xs flex-1">
-                    {nodeDetail.sourceDocs.length > 0 && (
+                {/* ── Analytics tab ───────────────────────────────── */}
+                {rightPanel === "stats" && (
+                  statsLoading ? (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="w-6 h-6 border-2 border-[var(--color-rule)] border-t-[var(--color-ink)] rounded-none animate-spin" />
+                    </div>
+                  ) : !stats ? (
+                    <div className="h-full flex flex-col items-center justify-center gap-2 opacity-40 p-8 text-center">
+                      <BarChart2 className="w-6 h-6 text-[var(--color-ink)]" />
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--color-neutral)]">No stats available</span>
+                    </div>
+                  ) : (
+                    <div className="p-4 space-y-6 text-xs">
+                      <div className="grid grid-cols-2 gap-3">
+                        {[{ label: "Entities", value: stats.nodeCount }, { label: "Relations", value: stats.linkCount }].map(({ label, value }) => (
+                          <div key={label} className="rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid p-3.5">
+                            <div className="text-2xl font-bold font-mono text-[var(--color-ink)] tabular-nums">{value.toLocaleString()}</div>
+                            <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest text-[9px] font-bold mt-1">{label}</div>
+                          </div>
+                        ))}
+                      </div>
+
                       <div>
-                        <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Source Documents</div>
-                        <div className="space-y-1">
-                          {nodeDetail.sourceDocs.map((doc) => (
-                            <div key={doc} className="px-3 py-2 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid text-[var(--color-ink)] text-[9px] font-mono truncate">{doc}</div>
+                        <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Entity Types</div>
+                        <div className="space-y-2">
+                          {stats.typeDistribution.map(({ type, count }) => {
+                            const pct = Math.round((count / Math.max(stats.nodeCount, 1)) * 100);
+                            return (
+                              <div key={type} className="bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid p-2">
+                                <div className="flex justify-between mb-1">
+                                  <span className="flex items-center gap-2">
+                                    <span className="w-2.5 h-2.5 rounded-none border-[1px] border-[var(--color-rule)] border-solid" style={{ background: TYPE_DOT_COLOR(type) }} />
+                                    <span className="text-[var(--color-ink)] font-mono font-bold text-[10px] uppercase">{type}</span>
+                                  </span>
+                                  <span className="text-[var(--color-neutral)] font-mono font-bold tabular-nums">{count}</span>
+                                </div>
+                                <div className="h-1.5 rounded-none bg-[var(--color-paper-3)] border-[1px] border-[var(--color-rule)] border-solid overflow-hidden">
+                                  <div className="h-full rounded-none transition-all" style={{ width: `${pct}%`, background: TYPE_DOT_COLOR(type) }} />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Top Entities by Degree</div>
+                        <div className="space-y-1.5">
+                          {stats.topEntities.map(({ name, type, degree }) => (
+                            <button key={name} onClick={() => handleNodeClick({ id: name })}
+                              className="w-full flex items-center justify-between px-3 py-2.5 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid hover:bg-[var(--color-paper-3)] transition-colors group cursor-pointer text-left">
+                              <span className="flex items-center gap-2 min-w-0">
+                                <span className="w-2.5 h-2.5 rounded-none border-[1px] border-[var(--color-rule)] border-solid shrink-0" style={{ background: TYPE_DOT_COLOR(type) }} />
+                                <span className="text-[var(--color-ink)] font-bold font-mono text-[10px] truncate">{name}</span>
+                              </span>
+                              <span className="text-[var(--color-neutral)] font-mono text-[9px] uppercase font-bold tabular-nums shrink-0 ml-2">{degree} links</span>
+                            </button>
                           ))}
                         </div>
                       </div>
-                    )}
 
-                    <div>
-                      <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Relationships ({nodeDetail.relationships.length})</div>
-                      <div className="space-y-1.5">
-                        {nodeDetail.relationships.map((r, idx) => (
-                          <button key={idx} onClick={() => handleNodeClick({ id: r.other })}
-                            className="w-full text-left px-3 py-2.5 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid hover:bg-[var(--color-paper-3)] transition-colors group cursor-pointer">
-                            <div className="flex items-center gap-1 text-[var(--color-neutral)] text-[9px] font-mono uppercase mb-1">
-                              {r.isOutgoing ? (
-                                <><span className="text-[var(--color-ink)] font-bold">{nodeDetail.node.name.slice(0,10)}..</span> → <span className="font-bold text-[var(--color-ink)]">{r.relType}</span> →</>
-                              ) : (
-                                <>← <span className="font-bold text-[var(--color-ink)]">{r.relType}</span> ← <span className="text-[var(--color-ink)] font-bold">{nodeDetail.node.name.slice(0,10)}..</span></>
-                              )}
+                      <div>
+                        <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Common Relations</div>
+                        <div className="space-y-1">
+                          {stats.topRelationTypes.map(({ type, count }) => (
+                            <div key={type} className="flex items-center justify-between px-3 py-2 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid text-[10px] font-mono font-bold text-[var(--color-ink)]">
+                              <span className="truncate">{type}</span>
+                              <span className="text-[var(--color-neutral)] tabular-nums shrink-0 ml-2">{count}×</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-none border-[1px] border-[var(--color-rule)] border-solid shrink-0" style={{ background: TYPE_DOT_COLOR(r.otherType) }} />
-                              <span className="text-[var(--color-ink)] group-hover:text-[var(--color-ink)] font-mono font-bold text-[10px] truncate">{r.other}</span>
-                              {r.weight > 1 && <span className="ml-auto text-[var(--color-neutral)] font-mono shrink-0">{r.weight}×</span>}
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[var(--color-neutral)] font-mono uppercase tracking-widest font-bold mb-2">Relations per Document</div>
+                        <div className="space-y-1">
+                          {stats.docContributions.map(({ doc, count }) => (
+                            <div key={doc} className="flex items-center justify-between px-3 py-2 rounded-none bg-[var(--color-paper-2)] border-[1px] border-[var(--color-rule)] border-solid text-[10px] font-mono text-[var(--color-ink)]">
+                              <span className="truncate text-[9px] font-mono">{doc}</span>
+                              <span className="text-[var(--color-neutral)] font-bold tabular-nums shrink-0 ml-2">{count}</span>
                             </div>
-                          </button>
-                        ))}
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </>
-              ) : null}
+                  )
+                )}
+
+              </div>
             </motion.aside>
           )}
         </AnimatePresence>

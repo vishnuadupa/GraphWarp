@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 
 export type ThinkingPhase = "searching" | "traversing" | "answering" | null;
+export type GraphLayout = "force" | "circular" | "radial" | "hierarchical" | "grid";
 
 export interface GraphNode {
   id: string;
@@ -46,8 +47,10 @@ function nodeRadius(degree?: number): number {
 
 interface Props {
   data: GraphData;
+  layout?: GraphLayout;
   thinkingPhase?: ThinkingPhase;
-  activeNodeIds?: Set<string>;
+  matchedNodeIds?: Set<string>;     // direct entity hits (searching/traversing phase)
+  activeNodeIds?: Set<string>;      // full subgraph (traversing/answering phase)
   highlightNodeIds?: Set<string>;   // search result highlights
   pathNodeIds?: Set<string>;        // path finder node highlights (gold)
   pathLinkIds?: Set<string>;        // path finder link highlights
@@ -58,7 +61,9 @@ interface Props {
 
 export function ForceGraph({
   data,
+  layout = "force",
   thinkingPhase,
+  matchedNodeIds,
   activeNodeIds,
   highlightNodeIds,
   pathNodeIds,
@@ -71,18 +76,37 @@ export function ForceGraph({
   const fgRef = useRef<any>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
 
-  const animTimeRef    = useRef(0);
-  const phaseRef       = useRef<ThinkingPhase>(null);
-  const activeRef      = useRef<Set<string>>(new Set());
-  const highlightRef   = useRef<Set<string>>(new Set());
-  const pathNodeRef    = useRef<Set<string>>(new Set());
-  const pathLinkRef    = useRef<Set<string>>(new Set());
+  const animTimeRef       = useRef(0);
+  const phaseRef          = useRef<ThinkingPhase>(null);
+  const matchedRef        = useRef<Set<string>>(new Set());
+  const activeRef         = useRef<Set<string>>(new Set());
+  const highlightRef      = useRef<Set<string>>(new Set());
+  const pathNodeRef       = useRef<Set<string>>(new Set());
+  const pathLinkRef       = useRef<Set<string>>(new Set());
+  // New-node entrance animation: nodeId → performance.now() when it first appeared
+  const newNodeTimestamps = useRef<Map<string, number>>(new Map());
+  const prevNodeIds       = useRef<Set<string>>(new Set());
 
-  useEffect(() => { phaseRef.current     = thinkingPhase ?? null; },   [thinkingPhase]);
-  useEffect(() => { activeRef.current    = activeNodeIds ?? new Set(); }, [activeNodeIds]);
+  useEffect(() => { phaseRef.current   = thinkingPhase ?? null; },     [thinkingPhase]);
+  useEffect(() => { matchedRef.current = matchedNodeIds ?? new Set(); }, [matchedNodeIds]);
+  useEffect(() => { activeRef.current  = activeNodeIds ?? new Set(); },  [activeNodeIds]);
   useEffect(() => { highlightRef.current = highlightNodeIds ?? new Set(); }, [highlightNodeIds]);
   useEffect(() => { pathNodeRef.current  = pathNodeIds ?? new Set(); }, [pathNodeIds]);
   useEffect(() => { pathLinkRef.current  = pathLinkIds ?? new Set(); }, [pathLinkIds]);
+
+  // Track which nodes are newly added — triggers entrance ripple animation
+  useEffect(() => {
+    const now = performance.now();
+    const prev = prevNodeIds.current;
+    filteredData.nodes.forEach((n) => {
+      if (!prev.has(n.id) && !newNodeTimestamps.current.has(n.id)) {
+        newNodeTimestamps.current.set(n.id, now);
+      }
+    });
+    prevNodeIds.current = new Set(filteredData.nodes.map((n) => n.id));
+    // Resume animation so entrance rings actually render
+    if (newNodeTimestamps.current.size > 0) fgRef.current?.resumeAnimation?.();
+  }, [filteredData]);
 
   // Resume animation when thinking starts
   useEffect(() => {
@@ -134,18 +158,120 @@ export function ForceGraph({
     return { nodes: visibleNodes, links: visibleLinks };
   }, [data, hiddenTypes]);
 
-  // Configure forces to make the graph clean and prevent clumping (messiness)
+  // Apply layout: force uses D3 physics; others pre-compute fixed positions (fx/fy)
   useEffect(() => {
     const fg = fgRef.current;
-    if (fg) {
-      // Pull nodes further apart (default is usually -30)
+    if (!fg || dims.width === 0 || filteredData.nodes.length === 0) return;
+
+    const nodes = filteredData.nodes as any[]; // D3 adds x, y, vx, vy, fx, fy
+    const cx = dims.width / 2;
+    const cy = dims.height / 2;
+    const n = nodes.length;
+
+    if (layout === "force") {
+      // Release any fixed positions, let D3 physics run freely
+      nodes.forEach((node) => { node.fx = undefined; node.fy = undefined; });
       fg.d3Force("charge")?.strength(-120);
-      // Give relationships more breathing room (default is 30)
       fg.d3Force("link")?.distance(75);
-      // Re-heat simulation
       fg.d3ReheatSimulation?.();
+      return;
     }
-  }, [filteredData]);
+
+    // ── Static layouts — pin every node with fx/fy ──────────────────────
+    if (layout === "circular") {
+      const r = Math.min(cx, cy) * 0.78;
+      nodes.forEach((node, i) => {
+        const angle = (2 * Math.PI * i) / n - Math.PI / 2;
+        node.fx = cx + r * Math.cos(angle);
+        node.fy = cy + r * Math.sin(angle);
+      });
+
+    } else if (layout === "radial") {
+      // Group nodes by type; each type gets its own concentric ring
+      const typeGroups = new Map<string, any[]>();
+      nodes.forEach((node) => {
+        const t = node.type ?? "Entity";
+        if (!typeGroups.has(t)) typeGroups.set(t, []);
+        typeGroups.get(t)!.push(node);
+      });
+      const types = Array.from(typeGroups.keys());
+      const maxR = Math.min(cx, cy) * 0.88;
+      const ringSpacing = types.length > 0 ? maxR / types.length : maxR;
+      types.forEach((type, ti) => {
+        const ring = typeGroups.get(type)!;
+        const r = ringSpacing * (ti + 1);
+        ring.forEach((node, i) => {
+          const angle = (2 * Math.PI * i) / ring.length - Math.PI / 2;
+          node.fx = cx + r * Math.cos(angle);
+          node.fy = cy + r * Math.sin(angle);
+        });
+      });
+
+    } else if (layout === "hierarchical") {
+      // BFS from nodes that have no incoming edges
+      const inDegree = new Map<string, number>(nodes.map((nd) => [nd.id, 0]));
+      filteredData.links.forEach((link) => {
+        const tId = typeof link.target === "object" ? (link.target as GraphNode).id : (link.target as string);
+        inDegree.set(tId, (inDegree.get(tId) ?? 0) + 1);
+      });
+
+      const roots = nodes.filter((nd) => (inDegree.get(nd.id) ?? 0) === 0);
+      if (roots.length === 0) roots.push(nodes[0]);
+
+      const visited = new Set<string>();
+      const levels: string[][] = [];
+      let queue = roots.map((nd) => nd.id);
+
+      while (queue.length > 0) {
+        const levelIds: string[] = [];
+        const next: string[] = [];
+        queue.forEach((id) => {
+          if (visited.has(id)) return;
+          visited.add(id);
+          levelIds.push(id);
+          filteredData.links.forEach((link) => {
+            const sId = typeof link.source === "object" ? (link.source as GraphNode).id : (link.source as string);
+            const tId = typeof link.target === "object" ? (link.target as GraphNode).id : (link.target as string);
+            if (sId === id && !visited.has(tId)) next.push(tId);
+          });
+        });
+        if (levelIds.length > 0) levels.push(levelIds);
+        queue = next;
+      }
+      // Append any disconnected nodes at the bottom
+      const unvisited = nodes.filter((nd) => !visited.has(nd.id)).map((nd) => nd.id);
+      if (unvisited.length > 0) levels.push(unvisited);
+
+      const nodeMap = new Map<string, any>(nodes.map((nd) => [nd.id, nd]));
+      const rowSpacing = (dims.height * 0.85) / Math.max(levels.length, 1);
+      const topPad = dims.height * 0.075;
+      levels.forEach((levelIds, li) => {
+        const colSpacing = dims.width / (levelIds.length + 1);
+        levelIds.forEach((id, ci) => {
+          const node = nodeMap.get(id);
+          if (node) {
+            node.fx = colSpacing * (ci + 1);
+            node.fy = topPad + rowSpacing * (li + 0.5);
+          }
+        });
+      });
+
+    } else if (layout === "grid") {
+      const cols = Math.ceil(Math.sqrt(n));
+      const rows = Math.ceil(n / cols);
+      const cellW = (dims.width * 0.88) / cols;
+      const cellH = (dims.height * 0.88) / rows;
+      const startX = dims.width * 0.06 + cellW / 2;
+      const startY = dims.height * 0.06 + cellH / 2;
+      nodes.forEach((node, i) => {
+        node.fx = startX + (i % cols) * cellW;
+        node.fy = startY + Math.floor(i / cols) * cellH;
+      });
+    }
+
+    // Tick the simulation once so positions are picked up immediately
+    fg.d3ReheatSimulation?.();
+  }, [layout, filteredData, dims]);
 
   const drawNode = useCallback(
     (node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
@@ -154,34 +280,88 @@ export function ForceGraph({
       const r = nodeRadius(n.degree);
       const color = TYPE_COLORS[n.type ?? ""] ?? DEFAULT_COLOR;
       const phase = phaseRef.current;
-      const isActive    = activeRef.current.has(n.id);
+      const isMatched   = matchedRef.current.has(n.id);  // direct entity hit
+      const isActive    = activeRef.current.has(n.id);   // in subgraph (may include matched)
       const isHighlight = highlightRef.current.size > 0 && highlightRef.current.has(n.id);
       const isOnPath    = pathNodeRef.current.has(n.id);
       const isDimmed    = (highlightRef.current.size > 0 && !highlightRef.current.has(n.id)) ||
                           (pathNodeRef.current.size > 0 && !isOnPath);
       const t = animTimeRef.current;
 
-      // Phase animations (styled for stark white canvas)
+      // ── Phase animations ──────────────────────────────────────────────────
       if (phase === "searching") {
-        const wave = Math.sin(t * 2.5 + (x + y) / 60);
-        const alpha = 0.06 + 0.10 * ((wave + 1) / 2);
-        ctx.beginPath(); ctx.arc(x, y, r + 6, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(37,99,235,${alpha})`; ctx.fill();
-      } else if (phase === "traversing" && isActive) {
-        for (let i = 0; i < 3; i++) {
-          const p = ((t * 1.4 + i * 0.33) % 1);
-          ctx.beginPath(); ctx.arc(x, y, r + p * 24, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(37,99,235,${(1 - p) * 0.55})`;
-          ctx.lineWidth = 1.5 / globalScale; ctx.stroke();
+        // If we already know which nodes match, highlight only them with a focused beacon.
+        // Otherwise fall back to the wide scanning wave across all nodes.
+        if (matchedRef.current.size > 0) {
+          if (isMatched) {
+            // Focused pulsing halo on known entity nodes
+            const pulse = 0.5 + 0.5 * Math.sin(t * 5);
+            ctx.beginPath(); ctx.arc(x, y, r + 6 + pulse * 4, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(37,99,235,${0.5 + pulse * 0.4})`;
+            ctx.lineWidth = 2 / globalScale; ctx.stroke();
+            const grd = ctx.createRadialGradient(x, y, r, x, y, r + 14);
+            grd.addColorStop(0, "rgba(37,99,235,0.2)"); grd.addColorStop(1, "rgba(37,99,235,0)");
+            ctx.beginPath(); ctx.arc(x, y, r + 14, 0, Math.PI * 2); ctx.fillStyle = grd; ctx.fill();
+          }
+          // Non-matched nodes: no animation, they stay quiet
+        } else {
+          // No entity match yet — scanning wave sweeps the whole graph
+          const wave = Math.sin(t * 2.5 + (x + y) / 60);
+          const alpha = 0.05 + 0.08 * ((wave + 1) / 2);
+          ctx.beginPath(); ctx.arc(x, y, r + 6, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(37,99,235,${alpha})`; ctx.fill();
         }
-        const grd = ctx.createRadialGradient(x, y, r * 0.4, x, y, r + 12);
-        grd.addColorStop(0, "rgba(37,99,235,0.3)"); grd.addColorStop(1, "rgba(37,99,235,0)");
-        ctx.beginPath(); ctx.arc(x, y, r + 12, 0, Math.PI * 2); ctx.fillStyle = grd; ctx.fill();
-      } else if (phase === "answering" && isActive) {
-        const pulse = 0.5 + 0.5 * Math.sin(t * 3.5);
-        const grd = ctx.createRadialGradient(x, y, r * 0.4, x, y, r + 14);
-        grd.addColorStop(0, `rgba(5,150,105,${0.2 + pulse * 0.25})`); grd.addColorStop(1, "rgba(5,150,105,0)");
-        ctx.beginPath(); ctx.arc(x, y, r + 14, 0, Math.PI * 2); ctx.fillStyle = grd; ctx.fill();
+      } else if (phase === "traversing") {
+        if (isMatched) {
+          // Direct hits: full expanding ring animation (traversal roots)
+          for (let i = 0; i < 3; i++) {
+            const p = ((t * 1.4 + i * 0.33) % 1);
+            ctx.beginPath(); ctx.arc(x, y, r + p * 24, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(37,99,235,${(1 - p) * 0.6})`;
+            ctx.lineWidth = 1.5 / globalScale; ctx.stroke();
+          }
+          const grd = ctx.createRadialGradient(x, y, r * 0.4, x, y, r + 14);
+          grd.addColorStop(0, "rgba(37,99,235,0.35)"); grd.addColorStop(1, "rgba(37,99,235,0)");
+          ctx.beginPath(); ctx.arc(x, y, r + 14, 0, Math.PI * 2); ctx.fillStyle = grd; ctx.fill();
+        } else if (isActive) {
+          // Traversal neighbors: soft ambient glow — "reached" but not a root
+          const pulse = 0.3 + 0.2 * Math.sin(t * 1.8 + x * 0.05);
+          const grd = ctx.createRadialGradient(x, y, r, x, y, r + 10);
+          grd.addColorStop(0, `rgba(37,99,235,${pulse})`); grd.addColorStop(1, "rgba(37,99,235,0)");
+          ctx.beginPath(); ctx.arc(x, y, r + 10, 0, Math.PI * 2); ctx.fillStyle = grd; ctx.fill();
+        }
+      } else if (phase === "answering") {
+        if (isMatched) {
+          // Direct hits: strong green pulse
+          const pulse = 0.5 + 0.5 * Math.sin(t * 3.5);
+          const grd = ctx.createRadialGradient(x, y, r * 0.4, x, y, r + 16);
+          grd.addColorStop(0, `rgba(5,150,105,${0.28 + pulse * 0.28})`); grd.addColorStop(1, "rgba(5,150,105,0)");
+          ctx.beginPath(); ctx.arc(x, y, r + 16, 0, Math.PI * 2); ctx.fillStyle = grd; ctx.fill();
+        } else if (isActive) {
+          // Neighbors: softer steady green glow
+          const pulse = 0.2 + 0.1 * Math.sin(t * 2 + y * 0.05);
+          const grd = ctx.createRadialGradient(x, y, r, x, y, r + 10);
+          grd.addColorStop(0, `rgba(5,150,105,${pulse})`); grd.addColorStop(1, "rgba(5,150,105,0)");
+          ctx.beginPath(); ctx.arc(x, y, r + 10, 0, Math.PI * 2); ctx.fillStyle = grd; ctx.fill();
+        }
+      }
+
+      // ── New-node entrance ripple (fires once when a node first appears) ──
+      const newTs = newNodeTimestamps.current.get(n.id);
+      if (newTs !== undefined) {
+        const elapsed = performance.now() - newTs;
+        const ENTRANCE_MS = 700;
+        if (elapsed < ENTRANCE_MS) {
+          const p = elapsed / ENTRANCE_MS;          // 0 → 1
+          const ringR = r + p * 22;
+          const alpha = (1 - p) * 0.65;
+          ctx.beginPath(); ctx.arc(x, y, ringR, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(37,99,235,${alpha})`;
+          ctx.lineWidth = 2 / globalScale; ctx.stroke();
+          fgRef.current?.resumeAnimation?.();       // keep RAF alive until done
+        } else {
+          newNodeTimestamps.current.delete(n.id);   // cleanup when done
+        }
       }
 
       // Search highlight halo (dark amber)
