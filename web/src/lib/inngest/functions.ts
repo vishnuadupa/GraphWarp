@@ -4,8 +4,28 @@ import OpenAI from 'openai';
 import { driver } from '../neo4j/neo4j';
 import { withRetry } from '../utils/retry';
 import { MODELS } from '../config/models';
+import { embedBatch, embeddingsEnabled, DIMENSIONS } from '../embeddings';
 import * as mammoth from 'mammoth';
 import Papa from 'papaparse';
+
+/**
+ * Normalises an extracted entity name to prevent trivial duplicates:
+ *   - Collapses multiple spaces to one
+ *   - Converts smart quotes / curly apostrophes to ASCII equivalents
+ *   - Converts em/en dashes to ASCII hyphen
+ *   - Strips zero-width characters
+ * Does NOT change casing (LLM already capitalises correctly per the prompt,
+ * and lowercasing would break proper-noun casing like "iOS", "McKinsey").
+ */
+function normaliseEntityName(name: string): string {
+  return name
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/['']/g, "'")
+    .replace(/[""]/g, '"')
+    .replace(/[–—]/g, '-')
+    .replace(/[​-‍﻿]/g, '');
+}
 
 // Lazy OpenRouter client — instantiated per call so a missing env var
 // doesn't crash the module at import time (build-time safety).
@@ -338,12 +358,12 @@ export const processDocument = inngest.createFunction(
 
         return (parsed as Record<string, unknown>[])
           .map((item) => ({
-            source:      String(item.source      ?? '').trim(),
+            source:      normaliseEntityName(String(item.source      ?? '')),
             source_type: VALID_ENTITY_TYPES.has(String(item.source_type ?? '').trim())
               ? String(item.source_type).trim()
               : 'Entity',
-            relation:    String(item.relation    ?? '').trim().toLowerCase(),
-            target:      String(item.target      ?? '').trim(),
+            relation:    normaliseEntityName(String(item.relation    ?? '')).toLowerCase(),
+            target:      normaliseEntityName(String(item.target      ?? '')),
             target_type: VALID_ENTITY_TYPES.has(String(item.target_type ?? '').trim())
               ? String(item.target_type).trim()
               : 'Entity',
@@ -373,12 +393,25 @@ export const processDocument = inngest.createFunction(
           await session.executeWrite(async (tx) => {
             const queries = extractedData.map((item: GraphTriple) =>
               tx.run(
-                `MERGE (s:Entity {name: $source, user_id: $userId})
+                // Case-insensitive lookup: if a node already exists with the
+                // same name modulo casing, reuse its canonical name rather than
+                // creating a second node.  COLLECT()[0] collapses multi-match
+                // safely (should be at most 1 due to prior runs of this same
+                // logic, but protects against pre-existing duplicates).
+                `OPTIONAL MATCH (existing_s:Entity {user_id: $userId})
+                 WHERE toLower(existing_s.name) = toLower($source)
+                 WITH collect(existing_s.name)[0] AS canonS
+                 MERGE (s:Entity {name: coalesce(canonS, $source), user_id: $userId})
                  ON CREATE SET s.type = $sourceType, s.created_at = datetime()
                  ON MATCH  SET s.type = CASE WHEN s.type = 'Entity' THEN $sourceType ELSE s.type END
-                 MERGE (t:Entity {name: $target, user_id: $userId})
+                 WITH s
+                 OPTIONAL MATCH (existing_t:Entity {user_id: $userId})
+                 WHERE toLower(existing_t.name) = toLower($target)
+                 WITH s, collect(existing_t.name)[0] AS canonT
+                 MERGE (t:Entity {name: coalesce(canonT, $target), user_id: $userId})
                  ON CREATE SET t.type = $targetType, t.created_at = datetime()
                  ON MATCH  SET t.type = CASE WHEN t.type = 'Entity' THEN $targetType ELSE t.type END
+                 WITH s, t
                  MERGE (s)-[r:RELATION {type: $relation, user_id: $userId}]->(t)
                  ON CREATE SET r.weight = 1, r.created_at = datetime(), r.source_files = [$filename]
                  ON MATCH  SET r.weight = r.weight + 1,
@@ -418,15 +451,60 @@ export const processDocument = inngest.createFunction(
         }).eq('id', documentId);
       });
 
-      // ── Step 5: Embeddings (currently skipped) ────────────────────────────
-      // OpenRouter has no /embeddings endpoint, so embeddings are skipped for now.
-      // Chat falls back to exact-match + substring search which works without them.
-      // The vector index is already created (in neo4j.ts init) so this step can
-      // be enabled by adding an embedding provider and populating the step body.
-      await step.run('generate-embeddings', async () => ({
-        embedded: 0,
-        status:   'skipped — no embedding provider configured',
-      }));
+      // ── Step 5: Embeddings ────────────────────────────────────────────────
+      // Activated automatically when OPENAI_API_KEY (or EMBEDDING_API_KEY) is
+      // set.  Falls back gracefully when no key is present — exact-match +
+      // substring search in the chat route still work without embeddings.
+      await step.run('generate-embeddings', async () => {
+        if (!embeddingsEnabled) {
+          return { embedded: 0, status: 'skipped — set OPENAI_API_KEY to enable' };
+        }
+
+        // Only embed entity names that don't already have an embedding stored.
+        const uniqueNames: string[] = [...new Set(
+          (extractedData as GraphTriple[]).flatMap((d) => [d.source, d.target]),
+        )];
+
+        const session = driver.session();
+        try {
+          // Check which nodes already have embeddings so we don't re-embed them
+          const existing = await session.executeRead((tx) =>
+            tx.run(
+              `MATCH (n:Entity {user_id: $userId})
+               WHERE n.name IN $names AND n.embedding IS NOT NULL
+               RETURN n.name AS name`,
+              { userId, names: uniqueNames },
+            ),
+          );
+          const alreadyEmbedded = new Set(existing.records.map((r: any) => r.get('name') as string));
+          const toEmbed = uniqueNames.filter((n) => !alreadyEmbedded.has(n));
+
+          if (toEmbed.length === 0) return { embedded: 0, status: 'all already embedded' };
+
+          const vectors = await embedBatch(toEmbed);
+          const pairs = toEmbed
+            .map((name, i) => ({ name, vector: vectors[i] }))
+            .filter((p) => p.vector !== null);
+
+          if (pairs.length === 0) return { embedded: 0, status: 'embedding API returned no vectors' };
+
+          await session.executeWrite((tx) =>
+            Promise.all(
+              pairs.map((p) =>
+                tx.run(
+                  'MATCH (n:Entity {name: $name, user_id: $userId}) SET n.embedding = $embedding',
+                  { name: p.name, userId, embedding: p.vector },
+                ),
+              ),
+            ),
+          );
+
+          console.log(`[ingest] Embedded ${pairs.length} entities (model dim=${DIMENSIONS})`);
+          return { embedded: pairs.length };
+        } finally {
+          await session.close();
+        }
+      });
 
       return { success: true, relationsExtracted: extractedData.length };
 

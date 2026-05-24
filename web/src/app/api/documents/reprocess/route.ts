@@ -35,8 +35,11 @@ export async function POST(req: NextRequest) {
     const session = driver.session();
     try {
       await session.executeWrite(async (tx) => {
+        // Handles both old source_file (string) and new source_files (array) formats
         await tx.run(
-          'MATCH ()-[r:RELATION {source_file: $filename, user_id: $uid}]->() DELETE r',
+          `MATCH ()-[r:RELATION {user_id: $uid}]->()
+           WHERE r.source_file = $filename OR $filename IN coalesce(r.source_files, [])
+           DELETE r`,
           { filename: doc.filename, uid: user.id }
         );
         // Clean up orphaned nodes

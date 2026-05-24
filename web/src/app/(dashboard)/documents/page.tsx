@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/browser-client";
 import { motion } from "framer-motion";
 import {
   FileText, Loader2, Trash2, Upload, Plus,
-  RefreshCw, AlertCircle, CheckCircle2, Clock,
+  RefreshCw, AlertCircle, CheckCircle2, Clock, Layers,
 } from "lucide-react";
 
 interface Doc {
@@ -98,6 +98,8 @@ export default function DocumentsPage() {
   const [reprocessing, setReprocessing] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState<Set<string>>(new Set());
   const [reprocessingAll, setReprocessingAll] = useState(false);
+  const [deduping, setDeduping] = useState(false);
+  const [dedupResult, setDedupResult] = useState<{ merged: number; deleted: number } | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -218,6 +220,28 @@ export default function DocumentsPage() {
     setReprocessingAll(false);
   };
 
+  const handleDedup = async () => {
+    setDeduping(true);
+    setDedupResult(null);
+    try {
+      const res = await fetch("/api/graph/dedup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dryRun: false }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setDedupResult({ merged: data.merged ?? 0, deleted: data.deleted ?? 0 });
+      } else {
+        alert("Deduplication failed.");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeduping(false);
+    }
+  };
+
   if (!ready) return null;
 
   return (
@@ -233,6 +257,25 @@ export default function DocumentsPage() {
             </p>
           </motion.div>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2">
+            {documents.length > 0 && (
+              <button
+                onClick={handleDedup}
+                disabled={deduping}
+                title="Merge entity nodes that are identical except for casing (e.g. 'Alice' and 'alice')"
+                className="flex items-center gap-1.5 px-4 py-2.5 bg-[var(--color-paper-2)] hover:bg-[var(--color-paper-3)] border-[2px] border-[var(--color-rule)] text-[var(--color-neutral)] rounded-none font-mono uppercase font-bold text-xs disabled:opacity-50"
+              >
+                {deduping
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Deduping…</>
+                  : <><Layers className="w-4 h-4" /> Deduplicate Graph</>}
+              </button>
+            )}
+            {dedupResult && (
+              <span className="text-xs font-mono text-green-700 border border-green-200 bg-green-50 px-2 py-1">
+                {dedupResult.deleted === 0
+                  ? "No duplicates found"
+                  : `Merged ${dedupResult.deleted} duplicate${dedupResult.deleted !== 1 ? "s" : ""}`}
+              </span>
+            )}
             {stuckDocs.length > 0 && (
               <button
                 onClick={handleReprocessAll}

@@ -59,22 +59,23 @@ export async function DELETE(req: NextRequest) {
     const session = driver.session();
     try {
       await session.executeWrite(async (tx) => {
-        // Delete relationships created by this file
+        // Delete relationships created by this file.
+        // Handles both formats:
+        //   - Old edges: source_file (string) written before the MERGE-key fix
+        //   - New edges: source_files (array) written after the fix
         await tx.run(
-          `
-          MATCH ()-[r:RELATION {source_file: $filename, user_id: $userId}]->()
-          DELETE r
-          `,
+          `MATCH ()-[r:RELATION {user_id: $userId}]->()
+           WHERE r.source_file = $filename
+              OR $filename IN coalesce(r.source_files, [])
+           DELETE r`,
           { filename: doc.filename, userId: user.id }
         );
 
         // Delete any nodes that now have zero relationships (orphaned)
         await tx.run(
-          `
-          MATCH (n:Entity {user_id: $userId})
-          WHERE NOT (n)--()
-          DELETE n
-          `,
+          `MATCH (n:Entity {user_id: $userId})
+           WHERE NOT (n)--()
+           DELETE n`,
           { userId: user.id }
         );
       });

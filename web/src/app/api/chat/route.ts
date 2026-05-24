@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { driver } from '@/lib/neo4j/neo4j';
 import { withRetry } from '@/lib/utils/retry';
 import { MODELS } from '@/lib/config/models';
+import { embedText, embeddingsEnabled } from '@/lib/embeddings';
 
 export const runtime = 'nodejs';
 
@@ -62,9 +63,18 @@ export async function POST(req: NextRequest) {
           // matching nodes in the already-loaded graph (no Neo4j round-trip needed).
           send({ type: 'entities', data: entities });
 
-          // Embeddings skipped — no separate embedding provider key.
-          // Chat uses exact match (Step A) + substring fallback (Step B), both work without embeddings.
+          // Generate embedding for the question if a provider is configured.
+          // Used in Step C (vector similarity search) to find semantically
+          // relevant nodes even when exact/substring name match fails.
           const validEmbeddings: number[][] = [];
+          if (embeddingsEnabled) {
+            try {
+              const vec = await embedText(question);
+              if (vec) validEmbeddings.push(vec);
+            } catch (embErr) {
+              console.warn('[chat] Query embedding failed, falling back to text search:', embErr);
+            }
+          }
 
           // ── Phase 2: graph traversal ──────────────────────────────────────
           send({ type: 'phase', data: 'traversing' });
