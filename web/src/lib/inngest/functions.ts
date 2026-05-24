@@ -175,14 +175,52 @@ Output a JSON array of objects. Each object MUST have exactly these string prope
 Rules: source and target must be different. No empty strings, no pure numbers, no punctuation-only names.
 Extract as many meaningful relationships as possible.`;
 
-const IMAGE_EXTRACT_ADDENDUM =
-  `\n\nThis is a visual diagram or image. Apply these rules carefully:
-- Examine ALL connecting lines, arrows, and branches — each one represents a relationship to extract.
-- For family trees and org charts: items positioned ABOVE are ancestors/parents of items BELOW them. A line between two people means they are related (use "parent of", "child of", "married to", or "sibling of" as appropriate from visual layout).
-- For flowcharts: arrows indicate direction of flow or dependency.
-- Extract EVERY pairwise connection visible in the diagram. Do NOT summarize groups with vague "member of" relationships — capture the actual structural relationships shown by the lines.
-- If two people share a horizontal line (spouse bar) they are partners. Vertical lines from that bar lead to children.
-Prioritize structural/hierarchical relationships over generic membership.`;
+// Applied only for image inputs. Teaches the model to recognise the visual
+// grammar of any diagram type rather than guessing one fixed structure.
+const IMAGE_EXTRACT_ADDENDUM = `
+
+This is an image. Before extracting, silently identify which type(s) of visual content it contains, then apply the matching strategy below. If multiple types appear, apply all relevant strategies.
+
+HIERARCHICAL DIAGRAMS (family trees, org charts, taxonomies, class diagrams):
+  - Every line or branch between two nodes is a relationship — extract it.
+  - Vertical position encodes hierarchy: nodes higher up are ancestors/parents/superiors.
+  - Horizontal bar connecting two nodes at the same level = peer relationship (e.g. spouses, co-founders).
+  - Do NOT collapse the whole diagram into vague "member of" triples — capture each direct connection.
+
+FLOWCHARTS / PROCESS DIAGRAMS / STATE MACHINES:
+  - Arrows represent directed relationships: source "leads to" / "triggers" / "results in" target.
+  - Diamond decision nodes: each output path is a separate "branches to" relationship.
+  - Capture every arrow, including loops and conditional branches.
+
+SCIENTIFIC DIAGRAMS (biology, chemistry, physics, engineering):
+  - Labelled arrows: X "produces" Y, X "inhibits" Y, X "converts to" Y, X "interacts with" Y.
+  - Part-whole: X "contains" Y, X "is part of" Y, X "surrounds" Y.
+  - Chemical structures: atoms connected by bonds are "bonded to"; functional groups are "part of" the molecule.
+  - Circuit diagrams: components are "connected to" / "powers" / "controls".
+  - Physics diagrams: forces, fields, or vectors between objects are "acts on" / "exerts" / "opposes".
+
+MATHEMATICAL CONTENT (equations, geometric figures, graphs/plots):
+  - Named variables or expressions in equations: X "equals" expression, X "represents" quantity.
+  - Geometric elements: A "adjacent to" B, A "inscribed in" B, A "perpendicular to" B.
+  - Graph/plot axes and data series: series "measures" quantity, A "greater than" B at condition.
+  - Proofs or derivations: step A "implies" step B.
+
+DATA VISUALISATIONS (bar charts, pie charts, scatter plots, tables):
+  - Each labelled category is an entity; its value or proportion is a "has value" or "accounts for" relationship.
+  - Comparative relationships: A "exceeds" B, A "correlates with" B.
+  - Time-series: entity at time T1 "precedes" same entity at T2.
+
+MIND MAPS / CONCEPT MAPS:
+  - Central node to each branch: "includes" / "is type of" / "related to".
+  - Labelled edges: use the label text directly as the relation.
+
+TEXT-HEAVY IMAGES (screenshots, slides, whiteboards, handwritten notes):
+  - Extract relationships from the text exactly as you would from a plain-text document.
+  - Bullet lists and numbered steps: treat each item as an entity; sequential items "followed by" the next.
+
+PHOTOGRAPHS OR ABSTRACT IMAGES WITH NO IDENTIFIABLE RELATIONAL CONTENT:
+  - Return an empty JSON array: []
+  - Do not invent relationships that are not visible or inferable from the image.`;
 
 // ── Main Inngest function ──────────────────────────────────────────────────────
 export const processDocument = inngest.createFunction(
