@@ -198,7 +198,7 @@ export default function ChatPage() {
       const res = await fetch("/api/graph/full");
       if (res.ok) {
         const data = await res.json();
-        if (data.graph?.nodes?.length > 0) {
+        if (data.graph) {
           setGraph(data.graph);
           try { localStorage.setItem(`graph_cache_${uid}`, JSON.stringify(data.graph)); } catch { /* quota */ }
         }
