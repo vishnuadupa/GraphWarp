@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser-client";
+import { MailCheck } from "lucide-react";
 
 export default function SignupPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,13 +32,37 @@ export default function SignupPage() {
         return;
       }
 
-      window.location.href = "/upload";
+      // Don't redirect — user must confirm email first
+      setConfirmed(true);
     } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  if (confirmed) {
+    return (
+      <div className="auth-shell">
+        <div className="auth-card">
+          <Link href="/" className="auth-wordmark uppercase tracking-widest text-[var(--color-ink)] hover:opacity-80 transition-opacity">
+            GRAPHWEAVE
+          </Link>
+          <div className="flex flex-col items-center gap-4 py-6 text-center">
+            <MailCheck className="w-10 h-10 text-[var(--color-ink)]" />
+            <h1 className="auth-heading">Check your inbox</h1>
+            <p className="auth-lede">
+              We sent a confirmation link to <strong>{email}</strong>.<br />
+              Click it to activate your account, then sign in.
+            </p>
+            <Link href="/login" className="btn-ink-full mt-2 w-full text-center">
+              Go to sign in
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-shell">
@@ -80,8 +104,6 @@ export default function SignupPage() {
             {loading ? "Creating..." : "Sign up"}
           </button>
         </form>
-
-
 
         <div className="auth-footer mt-6">
           Already have an account? <Link href="/login">Log in</Link>

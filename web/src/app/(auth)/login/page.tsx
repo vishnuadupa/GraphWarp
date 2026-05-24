@@ -29,7 +29,7 @@ export default function LoginPage() {
         return;
       }
 
-      window.location.href = "/upload";
+      window.location.href = "/chat";
     } catch {
       setError("An unexpected error occurred. Please try again.");
     } finally {
