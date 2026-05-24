@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
             <MailCheck className="w-10 h-10 text-[var(--color-ink)]" />
             <h1 className="auth-heading">Check your inbox</h1>
             <p className="auth-lede">
-              We sent a password reset link to <strong>{email}</strong>.<br />
+              I sent a password reset link to <strong>{email}</strong>.<br />
               Click it to choose a new password.
             </p>
             <Link href="/login" className="btn-ink-full mt-2 w-full text-center">
@@ -65,7 +65,7 @@ export default function ForgotPasswordPage() {
           GRAPHWEAVE
         </Link>
         <h1 className="auth-heading">Reset password</h1>
-        <p className="auth-lede">Enter your email and we&apos;ll send you a reset link.</p>
+        <p className="auth-lede">Enter your email and I&apos;ll send you a reset link.</p>
 
         {error && <div className="form-error">{error}</div>}
 

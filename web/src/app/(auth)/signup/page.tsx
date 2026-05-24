@@ -52,7 +52,7 @@ export default function SignupPage() {
             <MailCheck className="w-10 h-10 text-[var(--color-ink)]" />
             <h1 className="auth-heading">Check your inbox</h1>
             <p className="auth-lede">
-              We sent a confirmation link to <strong>{email}</strong>.<br />
+              I sent a confirmation link to <strong>{email}</strong>.<br />
               Click it to activate your account, then sign in.
             </p>
             <Link href="/login" className="btn-ink-full mt-2 w-full text-center">

@@ -18,7 +18,7 @@ export default function Home() {
             href="/signup"
             className="text-sm font-medium px-6 py-3 bg-[var(--color-ink)] text-[var(--color-paper)] hover:opacity-80 transition-opacity"
           >
-            Start free
+            Get started
           </Link>
         </div>
       </nav>
@@ -34,19 +34,19 @@ export default function Home() {
             <h1 className="text-[clamp(3.5rem,10vw,10rem)] font-bold tracking-tighter leading-[0.85] text-[var(--color-ink)] uppercase mb-8">
               Chat with<br />
               your data.<br />
-              <span className="text-[var(--color-neutral)]">Deterministically.</span>
+              <span className="text-[var(--color-neutral)]">Confidently.</span>
             </h1>
             
             <div className="flex flex-col md:flex-row gap-8 md:gap-24 items-start md:items-end mt-8">
               <p className="text-xl max-w-xl text-[var(--color-muted)] leading-[1.6] pointer-events-auto">
-                Stop trusting probabilistic text chunks. GraphWeave extracts a strict semantic knowledge graph from your documents, ensuring a 0% hallucination rate.
+                Stop trusting probabilistic text chunks. I built GraphWeave to extract a strict semantic knowledge graph from your documents, ensuring a 0% hallucination rate.
               </p>
               <div className="flex items-center gap-6 pointer-events-auto">
                 <Link
                   href="/signup"
                   className="group flex items-center gap-3 text-lg font-bold text-[var(--color-ink)] border-b-2 border-[var(--color-ink)] pb-1 hover:text-[var(--color-neutral)] hover:border-[var(--color-neutral)] transition-colors"
                 >
-                  Start free
+                  Get started
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <Link
@@ -74,18 +74,18 @@ export default function Home() {
           />
           <FeatureCard
             num="03"
-            title="Tenant Isolation"
-            desc="Enterprise RLS and strict Cypher driver constraints guarantee your graph data never leaks to other users."
+            title="Secure Privacy"
+            desc="Postgres Row Level Security (RLS) and strict Cypher constraints guarantee your graph data remains private and fully isolated."
           />
         </section>
 
         {/* Ft4 Dense colophon footer */}
         <footer className="px-6 py-16 grid grid-cols-1 md:grid-cols-12 gap-12 font-mono text-xs leading-[1.7] text-[var(--color-neutral)] bg-[var(--color-paper-2)]">
           <div className="md:col-span-6 max-w-md">
-            <div className="font-bold text-[var(--color-ink)] uppercase tracking-widest mb-4">GraphWeave Systems</div>
+            <div className="font-bold text-[var(--color-ink)] uppercase tracking-widest mb-4">GraphWeave Project</div>
             <p className="mb-6">
-              A premium knowledge engine built for deterministic retrieval.
-              Architecture relies on Neo4j graph traversal and OpenRouter LLMs for
+              A premium personal knowledge engine built for confident retrieval.
+              I designed the architecture around Neo4j graph traversal and OpenRouter LLMs for
               zero-hallucination factual synthesis.
             </p>
             <p>Built in 2026. All rights reserved.</p>

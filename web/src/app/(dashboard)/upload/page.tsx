@@ -268,7 +268,7 @@ export default function UploadPage() {
           </div>
           <h1 className="text-4xl font-bold tracking-tighter uppercase text-[var(--color-ink)]">Ingest Documents</h1>
           <p className="text-[var(--color-neutral)] text-lg max-w-2xl mx-auto leading-relaxed">
-            Drop any file up to 1 MB. It uploads to your private tenant, then the graph is extracted automatically in the background.
+            Drop any file up to 1 MB. It uploads to your private storage, then the graph is extracted automatically in the background.
           </p>
         </motion.div>
 

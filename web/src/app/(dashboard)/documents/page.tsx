@@ -305,7 +305,7 @@ export default function DocumentsPage() {
               <FileText className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-bold tracking-tight mb-2 uppercase">No documents yet</h3>
-            <p className="text-[var(--color-neutral)] text-center max-w-sm mb-8 leading-relaxed font-medium">Upload your first document to begin building your deterministic knowledge graph.</p>
+            <p className="text-[var(--color-neutral)] text-center max-w-sm mb-8 leading-relaxed font-medium">Upload your first document to begin building your confident knowledge graph.</p>
             <Link href="/upload" className="flex items-center gap-2 px-6 py-3 bg-black text-[var(--color-paper)] hover:opacity-85 rounded-none font-mono uppercase font-bold text-sm">
               <Upload className="w-4 h-4" /> Upload Document
             </Link>
