@@ -29,6 +29,24 @@ export default function LoginPage() {
         return;
       }
 
+      // Smart redirect:
+      // - No documents at all  → /upload  (onboarding)
+      // - Has completed docs   → /chat    (returning user, ready to query)
+      // - Has docs but none ready yet → /documents (check processing status)
+      try {
+        const res = await fetch("/api/documents");
+        if (res.ok) {
+          const { documents = [] } = await res.json();
+          if (documents.length === 0) {
+            window.location.href = "/upload";
+            return;
+          }
+          const hasReady = documents.some((d: any) => d.status === "Completed");
+          window.location.href = hasReady ? "/chat" : "/documents";
+          return;
+        }
+      } catch { /* fall through to default */ }
+
       window.location.href = "/chat";
     } catch {
       setError("An unexpected error occurred. Please try again.");

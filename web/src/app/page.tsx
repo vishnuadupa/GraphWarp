@@ -41,33 +41,41 @@ export default function Home() {
               <p className="text-xl max-w-xl text-[var(--color-muted)] leading-[1.6] pointer-events-auto">
                 Stop trusting probabilistic text chunks. GraphWeave extracts a strict semantic knowledge graph from your documents, ensuring a 0% hallucination rate.
               </p>
-              <Link
-                href="/signup"
-                className="group flex items-center gap-3 text-lg font-bold text-[var(--color-ink)] border-b-2 border-[var(--color-ink)] pb-1 hover:text-[var(--color-neutral)] hover:border-[var(--color-neutral)] transition-colors pointer-events-auto"
-              >
-                Enter the platform
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
+              <div className="flex items-center gap-6 pointer-events-auto">
+                <Link
+                  href="/signup"
+                  className="group flex items-center gap-3 text-lg font-bold text-[var(--color-ink)] border-b-2 border-[var(--color-ink)] pb-1 hover:text-[var(--color-neutral)] hover:border-[var(--color-neutral)] transition-colors"
+                >
+                  Start free
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  href="/login"
+                  className="text-lg font-medium text-[var(--color-neutral)] hover:text-[var(--color-ink)] transition-colors"
+                >
+                  Sign in
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Feature Grid - Brutal borders */}
         <section className="grid grid-cols-1 md:grid-cols-3 border-b-[2px] border-[var(--color-rule)]">
-          <FeatureCard 
+          <FeatureCard
             num="01"
-            title="Semantic Resolution"
-            desc="We embed structural nodes, not paragraphs. Traverse the graph without losing the context of synonyms."
+            title="Graph Extraction"
+            desc="Every upload is torn apart by a vision-capable LLM and reassembled as a strict entity-relationship graph. No chunks, no embeddings drift."
           />
-          <FeatureCard 
+          <FeatureCard
             num="02"
-            title="Parallel Extraction"
-            desc="Fan-out workers tear through massive PDFs in seconds using Gemini 3.1 Flash Lite."
+            title="Deterministic Answers"
+            desc="Answers are synthesised from exact graph traversal — not fuzzy vector similarity. Every fact is traceable back to a source file."
           />
-          <FeatureCard 
+          <FeatureCard
             num="03"
             title="Tenant Isolation"
-            desc="Enterprise RLS and strict Cypher driver constraints guarantee your data never leaks."
+            desc="Enterprise RLS and strict Cypher driver constraints guarantee your graph data never leaks to other users."
           />
         </section>
 
@@ -76,8 +84,8 @@ export default function Home() {
           <div className="md:col-span-6 max-w-md">
             <div className="font-bold text-[var(--color-ink)] uppercase tracking-widest mb-4">GraphWeave Systems</div>
             <p className="mb-6">
-              A premium knowledge engine built for deterministic retrieval. 
-              Architecture relies on Neo4j vector indexing and Google Generative AI for 
+              A premium knowledge engine built for deterministic retrieval.
+              Architecture relies on Neo4j graph traversal and OpenRouter LLMs for
               zero-hallucination factual synthesis.
             </p>
             <p>Built in 2026. All rights reserved.</p>

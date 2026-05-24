@@ -703,6 +703,19 @@ export default function ChatPage() {
           )}
         </div>
 
+        {/* Processing banner — shown when any uploaded doc is still being extracted */}
+        {availableDocs.some((d: any) => d.status === "Processing") && (
+          <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-50 border-b-[2px] border-amber-200 text-amber-800 text-xs font-mono shrink-0">
+            <Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+            <span>
+              {availableDocs.filter((d: any) => d.status === "Processing").length} file
+              {availableDocs.filter((d: any) => d.status === "Processing").length !== 1 ? "s" : ""}{" "}
+              still being extracted — results will appear once processing completes.
+            </span>
+            <a href="/documents" className="ml-auto underline hover:text-amber-900 shrink-0">View status</a>
+          </div>
+        )}
+
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-6 py-8 space-y-8 bg-[var(--color-paper)]">
           {convLoading ? (
