@@ -53,9 +53,17 @@ export function GlobalDropzone({ children }: { children: ReactNode }) {
       return;
     }
 
+    const ALLOWED_EXTENSIONS = new Set(['.docx', '.txt', '.csv', '.xlsx', '.xls']);
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
     const validFiles = files.filter(f => {
-      if (f.size > 1 * 1024 * 1024) {
-        alert(`File ${f.name} exceeds the 1MB limit.`);
+      const ext = "." + f.name.split(".").pop()?.toLowerCase();
+      if (!ALLOWED_EXTENSIONS.has(ext)) {
+        alert(`File ${f.name} has an unsupported format. Accepted formats: ${[...ALLOWED_EXTENSIONS].join(", ")}`);
+        return false;
+      }
+      if (f.size > MAX_FILE_SIZE) {
+        alert(`File ${f.name} exceeds the 10MB limit.`);
         return false;
       }
       return true;

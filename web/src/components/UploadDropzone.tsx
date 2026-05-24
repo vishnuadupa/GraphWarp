@@ -25,7 +25,7 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
           return false;
         }
         if (f.size > MAX_FILE_SIZE) {
-          alert(`File ${f.name} exceeds the 1MB limit.`);
+          alert(`File ${f.name} exceeds the 10MB limit.`);
           return false;
         }
         return true;
@@ -118,7 +118,7 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
             </span>
           </p>
           <p className="text-xs text-[var(--color-neutral)] font-mono uppercase tracking-widest pt-1">
-            {ACCEPTED_TYPES.join("  ·  ")} (Max 1MB)
+            {ACCEPTED_TYPES.join("  ·  ")} (Max 10MB)
           </p>
         </div>
       </label>
