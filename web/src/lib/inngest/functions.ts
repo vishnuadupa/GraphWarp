@@ -7,6 +7,7 @@ import { MODELS } from '../config/models';
 import { embedBatch, embeddingsEnabled, DIMENSIONS } from '../embeddings';
 import * as mammoth from 'mammoth';
 import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
 
 /**
  * Normalises an extracted entity name to prevent trivial duplicates:
@@ -180,6 +181,24 @@ function parseJsonToGraph(buffer: Buffer): GraphTriple[] {
   return triples;
 }
 
+/**
+ * XLSX / XLS → graph triples, no LLM.
+ * Reads the first sheet, converts to CSV format, then delegates to parseCsvToGraph.
+ */
+function parseXlsxToGraph(buffer: Buffer): GraphTriple[] {
+  try {
+    const workbook = XLSX.read(buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    if (!sheetName) return [];
+    const sheet = workbook.Sheets[sheetName];
+    const csv = XLSX.utils.sheet_to_csv(sheet);
+    return parseCsvToGraph(Buffer.from(csv, 'utf8'));
+  } catch (err: any) {
+    console.warn('[ingest] XLSX parse failed:', err?.message);
+    return [];
+  }
+}
+
 const VALID_ENTITY_TYPES = new Set([
   'Person', 'Organization', 'Location', 'Event', 'Concept', 'Technology', 'Entity',
 ]);
@@ -275,68 +294,45 @@ export const processDocument = inngest.createFunction(
         const rawBuffer = Buffer.from(fileData.buffer, 'base64');
         const ext = fileData.ext;
 
+        // ── Route by accepted file type ───────────────────────────────────────
+        const SUPPORTED = new Set(['csv', 'xlsx', 'xls', 'docx', 'txt']);
+        if (!SUPPORTED.has(ext)) {
+          throw new Error(
+            `Unsupported file type ".${ext}". Accepted formats: .docx, .txt, .csv, .xlsx, .xls`,
+          );
+        }
+
         // Structured files: deterministic parse, no LLM cost
         if (ext === 'csv') {
           console.log('[ingest] CSV — parsing directly (no LLM)');
           return parseCsvToGraph(rawBuffer);
         }
-        if (ext === 'json') {
-          console.log('[ingest] JSON — parsing directly (no LLM)');
-          return parseJsonToGraph(rawBuffer);
+        if (ext === 'xlsx' || ext === 'xls') {
+          console.log(`[ingest] Excel (${ext}) — parsing directly (no LLM)`);
+          return parseXlsxToGraph(rawBuffer);
         }
 
-        // Unstructured files: extract text / build vision input first
-        let promptInput: string | { type: 'image_url'; image_url: { url: string } };
-
-        if (['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
-          throw new Error("Image ingestion is not supported when using a text-only extraction model (DeepSeek). Please upload text-based files such as CSV, JSON, PDF, DOCX, or TXT.");
-        } else if (ext === 'pdf') {
-          try {
-            // pdf-parse ships CJS; the `default` key exists at runtime but
-            // TypeScript's ESM types don't declare it — cast via any.
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const pdfMod = await import('pdf-parse') as any;
-            const pdfParse = pdfMod.default ?? pdfMod;
-            const pdfData = await pdfParse(rawBuffer);
-            promptInput = pdfData.text;
-            console.log(`[ingest] PDF — extracted ${pdfData.text.length} chars`);
-          } catch (pdfErr: any) {
-            console.warn(`[ingest] pdf-parse failed (${pdfErr.message}), using raw text fallback`);
-            promptInput = rawBuffer.toString('utf8');
-          }
-        } else if (ext === 'docx') {
+        // Unstructured text files: extract text then run LLM
+        let promptInput: string;
+        if (ext === 'docx') {
           const result = await mammoth.extractRawText({ buffer: rawBuffer });
           promptInput = result.value;
           console.log(`[ingest] DOCX — extracted ${result.value.length} chars`);
         } else {
+          // txt and any other accepted text format
           promptInput = rawBuffer.toString('utf8');
           console.log(`[ingest] Text (${ext}) — ${promptInput.length} chars`);
         }
 
-        // Qwen3.5 Plus via OpenRouter — handles text and vision.
-        // Vision: instruction + image in the SAME user message (required for vision models).
-        // No response_format — conflicts with JSON array output and breaks vision requests.
-        const isImage = typeof promptInput !== 'string';
         const extractionNote = '\n\nOutput ONLY a raw JSON array, no markdown, no code blocks.';
-        // For images, add explicit visual-hierarchy guidance so the model extracts
-        // structural relationships (parent-child lines) rather than generic "member of" triples.
-        const imageAddendum = isImage ? IMAGE_EXTRACT_ADDENDUM : '';
 
         const result = await withRetry(() =>
           getOpenRouter().chat.completions.create({
             model: MODELS.EXTRACTION,
-            messages: isImage
-              ? [{
-                  role: 'user',
-                  content: [
-                    { type: 'text', text: EXTRACT_PROMPT + imageAddendum + extractionNote },
-                    promptInput as { type: 'image_url'; image_url: { url: string } },
-                  ],
-                }]
-              : [
-                  { role: 'system', content: EXTRACT_PROMPT + extractionNote },
-                  { role: 'user',   content: promptInput as string },
-                ],
+            messages: [
+              { role: 'system', content: EXTRACT_PROMPT + extractionNote },
+              { role: 'user',   content: promptInput },
+            ],
           }),
         );
 

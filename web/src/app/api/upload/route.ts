@@ -25,6 +25,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Forbidden: Invalid storage path' }, { status: 403 });
     }
 
+    // Server-side file type guard — only allow the supported formats
+    const ALLOWED_EXTENSIONS = new Set(['.docx', '.txt', '.csv', '.xlsx', '.xls']);
+    const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
+    const ext = '.' + (filename.split('.').pop()?.toLowerCase() ?? '');
+    if (!ALLOWED_EXTENSIONS.has(ext)) {
+      return NextResponse.json(
+        { error: `Unsupported file type "${ext}". Accepted formats: ${[...ALLOWED_EXTENSIONS].join(', ')}` },
+        { status: 415 },
+      );
+    }
+
+    // Check file size via storage metadata before creating the DB record
+    const { data: fileMeta } = await supabaseAdmin.storage
+      .from('documents')
+      .list(filePath.split('/').slice(0, -1).join('/'), {
+        search: filePath.split('/').pop(),
+      });
+    const fileSize = fileMeta?.[0]?.metadata?.size ?? 0;
+    if (fileSize > MAX_FILE_BYTES) {
+      // Remove the oversized file from storage
+      await supabaseAdmin.storage.from('documents').remove([filePath]);
+      return NextResponse.json(
+        { error: `File exceeds the 10 MB size limit (${(fileSize / 1024 / 1024).toFixed(1)} MB).` },
+        { status: 413 },
+      );
+    }
+
     const { data: document, error: insertError } = await supabase
       .from('documents')
       .insert({
