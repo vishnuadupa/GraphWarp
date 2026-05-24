@@ -289,9 +289,7 @@ export const processDocument = inngest.createFunction(
         let promptInput: string | { type: 'image_url'; image_url: { url: string } };
 
         if (['png', 'jpg', 'jpeg', 'webp'].includes(ext)) {
-          const mimeType = `image/${ext === 'jpg' ? 'jpeg' : ext}`;
-          promptInput = { type: 'image_url', image_url: { url: `data:${mimeType};base64,${fileData.buffer}` } };
-          console.log(`[ingest] Image (${ext}) — sending to Qwen vision`);
+          throw new Error("Image ingestion is not supported when using a text-only extraction model (DeepSeek). Please upload text-based files such as CSV, JSON, PDF, DOCX, or TXT.");
         } else if (ext === 'pdf') {
           try {
             // pdf-parse ships CJS; the `default` key exists at runtime but

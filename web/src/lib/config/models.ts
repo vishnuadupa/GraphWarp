@@ -4,11 +4,10 @@
  */
 export const MODELS = {
   /**
-   * Vision-capable extraction model.
-   * Handles text, images (base64 data URL), and structured prompts.
-   * Used by the Inngest ingestion pipeline.
+   * Fast, cost-effective extraction model.
+   * Switched to DeepSeek for high-performance text-based relationship extraction.
    */
-  EXTRACTION: 'qwen/qwen3.5-plus-20260420',
+  EXTRACTION: 'deepseek/deepseek-v4-flash',
 
   /**
    * Fast, cost-effective chat / RAG synthesis model.
