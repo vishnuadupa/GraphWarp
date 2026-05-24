@@ -789,9 +789,9 @@ export default function ChatPage() {
                 <div className="w-12 h-12 rounded-none border-[1px] border-[var(--color-rule)] border-solid bg-[var(--color-paper)] flex items-center justify-center mx-auto mb-4 text-[var(--color-ink)]">
                   <Network className="w-6 h-6" />
                 </div>
-                <p className="text-xs uppercase tracking-widest font-bold font-mono text-[var(--color-ink)] leading-relaxed">Zero-Hallucination<br />Graph Context RAG</p>
+                <p className="text-xs uppercase tracking-widest font-bold font-mono text-[var(--color-ink)] leading-relaxed">Verifiable<br />Graph Context RAG</p>
                 <p className="text-xs text-[var(--color-neutral)] font-body mt-2 leading-relaxed">
-                  Query the knowledge graph with zero hallucination guarantee. Entities and facts are extracted automatically from private workspace ingestion.
+                  Query the knowledge graph with verifiable grounding. Entities and facts are extracted automatically from private workspace ingestion.
                 </p>
               </div>
               {starterQs.length > 0 && (

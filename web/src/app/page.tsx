@@ -39,7 +39,7 @@ export default function Home() {
             
             <div className="flex flex-col md:flex-row gap-8 md:gap-24 items-start md:items-end mt-8">
               <p className="text-xl max-w-xl text-[var(--color-muted)] leading-[1.6] pointer-events-auto">
-                Stop trusting probabilistic text chunks. I built GraphWeave to extract a strict semantic knowledge graph from your documents, ensuring a 0% hallucination rate.
+                Stop trusting probabilistic text chunks. I built GraphWeave to extract a strict semantic knowledge graph from your documents, ensuring highly accurate, fully traceable facts.
               </p>
               <div className="flex items-center gap-6 pointer-events-auto">
                 <Link
@@ -86,7 +86,7 @@ export default function Home() {
             <p className="mb-6">
               A premium personal knowledge engine built for confident retrieval.
               I designed the architecture around Neo4j graph traversal and OpenRouter LLMs for
-              zero-hallucination factual synthesis.
+              verifiable, factual synthesis.
             </p>
             <p>Built in 2026. All rights reserved.</p>
           </div>
