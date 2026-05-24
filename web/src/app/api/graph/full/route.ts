@@ -16,9 +16,13 @@ export async function GET(req: Request) {
 
     const session = driver.session();
     try {
-      const query = docFilter
+      // Doc filter handles both storage formats:
+    //   - Old edges: r.source_file (string) written before the MERGE-key fix
+    //   - New edges: r.source_files (array) written after the fix
+    const query = docFilter
         ? `MATCH (n:Entity {user_id: $userId})-[r:RELATION]->(m:Entity {user_id: $userId})
-           WHERE r.source_file = $docFilter OR r.source_file CONTAINS $docFilter
+           WHERE (r.source_file = $docFilter OR r.source_file CONTAINS $docFilter)
+              OR any(f IN coalesce(r.source_files, []) WHERE f = $docFilter OR f CONTAINS $docFilter)
            WITH n, r, m,
                 COUNT { (n)-[:RELATION]-() } AS nDegree,
                 COUNT { (m)-[:RELATION]-() } AS mDegree

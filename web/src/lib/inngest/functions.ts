@@ -169,11 +169,20 @@ const EXTRACT_PROMPT =
 Output a JSON array of objects. Each object MUST have exactly these string properties:
   - "source": entity name, 2–100 characters, no leading/trailing spaces, capitalized (e.g. "Alice Smith", "Apple Inc")
   - "source_type": MUST be one of exactly: Person, Organization, Location, Event, Concept, Technology, Entity
-  - "relation": relationship phrase, 2–50 characters, lowercase (e.g. "works at", "founded", "located in")
+  - "relation": relationship phrase, 2–50 characters, lowercase (e.g. "works at", "founded", "located in", "parent of", "child of", "married to", "sibling of")
   - "target": entity name, same rules as source
   - "target_type": MUST be one of exactly: Person, Organization, Location, Event, Concept, Technology, Entity
 Rules: source and target must be different. No empty strings, no pure numbers, no punctuation-only names.
 Extract as many meaningful relationships as possible.`;
+
+const IMAGE_EXTRACT_ADDENDUM =
+  `\n\nThis is a visual diagram or image. Apply these rules carefully:
+- Examine ALL connecting lines, arrows, and branches — each one represents a relationship to extract.
+- For family trees and org charts: items positioned ABOVE are ancestors/parents of items BELOW them. A line between two people means they are related (use "parent of", "child of", "married to", or "sibling of" as appropriate from visual layout).
+- For flowcharts: arrows indicate direction of flow or dependency.
+- Extract EVERY pairwise connection visible in the diagram. Do NOT summarize groups with vague "member of" relationships — capture the actual structural relationships shown by the lines.
+- If two people share a horizontal line (spouse bar) they are partners. Vertical lines from that bar lead to children.
+Prioritize structural/hierarchical relationships over generic membership.`;
 
 // ── Main Inngest function ──────────────────────────────────────────────────────
 export const processDocument = inngest.createFunction(
@@ -253,6 +262,9 @@ export const processDocument = inngest.createFunction(
         // No response_format — conflicts with JSON array output and breaks vision requests.
         const isImage = typeof promptInput !== 'string';
         const extractionNote = '\n\nOutput ONLY a raw JSON array, no markdown, no code blocks.';
+        // For images, add explicit visual-hierarchy guidance so the model extracts
+        // structural relationships (parent-child lines) rather than generic "member of" triples.
+        const imageAddendum = isImage ? IMAGE_EXTRACT_ADDENDUM : '';
 
         const result = await withRetry(() =>
           getOpenRouter().chat.completions.create({
@@ -261,7 +273,7 @@ export const processDocument = inngest.createFunction(
               ? [{
                   role: 'user',
                   content: [
-                    { type: 'text', text: EXTRACT_PROMPT + extractionNote },
+                    { type: 'text', text: EXTRACT_PROMPT + imageAddendum + extractionNote },
                     promptInput as { type: 'image_url'; image_url: { url: string } },
                   ],
                 }]

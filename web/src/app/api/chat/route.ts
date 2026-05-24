@@ -268,6 +268,16 @@ export async function POST(req: NextRequest) {
             });
           }
 
+          // ── Hard guardrail: refuse to synthesise when the graph has no data ─
+          // Without this, the LLM answers from parametric training knowledge,
+          // which defeats the purpose of a knowledge-graph-grounded RAG system.
+          if (nodes.length === 0) {
+            send({ type: 'text', data: "I couldn't find any relevant information in your knowledge graph for that question. Make sure the document has finished processing and try rephrasing using the exact entity names visible in the graph." });
+            send({ type: 'phase', data: null });
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+            return;
+          }
+
           // ── Phase 3: synthesis with multi-turn context ────────────────────
           send({ type: 'phase', data: 'answering' });
 

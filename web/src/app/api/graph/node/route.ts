@@ -35,11 +35,15 @@ export async function POST(req: NextRequest) {
           `MATCH (n:Entity {user_id: $uid})-[r:RELATION]-(m:Entity {user_id: $uid})
            WHERE toLower(n.name) = toLower($nodeId)
            RETURN
-             r.type        AS relType,
-             m.name        AS other,
-             m.type        AS otherType,
-             r.source_file AS sourceFile,
-             r.weight      AS weight,
+             r.type AS relType,
+             m.name AS other,
+             m.type AS otherType,
+             CASE
+               WHEN size(coalesce(r.source_files, [])) > 0 THEN coalesce(r.source_files, [])[0]
+               ELSE coalesce(r.source_file, 'Unknown')
+             END AS sourceFile,
+             coalesce(r.source_files, CASE WHEN r.source_file IS NOT NULL THEN [r.source_file] ELSE [] END) AS sourceFiles,
+             r.weight AS weight,
              startNode(r) = n AS isOutgoing
            ORDER BY r.weight DESC, relType`,
           { nodeId, uid: user.id }
@@ -56,11 +60,15 @@ export async function POST(req: NextRequest) {
         other:      r.get('other'),
         otherType:  r.get('otherType') ?? 'Entity',
         sourceFile: r.get('sourceFile') ?? 'Unknown',
+        sourceFiles: (r.get('sourceFiles') as string[] | null) ?? [],
         weight:     r.get('weight')?.toNumber?.() ?? 1,
         isOutgoing: r.get('isOutgoing'),
       }));
 
-      const sourceDocs = [...new Set(relationships.map((r) => r.sourceFile))];
+      // Collect all unique source documents across all relationships (both old and new format)
+      const sourceDocs = [...new Set(
+        relationships.flatMap((r) => r.sourceFiles.length > 0 ? r.sourceFiles : [r.sourceFile])
+      )].filter((f) => f && f !== 'Unknown');
 
       return NextResponse.json({
         node: {
