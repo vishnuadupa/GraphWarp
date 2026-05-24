@@ -325,13 +325,16 @@ export const processDocument = inngest.createFunction(
               tx.run(
                 `MERGE (s:Entity {name: $source, user_id: $userId})
                  ON CREATE SET s.type = $sourceType, s.created_at = datetime()
-                 ON MATCH  SET s.type = coalesce(s.type, $sourceType)
+                 ON MATCH  SET s.type = CASE WHEN s.type = 'Entity' THEN $sourceType ELSE s.type END
                  MERGE (t:Entity {name: $target, user_id: $userId})
                  ON CREATE SET t.type = $targetType, t.created_at = datetime()
-                 ON MATCH  SET t.type = coalesce(t.type, $targetType)
-                 MERGE (s)-[r:RELATION {type: $relation, user_id: $userId, source_file: $filename}]->(t)
-                 ON CREATE SET r.weight = 1, r.created_at = datetime()
-                 ON MATCH  SET r.weight = r.weight + 1`,
+                 ON MATCH  SET t.type = CASE WHEN t.type = 'Entity' THEN $targetType ELSE t.type END
+                 MERGE (s)-[r:RELATION {type: $relation, user_id: $userId}]->(t)
+                 ON CREATE SET r.weight = 1, r.created_at = datetime(), r.source_files = [$filename]
+                 ON MATCH  SET r.weight = r.weight + 1,
+                              r.source_files = CASE WHEN $filename IN coalesce(r.source_files, [])
+                                               THEN coalesce(r.source_files, [])
+                                               ELSE coalesce(r.source_files, []) + [$filename] END`,
                 {
                   source:     item.source,
                   sourceType: item.source_type,

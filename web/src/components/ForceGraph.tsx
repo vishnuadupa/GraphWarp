@@ -94,6 +94,19 @@ export function ForceGraph({
   useEffect(() => { pathNodeRef.current  = pathNodeIds ?? new Set(); }, [pathNodeIds]);
   useEffect(() => { pathLinkRef.current  = pathLinkIds ?? new Set(); }, [pathLinkIds]);
 
+  // Filter graph based on hiddenTypes (hoisted above effects that depend on filteredData)
+  const filteredData = useMemo(() => {
+    if (!hiddenTypes || hiddenTypes.size === 0) return data;
+    const visibleNodes = data.nodes.filter((n) => !hiddenTypes.has(n.type ?? "Entity"));
+    const visibleIds = new Set(visibleNodes.map((n) => n.id));
+    const visibleLinks = data.links.filter((l) => {
+      const sId = typeof l.source === "object" ? (l.source as GraphNode).id : l.source;
+      const tId = typeof l.target === "object" ? (l.target as GraphNode).id : l.target;
+      return visibleIds.has(sId) && visibleIds.has(tId);
+    });
+    return { nodes: visibleNodes, links: visibleLinks };
+  }, [data, hiddenTypes]);
+
   // Track which nodes are newly added — triggers entrance ripple animation
   useEffect(() => {
     const now = performance.now();
@@ -144,19 +157,6 @@ export function ForceGraph({
     });
     ro.observe(el); return () => ro.disconnect();
   }, []);
-
-  // Filter graph based on hiddenTypes
-  const filteredData = useMemo(() => {
-    if (!hiddenTypes || hiddenTypes.size === 0) return data;
-    const visibleNodes = data.nodes.filter((n) => !hiddenTypes.has(n.type ?? "Entity"));
-    const visibleIds = new Set(visibleNodes.map((n) => n.id));
-    const visibleLinks = data.links.filter((l) => {
-      const sId = typeof l.source === "object" ? (l.source as GraphNode).id : l.source;
-      const tId = typeof l.target === "object" ? (l.target as GraphNode).id : l.target;
-      return visibleIds.has(sId) && visibleIds.has(tId);
-    });
-    return { nodes: visibleNodes, links: visibleLinks };
-  }, [data, hiddenTypes]);
 
   // Apply layout: force uses D3 physics; others pre-compute fixed positions (fx/fy)
   useEffect(() => {

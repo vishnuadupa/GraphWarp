@@ -80,14 +80,35 @@ export async function POST(req: NextRequest) {
             subgraphData = await session.executeRead(async (tx) => {
               const nodeMap = new Map<string, any>();
               const linkMap = new Map<string, boolean>();
-              const pathStrings = new Set<string>();
+              // Separate first-hop (direct) and second-hop (context) paths for structured synthesis
+              const directPathStrings = new Set<string>();
+              const contextPathStrings = new Set<string>();
 
-              // Normalize selectedDocs to check filenames resiliently
-              const docFilter = selectedDocs.length > 0
-                ? 'AND (r1.source_file IN $selectedDocs OR any(doc IN $selectedDocs WHERE r1.source_file CONTAINS doc))'
+              // Doc filter for r1 — checks source_files array (new format) with fallback
+              // to source_file string (old format) for backward compatibility.
+              const docFilterR1 = selectedDocs.length > 0
+                ? `AND any(f IN coalesce(r1.source_files, CASE WHEN r1.source_file IS NOT NULL THEN [r1.source_file] ELSE [] END)
+                       WHERE f IN $selectedDocs OR any(doc IN $selectedDocs WHERE f CONTAINS doc))`
+                : '';
+
+              // Doc filter for r2 — same logic, applied to the OPTIONAL MATCH hop
+              // so second-hop context is restricted to the selected documents too.
+              const docFilterR2 = selectedDocs.length > 0
+                ? `AND any(f IN coalesce(r2.source_files, CASE WHEN r2.source_file IS NOT NULL THEN [r2.source_file] ELSE [] END)
+                       WHERE f IN $selectedDocs OR any(doc IN $selectedDocs WHERE f CONTAINS doc))`
                 : '';
 
               const lowerEntities = entities.map((e) => e.toLowerCase());
+
+              // Resolve a readable source label from a relationship's source_files array
+              // (new format) or legacy source_file string (old edges).
+              const getSourceLabel = (relProps: Record<string, any>): string => {
+                const files: string[] = Array.isArray(relProps.source_files)
+                  ? relProps.source_files
+                  : relProps.source_file ? [relProps.source_file] : [];
+                const label = files.find((f) => f && f !== 'Unknown' && f !== 'Unknown Source');
+                return label ?? '';
+              };
 
               const processRecords = (records: any[]) => {
                 records.forEach((record) => {
@@ -102,9 +123,8 @@ export async function POST(req: NextRequest) {
                   const mName = (mNode.properties.name ?? '').trim();
                   if (!sName || !mName) return; // skip nodes with empty/null names
                   const r1Type = r1.properties.type;
-                  const r1Src = r1.properties.source_file;
-                  const r1SrcValid = r1Src && r1Src !== 'Unknown' && r1Src !== 'Unknown Source';
-                  const r1Prefix = r1SrcValid ? `[Source: ${r1Src}] ` : '';
+                  const r1Label = getSourceLabel(r1.properties);
+                  const r1Prefix = r1Label ? `[Source: ${r1Label}] ` : '';
                   const r1W = r1.properties.weight?.toNumber?.() ?? 1;
 
                   if (!nodeMap.has(sName)) nodeMap.set(sName, { id: sName, name: sName, type: sNode.properties.type ?? 'Entity', degree: sDeg });
@@ -116,18 +136,15 @@ export async function POST(req: NextRequest) {
                     links.push({ source: fwd ? sName : mName, target: fwd ? mName : sName, label: r1Type, weight: r1W });
                     linkMap.set(lid1, true);
                   }
-                  // Use actual relationship direction in path string
-                  pathStrings.add(`${r1Prefix}${fwd ? sName : mName} --[${r1Type}]--> ${fwd ? mName : sName}`);
+                  directPathStrings.add(`${r1Prefix}${fwd ? sName : mName} --[${r1Type}]--> ${fwd ? mName : sName}`);
 
                   const r2 = record.get('r2');
                   if (r2) {
                     const kNode = record.get('k');
-                    // Skip k if it loops back to start node or is the same as m (prevents circular/self-loop path strings)
                     if (kNode && kNode.identity.toNumber() !== sNode.identity.toNumber() && kNode.identity.toNumber() !== mNode.identity.toNumber()) {
                       const r2Type = r2.properties.type;
-                      const r2Src = r2.properties.source_file;
-                      const r2SrcValid = r2Src && r2Src !== 'Unknown' && r2Src !== 'Unknown Source';
-                      const r2Prefix = r2SrcValid ? `[Source: ${r2Src}] ` : '';
+                      const r2Label = getSourceLabel(r2.properties);
+                      const r2Prefix = r2Label ? `[Source: ${r2Label}] ` : '';
                       const r2W = r2.properties.weight?.toNumber?.() ?? 1;
                       const kName = kNode.properties.name;
                       if (!nodeMap.has(kName)) nodeMap.set(kName, { id: kName, name: kName, type: kNode.properties.type ?? 'Entity', degree: 1 });
@@ -137,8 +154,7 @@ export async function POST(req: NextRequest) {
                         links.push({ source: fwd2 ? mName : kName, target: fwd2 ? kName : mName, label: r2Type, weight: r2W });
                         linkMap.set(lid2, true);
                       }
-                      // Use actual relationship direction in path string
-                      pathStrings.add(`${r2Prefix}${fwd2 ? mName : kName} --[${r2Type}]--> ${fwd2 ? kName : mName}`);
+                      contextPathStrings.add(`${r2Prefix}${fwd2 ? mName : kName} --[${r2Type}]--> ${fwd2 ? kName : mName}`);
                     }
                   }
                 });
@@ -155,19 +171,20 @@ export async function POST(req: NextRequest) {
                 });
               };
 
-              // Step A: Find start nodes using case-insensitive exact text search (highly reliable fallback/addition)
+              // Step A: Find start nodes using case-insensitive exact text search
               if (lowerEntities.length > 0) {
                 const textRes = await tx.run(
                   `MATCH (startNode:Entity)
                    WHERE startNode.user_id = $uid AND toLower(startNode.name) IN $lowerEntities
                    MATCH (startNode)-[r1:RELATION]-(m:Entity)
+                   WHERE m.user_id = $uid ${docFilterR1}
                    OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                   WHERE m.user_id = $uid AND (k IS NULL OR (k.user_id = $uid AND k <> startNode))
-                   ${docFilter}
+                   WHERE k.user_id = $uid AND k <> startNode AND k <> m ${docFilterR2}
                    WITH startNode, r1, m, r2, k,
                         COUNT { (startNode)-[:RELATION]-() } AS sDeg,
                         COUNT { (m)-[:RELATION]-() } AS mDeg
                    RETURN startNode, r1, m, r2, k, sDeg, mDeg
+                   ORDER BY r1.weight DESC
                    LIMIT 50`,
                   { uid: user.id, lowerEntities, selectedDocs }
                 );
@@ -182,13 +199,14 @@ export async function POST(req: NextRequest) {
                   `MATCH (startNode:Entity)
                    WHERE startNode.user_id = $uid AND any(entity IN $lowerEntities WHERE toLower(startNode.name) CONTAINS entity OR entity CONTAINS toLower(startNode.name))
                    MATCH (startNode)-[r1:RELATION]-(m:Entity)
+                   WHERE m.user_id = $uid ${docFilterR1}
                    OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                   WHERE m.user_id = $uid AND (k IS NULL OR (k.user_id = $uid AND k <> startNode))
-                   ${docFilter}
+                   WHERE k.user_id = $uid AND k <> startNode AND k <> m ${docFilterR2}
                    WITH startNode, r1, m, r2, k,
                         COUNT { (startNode)-[:RELATION]-() } AS sDeg,
                         COUNT { (m)-[:RELATION]-() } AS mDeg
                    RETURN startNode, r1, m, r2, k, sDeg, mDeg
+                   ORDER BY r1.weight DESC
                    LIMIT 30`,
                   { uid: user.id, lowerEntities, selectedDocs }
                 );
@@ -205,13 +223,14 @@ export async function POST(req: NextRequest) {
                        YIELD node AS startNode, score
                        WHERE startNode.user_id = $uid
                        MATCH (startNode)-[r1:RELATION]-(m:Entity)
+                       WHERE m.user_id = $uid ${docFilterR1}
                        OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                       WHERE m.user_id = $uid AND (k IS NULL OR k.user_id = $uid)
-                       ${docFilter}
+                       WHERE k.user_id = $uid AND k <> startNode AND k <> m ${docFilterR2}
                        WITH startNode, r1, m, r2, k,
                             COUNT { (startNode)-[:RELATION]-() } AS sDeg,
                             COUNT { (m)-[:RELATION]-() } AS mDeg
                        RETURN startNode, r1, m, r2, k, sDeg, mDeg
+                       ORDER BY r1.weight DESC
                        LIMIT 50`,
                       { uid: user.id, embedding, selectedDocs }
                     );
@@ -223,7 +242,16 @@ export async function POST(req: NextRequest) {
               }
 
               nodes = Array.from(nodeMap.values());
-              return Array.from(pathStrings).join('\n') + '\n';
+
+              // Build structured synthesis context: direct facts first, then broader context
+              const parts: string[] = [];
+              if (directPathStrings.size > 0) {
+                parts.push('## Direct Facts\n' + Array.from(directPathStrings).join('\n'));
+              }
+              if (contextPathStrings.size > 0) {
+                parts.push('## Related Context\n' + Array.from(contextPathStrings).join('\n'));
+              }
+              return parts.join('\n\n') + '\n';
             });
           } finally {
             await session.close();
