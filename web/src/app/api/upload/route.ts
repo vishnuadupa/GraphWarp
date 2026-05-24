@@ -43,13 +43,16 @@ export async function POST(request: Request) {
 
     try {
       await inngest.send({
+        // Idempotency key — prevents double-processing if the same documentId
+        // is sent more than once (e.g. accidental double upload or retry).
+        id: `doc-process-${document.id}`,
         name: 'document.process',
         data: {
           documentId: document.id,
           filePath,
           userId: user.id,
-          filename: document.filename
-        }
+          filename: document.filename,
+        },
       });
     } catch (inngestErr: any) {
       console.error('Inngest send failed:', inngestErr?.message, inngestErr?.status, JSON.stringify(inngestErr));

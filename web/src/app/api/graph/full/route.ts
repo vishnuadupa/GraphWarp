@@ -72,11 +72,14 @@ export async function GET(req: Request) {
         }
       });
 
+      const nodes = Array.from(nodeMap.values());
+      // Warn the client when LIMIT 500 was hit so the UI can surface a notice
+      const truncated = result.records.length >= 500;
+
       return NextResponse.json({
-        graph: {
-          nodes: Array.from(nodeMap.values()),
-          links,
-        },
+        graph: { nodes, links },
+        truncated,
+        ...(truncated && { message: `Showing 500 of your total nodes. Upload fewer files or use the file filter to focus the graph.` }),
       });
     } finally {
       await session.close();

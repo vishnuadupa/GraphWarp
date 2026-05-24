@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import OpenAI from 'openai';
 import { driver } from '@/lib/neo4j/neo4j';
+import { withRetry } from '@/lib/utils/retry';
+import { MODELS } from '@/lib/config/models';
+
+export const runtime = 'nodejs';
 
 // Lazy client — instantiated per-request so missing env vars don't crash the build
 function getOpenRouter() {
@@ -9,37 +13,6 @@ function getOpenRouter() {
     baseURL: 'https://openrouter.ai/api/v1',
     apiKey: process.env.OPENROUTER_API_KEY || 'placeholder',
   });
-}
-
-async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 4, baseDelayMs = 2000): Promise<T> {
-  let lastError: unknown;
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      return await fn();
-    } catch (err: any) {
-      const msg: string = err?.message ?? '';
-      const retryable =
-        msg.includes('429') ||
-        msg.includes('quota') ||
-        msg.includes('limit') ||
-        msg.includes('503') ||
-        msg.includes('Service Unavailable') ||
-        msg.includes('overloaded') ||
-        msg.includes('high demand');
-
-      if (!retryable || attempt === maxAttempts) throw err;
-
-      // Back off slightly longer for 429s to allow rate limits to reset
-      const delay = (msg.includes('429') || msg.includes('quota'))
-        ? baseDelayMs * 2 * Math.pow(1.5, attempt - 1)
-        : baseDelayMs * Math.pow(2, attempt - 1);
-
-      console.warn(`[chat] Temporary API error. Retrying in ${Math.round(delay)}ms (attempt ${attempt}/${maxAttempts})...`);
-      await new Promise((r) => setTimeout(r, delay));
-      lastError = err;
-    }
-  }
-  throw lastError;
 }
 
 export async function POST(req: NextRequest) {
@@ -69,7 +42,7 @@ export async function POST(req: NextRequest) {
 
           const extractResult = await withRetry(() =>
             getOpenRouter().chat.completions.create({
-              model: 'deepseek/deepseek-v4-flash',
+              model: MODELS.CHAT,
               messages: [{
                 role: 'user',
                 content: `Extract the key entities from this question as a JSON array of strings. Keep entity names concise and capitalized. Output ONLY the JSON array, no other text. Question: ${question}`,
@@ -269,7 +242,7 @@ AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q
 
           const synthStream = await withRetry(() =>
             getOpenRouter().chat.completions.create({
-              model: 'deepseek/deepseek-v4-flash',
+              model: MODELS.CHAT,
               messages: [{ role: 'user', content: synthPrompt }],
               stream: true,
             })
