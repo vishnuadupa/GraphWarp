@@ -301,9 +301,16 @@ export async function POST(req: NextRequest) {
               }\n`
             : '';
 
-          const synthPrompt = `You are a strict, factual assistant. Answer based ONLY on the knowledge graph context below.
-If the context does not contain the answer, say "I don't have enough information to answer that."
-Cite sources using the [Source: filename] annotations.${historyContext}
+          const synthPrompt = `You are a highly articulate, intelligent personal assistant. Synthesise a smooth, conversational narrative based ONLY on the knowledge graph context provided below.
+
+Style Guide:
+1. Speak in a natural, fluid, and human-like voice. Avoid robotic prefixes (like "Based on the knowledge graph..." or "According to the context provided...").
+2. Resolve pseudonyms, connections, and relationships naturally in the flow of your writing.
+3. Keep the narrative strictly grounded in the factual connections provided. If the context does not contain the answer, say "I don't have enough information to answer that."
+4. Cite your sources in-line naturally using the exact [Source: filename] annotations present in the context.
+5. DO NOT echo or output raw technical path arrows (such as "A --[relation]--> B") in your final response. Hiding these technical details ensures a clean, premium reading experience.
+
+${historyContext}
 
 Context (Knowledge Graph):
 ${subgraphData || 'No relevant information found.'}
