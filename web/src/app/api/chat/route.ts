@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
           let matchedNodeIds = new Set<string>();
 
           try {
-            subgraphData = await session.executeRead(async (tx) => {
+            subgraphData = await session.executeRead(async (tx: any) => {
               const nodeMap = new Map<string, any>();
               const linkMap = new Map<string, boolean>();
               // Separate first-hop (direct) and second-hop (context) paths for structured synthesis

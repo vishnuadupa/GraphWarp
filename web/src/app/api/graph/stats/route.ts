@@ -15,7 +15,7 @@ export async function GET() {
       // All 6 queries run in parallel within a single read transaction —
       // one round-trip to Neo4j instead of six.
       const [nodeRes, linkRes, typeRes, topRes, relTypeRes, docsRes] =
-        await session.executeRead((tx) =>
+        await session.executeRead((tx: any) =>
           Promise.all([
             tx.run(
               'MATCH (n:Entity {user_id: $uid}) RETURN count(n) AS c',
@@ -53,20 +53,20 @@ export async function GET() {
       return NextResponse.json({
         nodeCount: nodeRes.records[0]?.get('c')?.toNumber?.() ?? 0,
         linkCount: linkRes.records[0]?.get('c')?.toNumber?.() ?? 0,
-        typeDistribution: typeRes.records.map((r) => ({
+        typeDistribution: typeRes.records.map((r: any) => ({
           type:  r.get('type') ?? 'Entity',
           count: r.get('cnt')?.toNumber?.() ?? 0,
         })),
-        topEntities: topRes.records.map((r) => ({
+        topEntities: topRes.records.map((r: any) => ({
           name:   r.get('name'),
           type:   r.get('type') ?? 'Entity',
           degree: r.get('deg')?.toNumber?.() ?? 0,
         })),
-        topRelationTypes: relTypeRes.records.map((r) => ({
+        topRelationTypes: relTypeRes.records.map((r: any) => ({
           type:  r.get('type'),
           count: r.get('cnt')?.toNumber?.() ?? 0,
         })),
-        docContributions: docsRes.records.map((r) => ({
+        docContributions: docsRes.records.map((r: any) => ({
           doc:   r.get('doc') ?? 'Unknown',
           count: r.get('cnt')?.toNumber?.() ?? 0,
         })),

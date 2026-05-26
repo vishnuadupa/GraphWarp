@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const session = driver.session();
     try {
-      const result = await session.executeRead((tx) =>
+      const result = await session.executeRead((tx: any) =>
         tx.run(
           `MATCH (a:Entity {user_id: $userId}),
                  (b:Entity {user_id: $userId})

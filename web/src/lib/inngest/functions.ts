@@ -384,7 +384,7 @@ export const processDocument = inngest.createFunction(
 
         const session = driver.session();
         try {
-          await session.executeWrite(async (tx) => {
+          await session.executeWrite(async (tx: any) => {
             const queries = extractedData.map((item: GraphTriple) =>
               tx.run(
                 // Case-insensitive lookup: if a node already exists with the
@@ -462,7 +462,7 @@ export const processDocument = inngest.createFunction(
         const session = driver.session();
         try {
           // Check which nodes already have embeddings so we don't re-embed them
-          const existing = await session.executeRead((tx) =>
+          const existing = await session.executeRead((tx: any) =>
             tx.run(
               `MATCH (n:Entity {user_id: $userId})
                WHERE n.name IN $names AND n.embedding IS NOT NULL
@@ -482,7 +482,7 @@ export const processDocument = inngest.createFunction(
 
           if (pairs.length === 0) return { embedded: 0, status: 'embedding API returned no vectors' };
 
-          await session.executeWrite((tx) =>
+          await session.executeWrite((tx: any) =>
             Promise.all(
               pairs.map((p) =>
                 tx.run(

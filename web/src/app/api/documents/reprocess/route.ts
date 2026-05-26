@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     // 1. Remove existing Neo4j data for this file
     const session = driver.session();
     try {
-      await session.executeWrite(async (tx) => {
+      await session.executeWrite(async (tx: any) => {
         // Handles both old source_file (string) and new source_files (array) formats
         await tx.run(
           `MATCH ()-[r:RELATION {user_id: $uid}]->()

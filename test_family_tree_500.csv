@@ -1,0 +1,2202 @@
+Person A,Relationship,Person B,City,Country
+Samuel Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Samuel Davis,MARRIED_TO,Carolyn Davis,London,United Kingdom
+Carolyn Davis,LIVES_IN,"Toronto, Canada",Toronto,Canada
+Donald Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Donald Rodriguez,MARRIED_TO,Christine Rodriguez,Rome,Italy
+Christine Rodriguez,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Richard Nguyen,LIVES_IN,"Amsterdam, Netherlands",Amsterdam,Netherlands
+Richard Nguyen,MARRIED_TO,Jennifer Nguyen,Amsterdam,Netherlands
+Jennifer Nguyen,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Mark Anderson,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+Mark Anderson,MARRIED_TO,Nicole Anderson,Stockholm,Sweden
+Nicole Anderson,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Anthony Rivera,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Anthony Rivera,MARRIED_TO,Rebecca Rivera,Oslo,Norway
+Rebecca Rivera,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Scott Moore,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Scott Moore,MARRIED_TO,Janet Moore,London,United Kingdom
+Janet Moore,LIVES_IN,"Amsterdam, Netherlands",Amsterdam,Netherlands
+Brian Moore,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Brian Moore,MARRIED_TO,Margaret Moore,Madrid,Spain
+Margaret Moore,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Joseph Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Joseph Garcia,MARRIED_TO,Susan Garcia,Vienna,Austria
+Susan Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Brandon Taylor,LIVES_IN,"Paris, France",Paris,France
+Brandon Taylor,MARRIED_TO,Rachel Taylor,Paris,France
+Rachel Taylor,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Thomas Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Thomas Harris,MARRIED_TO,Anna Harris,Berlin,Germany
+Anna Harris,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Edward Torres,LIVES_IN,"New York, United States",New York,United States
+Edward Torres,MARRIED_TO,Debra Torres,New York,United States
+Debra Torres,LIVES_IN,"Paris, France",Paris,France
+Alexander Anderson,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Alexander Anderson,MARRIED_TO,Barbara Anderson,Dublin,Ireland
+Barbara Anderson,LIVES_IN,"Rome, Italy",Rome,Italy
+Cynthia Rivera,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Cynthia Rivera,MARRIED_TO,Thomas Rivera,London,United Kingdom
+Samuel Davis,PARENT_OF,Cynthia Rivera,London,United Kingdom
+Carolyn Davis,PARENT_OF,Cynthia Rivera,London,United Kingdom
+Cynthia Rivera,SIBLING_OF,Nancy Taylor,London,United Kingdom
+Cynthia Rivera,SIBLING_OF,Alexander Davis,London,United Kingdom
+Nancy Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Nancy Taylor,MARRIED_TO,Richard Taylor,London,United Kingdom
+Samuel Davis,PARENT_OF,Nancy Taylor,London,United Kingdom
+Carolyn Davis,PARENT_OF,Nancy Taylor,London,United Kingdom
+Nancy Taylor,SIBLING_OF,Alexander Davis,London,United Kingdom
+Alexander Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Alexander Davis,MARRIED_TO,Kimberly Davis,London,United Kingdom
+Samuel Davis,PARENT_OF,Alexander Davis,London,United Kingdom
+Carolyn Davis,PARENT_OF,Alexander Davis,London,United Kingdom
+Brandon Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Donald Rodriguez,PARENT_OF,Brandon Rodriguez,Rome,Italy
+Christine Rodriguez,PARENT_OF,Brandon Rodriguez,Rome,Italy
+Brandon Rodriguez,SIBLING_OF,Daniel Rodriguez,Rome,Italy
+Brandon Rodriguez,SIBLING_OF,Katherine Moore,Rome,Italy
+Brandon Rodriguez,SIBLING_OF,Frank Rodriguez,Rome,Italy
+Daniel Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Donald Rodriguez,PARENT_OF,Daniel Rodriguez,Rome,Italy
+Christine Rodriguez,PARENT_OF,Daniel Rodriguez,Rome,Italy
+Daniel Rodriguez,SIBLING_OF,Katherine Moore,Rome,Italy
+Daniel Rodriguez,SIBLING_OF,Frank Rodriguez,Rome,Italy
+Katherine Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Katherine Moore,MARRIED_TO,Jack Moore,Rome,Italy
+Donald Rodriguez,PARENT_OF,Katherine Moore,Rome,Italy
+Christine Rodriguez,PARENT_OF,Katherine Moore,Rome,Italy
+Katherine Moore,SIBLING_OF,Frank Rodriguez,Rome,Italy
+Frank Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Frank Rodriguez,MARRIED_TO,Angela Rodriguez,Rome,Italy
+Donald Rodriguez,PARENT_OF,Frank Rodriguez,Rome,Italy
+Christine Rodriguez,PARENT_OF,Frank Rodriguez,Rome,Italy
+Michael Nguyen,LIVES_IN,"New York, United States",New York,United States
+Michael Nguyen,MARRIED_TO,Jessica Nguyen,New York,United States
+Richard Nguyen,PARENT_OF,Michael Nguyen,New York,United States
+Jennifer Nguyen,PARENT_OF,Michael Nguyen,New York,United States
+Michael Nguyen,SIBLING_OF,Kimberly Davis,New York,United States
+Kimberly Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Richard Nguyen,PARENT_OF,Kimberly Davis,London,United Kingdom
+Jennifer Nguyen,PARENT_OF,Kimberly Davis,London,United Kingdom
+Margaret Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Margaret Garcia,MARRIED_TO,Brandon Garcia,Vienna,Austria
+Mark Anderson,PARENT_OF,Margaret Garcia,Vienna,Austria
+Nicole Anderson,PARENT_OF,Margaret Garcia,Vienna,Austria
+Margaret Garcia,SIBLING_OF,Emma Taylor,Vienna,Austria
+Margaret Garcia,SIBLING_OF,Sarah Moore,Vienna,Austria
+Margaret Garcia,SIBLING_OF,Carolyn Rivera,Vienna,Austria
+Emma Taylor,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+Emma Taylor,MARRIED_TO,William Taylor,Stockholm,Sweden
+Mark Anderson,PARENT_OF,Emma Taylor,Stockholm,Sweden
+Nicole Anderson,PARENT_OF,Emma Taylor,Stockholm,Sweden
+Emma Taylor,SIBLING_OF,Sarah Moore,Stockholm,Sweden
+Emma Taylor,SIBLING_OF,Carolyn Rivera,Stockholm,Sweden
+Sarah Moore,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Sarah Moore,MARRIED_TO,Samuel Moore,Madrid,Spain
+Mark Anderson,PARENT_OF,Sarah Moore,Madrid,Spain
+Nicole Anderson,PARENT_OF,Sarah Moore,Madrid,Spain
+Sarah Moore,SIBLING_OF,Carolyn Rivera,Madrid,Spain
+Carolyn Rivera,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Carolyn Rivera,MARRIED_TO,Eric Rivera,Oslo,Norway
+Mark Anderson,PARENT_OF,Carolyn Rivera,Oslo,Norway
+Nicole Anderson,PARENT_OF,Carolyn Rivera,Oslo,Norway
+Melissa Taylor,LIVES_IN,"Paris, France",Paris,France
+Melissa Taylor,MARRIED_TO,Jerry Taylor,Paris,France
+Anthony Rivera,PARENT_OF,Melissa Taylor,Paris,France
+Rebecca Rivera,PARENT_OF,Melissa Taylor,Paris,France
+Melissa Taylor,SIBLING_OF,Eric Rivera,Paris,France
+Melissa Taylor,SIBLING_OF,Thomas Rivera,Paris,France
+Melissa Taylor,SIBLING_OF,Nicole Garcia,Paris,France
+Eric Rivera,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Anthony Rivera,PARENT_OF,Eric Rivera,Oslo,Norway
+Rebecca Rivera,PARENT_OF,Eric Rivera,Oslo,Norway
+Eric Rivera,SIBLING_OF,Thomas Rivera,Oslo,Norway
+Eric Rivera,SIBLING_OF,Nicole Garcia,Oslo,Norway
+Thomas Rivera,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Anthony Rivera,PARENT_OF,Thomas Rivera,London,United Kingdom
+Rebecca Rivera,PARENT_OF,Thomas Rivera,London,United Kingdom
+Thomas Rivera,SIBLING_OF,Nicole Garcia,London,United Kingdom
+Nicole Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Nicole Garcia,MARRIED_TO,Stephen Garcia,Vienna,Austria
+Anthony Rivera,PARENT_OF,Nicole Garcia,Vienna,Austria
+Rebecca Rivera,PARENT_OF,Nicole Garcia,Vienna,Austria
+Angela Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Scott Moore,PARENT_OF,Angela Rodriguez,Rome,Italy
+Janet Moore,PARENT_OF,Angela Rodriguez,Rome,Italy
+Angela Rodriguez,SIBLING_OF,Frank Moore,Rome,Italy
+Angela Rodriguez,SIBLING_OF,Virginia Harris,Rome,Italy
+Angela Rodriguez,SIBLING_OF,Joshua Moore,Rome,Italy
+Frank Moore,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Scott Moore,PARENT_OF,Frank Moore,London,United Kingdom
+Janet Moore,PARENT_OF,Frank Moore,London,United Kingdom
+Frank Moore,SIBLING_OF,Virginia Harris,London,United Kingdom
+Frank Moore,SIBLING_OF,Joshua Moore,London,United Kingdom
+Virginia Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Virginia Harris,MARRIED_TO,Alexander Harris,Berlin,Germany
+Scott Moore,PARENT_OF,Virginia Harris,Berlin,Germany
+Janet Moore,PARENT_OF,Virginia Harris,Berlin,Germany
+Virginia Harris,SIBLING_OF,Joshua Moore,Berlin,Germany
+Joshua Moore,LIVES_IN,"New York, United States",New York,United States
+Joshua Moore,MARRIED_TO,Laura Moore,New York,United States
+Scott Moore,PARENT_OF,Joshua Moore,New York,United States
+Janet Moore,PARENT_OF,Joshua Moore,New York,United States
+Jack Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Brian Moore,PARENT_OF,Jack Moore,Rome,Italy
+Margaret Moore,PARENT_OF,Jack Moore,Rome,Italy
+Jack Moore,SIBLING_OF,Shirley Garcia,Rome,Italy
+Jack Moore,SIBLING_OF,Samuel Moore,Rome,Italy
+Shirley Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Shirley Garcia,MARRIED_TO,Christopher Garcia,Vienna,Austria
+Brian Moore,PARENT_OF,Shirley Garcia,Vienna,Austria
+Margaret Moore,PARENT_OF,Shirley Garcia,Vienna,Austria
+Shirley Garcia,SIBLING_OF,Samuel Moore,Vienna,Austria
+Samuel Moore,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Brian Moore,PARENT_OF,Samuel Moore,Madrid,Spain
+Margaret Moore,PARENT_OF,Samuel Moore,Madrid,Spain
+Christopher Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Joseph Garcia,PARENT_OF,Christopher Garcia,Vienna,Austria
+Susan Garcia,PARENT_OF,Christopher Garcia,Vienna,Austria
+Christopher Garcia,SIBLING_OF,Stephen Garcia,Vienna,Austria
+Christopher Garcia,SIBLING_OF,Brandon Garcia,Vienna,Austria
+Christopher Garcia,SIBLING_OF,Thomas Garcia,Vienna,Austria
+Stephen Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Joseph Garcia,PARENT_OF,Stephen Garcia,Vienna,Austria
+Susan Garcia,PARENT_OF,Stephen Garcia,Vienna,Austria
+Stephen Garcia,SIBLING_OF,Brandon Garcia,Vienna,Austria
+Stephen Garcia,SIBLING_OF,Thomas Garcia,Vienna,Austria
+Brandon Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Joseph Garcia,PARENT_OF,Brandon Garcia,Vienna,Austria
+Susan Garcia,PARENT_OF,Brandon Garcia,Vienna,Austria
+Brandon Garcia,SIBLING_OF,Thomas Garcia,Vienna,Austria
+Thomas Garcia,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Thomas Garcia,MARRIED_TO,Patricia Garcia,Dublin,Ireland
+Joseph Garcia,PARENT_OF,Thomas Garcia,Dublin,Ireland
+Susan Garcia,PARENT_OF,Thomas Garcia,Dublin,Ireland
+William Taylor,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+Brandon Taylor,PARENT_OF,William Taylor,Stockholm,Sweden
+Rachel Taylor,PARENT_OF,William Taylor,Stockholm,Sweden
+William Taylor,SIBLING_OF,Richard Taylor,Stockholm,Sweden
+William Taylor,SIBLING_OF,Jerry Taylor,Stockholm,Sweden
+Richard Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Brandon Taylor,PARENT_OF,Richard Taylor,London,United Kingdom
+Rachel Taylor,PARENT_OF,Richard Taylor,London,United Kingdom
+Richard Taylor,SIBLING_OF,Jerry Taylor,London,United Kingdom
+Jerry Taylor,LIVES_IN,"Paris, France",Paris,France
+Brandon Taylor,PARENT_OF,Jerry Taylor,Paris,France
+Rachel Taylor,PARENT_OF,Jerry Taylor,Paris,France
+Alexander Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Thomas Harris,PARENT_OF,Alexander Harris,Berlin,Germany
+Anna Harris,PARENT_OF,Alexander Harris,Berlin,Germany
+Alexander Harris,SIBLING_OF,Paul Harris,Berlin,Germany
+Paul Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Paul Harris,MARRIED_TO,Margaret Harris,Berlin,Germany
+Thomas Harris,PARENT_OF,Paul Harris,Berlin,Germany
+Anna Harris,PARENT_OF,Paul Harris,Berlin,Germany
+Margaret Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Edward Torres,PARENT_OF,Margaret Harris,Berlin,Germany
+Debra Torres,PARENT_OF,Margaret Harris,Berlin,Germany
+Margaret Harris,SIBLING_OF,Raymond Torres,Berlin,Germany
+Margaret Harris,SIBLING_OF,Laura Moore,Berlin,Germany
+Margaret Harris,SIBLING_OF,Jessica Nguyen,Berlin,Germany
+Raymond Torres,LIVES_IN,"New York, United States",New York,United States
+Edward Torres,PARENT_OF,Raymond Torres,New York,United States
+Debra Torres,PARENT_OF,Raymond Torres,New York,United States
+Raymond Torres,SIBLING_OF,Laura Moore,New York,United States
+Raymond Torres,SIBLING_OF,Jessica Nguyen,New York,United States
+Laura Moore,LIVES_IN,"New York, United States",New York,United States
+Edward Torres,PARENT_OF,Laura Moore,New York,United States
+Debra Torres,PARENT_OF,Laura Moore,New York,United States
+Laura Moore,SIBLING_OF,Jessica Nguyen,New York,United States
+Jessica Nguyen,LIVES_IN,"New York, United States",New York,United States
+Edward Torres,PARENT_OF,Jessica Nguyen,New York,United States
+Debra Torres,PARENT_OF,Jessica Nguyen,New York,United States
+Patricia Garcia,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Alexander Anderson,PARENT_OF,Patricia Garcia,Dublin,Ireland
+Barbara Anderson,PARENT_OF,Patricia Garcia,Dublin,Ireland
+Patricia Garcia,SIBLING_OF,Scott Anderson,Dublin,Ireland
+Scott Anderson,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Alexander Anderson,PARENT_OF,Scott Anderson,Dublin,Ireland
+Barbara Anderson,PARENT_OF,Scott Anderson,Dublin,Ireland
+Jason Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Jason Moore,MARRIED_TO,Nancy Moore,Rome,Italy
+Jack Moore,PARENT_OF,Jason Moore,Rome,Italy
+Katherine Moore,PARENT_OF,Jason Moore,Rome,Italy
+Jason Moore,SIBLING_OF,Timothy Moore,Rome,Italy
+Timothy Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Timothy Moore,MARRIED_TO,Ashley Moore,Rome,Italy
+Jack Moore,PARENT_OF,Timothy Moore,Rome,Italy
+Katherine Moore,PARENT_OF,Timothy Moore,Rome,Italy
+Mary Rivera,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Mary Rivera,MARRIED_TO,Jason Rivera,London,United Kingdom
+Thomas Garcia,PARENT_OF,Mary Rivera,London,United Kingdom
+Patricia Garcia,PARENT_OF,Mary Rivera,London,United Kingdom
+Mary Rivera,SIBLING_OF,Cynthia Nguyen,London,United Kingdom
+Cynthia Nguyen,LIVES_IN,"New York, United States",New York,United States
+Cynthia Nguyen,MARRIED_TO,George Nguyen,New York,United States
+Thomas Garcia,PARENT_OF,Cynthia Nguyen,New York,United States
+Patricia Garcia,PARENT_OF,Cynthia Nguyen,New York,United States
+Karen Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Karen Rodriguez,MARRIED_TO,Matthew Rodriguez,New York,United States
+Alexander Davis,PARENT_OF,Karen Rodriguez,New York,United States
+Kimberly Davis,PARENT_OF,Karen Rodriguez,New York,United States
+Karen Rodriguez,SIBLING_OF,Scott Davis,New York,United States
+Karen Rodriguez,SIBLING_OF,Dennis Davis,New York,United States
+Scott Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Scott Davis,MARRIED_TO,Dorothy Davis,London,United Kingdom
+Alexander Davis,PARENT_OF,Scott Davis,London,United Kingdom
+Kimberly Davis,PARENT_OF,Scott Davis,London,United Kingdom
+Scott Davis,SIBLING_OF,Dennis Davis,London,United Kingdom
+Scott Davis,SIBLING_OF,Scott Davis,London,United Kingdom
+Dennis Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Alexander Davis,PARENT_OF,Dennis Davis,London,United Kingdom
+Kimberly Davis,PARENT_OF,Dennis Davis,London,United Kingdom
+Scott Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Scott Davis,MARRIED_TO,Samantha Davis,Oslo,Norway
+Alexander Davis,PARENT_OF,Scott Davis,Oslo,Norway
+Kimberly Davis,PARENT_OF,Scott Davis,Oslo,Norway
+William Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+William Garcia,MARRIED_TO,Patricia Garcia,Vienna,Austria
+Brandon Garcia,PARENT_OF,William Garcia,Vienna,Austria
+Margaret Garcia,PARENT_OF,William Garcia,Vienna,Austria
+William Garcia,SIBLING_OF,Matthew Garcia,Vienna,Austria
+William Garcia,SIBLING_OF,Timothy Garcia,Vienna,Austria
+William Garcia,SIBLING_OF,Scott Garcia,Vienna,Austria
+Matthew Garcia,LIVES_IN,"Paris, France",Paris,France
+Matthew Garcia,MARRIED_TO,Jessica Garcia,Paris,France
+Brandon Garcia,PARENT_OF,Matthew Garcia,Paris,France
+Margaret Garcia,PARENT_OF,Matthew Garcia,Paris,France
+Matthew Garcia,SIBLING_OF,Timothy Garcia,Paris,France
+Matthew Garcia,SIBLING_OF,Scott Garcia,Paris,France
+Timothy Garcia,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Timothy Garcia,MARRIED_TO,Samantha Garcia,Helsinki,Finland
+Brandon Garcia,PARENT_OF,Timothy Garcia,Helsinki,Finland
+Margaret Garcia,PARENT_OF,Timothy Garcia,Helsinki,Finland
+Timothy Garcia,SIBLING_OF,Scott Garcia,Helsinki,Finland
+Scott Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Scott Garcia,MARRIED_TO,Jennifer Garcia,Vienna,Austria
+Brandon Garcia,PARENT_OF,Scott Garcia,Vienna,Austria
+Margaret Garcia,PARENT_OF,Scott Garcia,Vienna,Austria
+Jason Rivera,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Thomas Rivera,PARENT_OF,Jason Rivera,London,United Kingdom
+Cynthia Rivera,PARENT_OF,Jason Rivera,London,United Kingdom
+Jason Rivera,SIBLING_OF,Dorothy Davis,London,United Kingdom
+Jason Rivera,SIBLING_OF,Ashley Moore,London,United Kingdom
+Jason Rivera,SIBLING_OF,Alexander Rivera,London,United Kingdom
+Dorothy Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Thomas Rivera,PARENT_OF,Dorothy Davis,London,United Kingdom
+Cynthia Rivera,PARENT_OF,Dorothy Davis,London,United Kingdom
+Dorothy Davis,SIBLING_OF,Ashley Moore,London,United Kingdom
+Dorothy Davis,SIBLING_OF,Alexander Rivera,London,United Kingdom
+Ashley Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Thomas Rivera,PARENT_OF,Ashley Moore,Rome,Italy
+Cynthia Rivera,PARENT_OF,Ashley Moore,Rome,Italy
+Ashley Moore,SIBLING_OF,Alexander Rivera,Rome,Italy
+Alexander Rivera,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Alexander Rivera,MARRIED_TO,Kimberly Rivera,Madrid,Spain
+Thomas Rivera,PARENT_OF,Alexander Rivera,Madrid,Spain
+Cynthia Rivera,PARENT_OF,Alexander Rivera,Madrid,Spain
+Janet Nguyen,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Janet Nguyen,MARRIED_TO,Alexander Nguyen,Oslo,Norway
+Christopher Garcia,PARENT_OF,Janet Nguyen,Oslo,Norway
+Shirley Garcia,PARENT_OF,Janet Nguyen,Oslo,Norway
+Janet Nguyen,SIBLING_OF,Jacob Garcia,Oslo,Norway
+Janet Nguyen,SIBLING_OF,David Garcia,Oslo,Norway
+Jacob Garcia,LIVES_IN,"New York, United States",New York,United States
+Jacob Garcia,MARRIED_TO,Ruth Garcia,New York,United States
+Christopher Garcia,PARENT_OF,Jacob Garcia,New York,United States
+Shirley Garcia,PARENT_OF,Jacob Garcia,New York,United States
+Jacob Garcia,SIBLING_OF,David Garcia,New York,United States
+David Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+David Garcia,MARRIED_TO,Margaret Garcia,Vienna,Austria
+Christopher Garcia,PARENT_OF,David Garcia,Vienna,Austria
+Shirley Garcia,PARENT_OF,David Garcia,Vienna,Austria
+Sarah Harris,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Sarah Harris,MARRIED_TO,Scott Harris,Oslo,Norway
+Eric Rivera,PARENT_OF,Sarah Harris,Oslo,Norway
+Carolyn Rivera,PARENT_OF,Sarah Harris,Oslo,Norway
+Sarah Harris,SIBLING_OF,Steven Rivera,Oslo,Norway
+Sarah Harris,SIBLING_OF,Ryan Rivera,Oslo,Norway
+Sarah Harris,SIBLING_OF,Samantha Davis,Oslo,Norway
+Steven Rivera,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Eric Rivera,PARENT_OF,Steven Rivera,Oslo,Norway
+Carolyn Rivera,PARENT_OF,Steven Rivera,Oslo,Norway
+Steven Rivera,SIBLING_OF,Ryan Rivera,Oslo,Norway
+Steven Rivera,SIBLING_OF,Samantha Davis,Oslo,Norway
+Ryan Rivera,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Ryan Rivera,MARRIED_TO,Ruth Rivera,Madrid,Spain
+Eric Rivera,PARENT_OF,Ryan Rivera,Madrid,Spain
+Carolyn Rivera,PARENT_OF,Ryan Rivera,Madrid,Spain
+Ryan Rivera,SIBLING_OF,Samantha Davis,Madrid,Spain
+Samantha Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Eric Rivera,PARENT_OF,Samantha Davis,Oslo,Norway
+Carolyn Rivera,PARENT_OF,Samantha Davis,Oslo,Norway
+Alexander Taylor,LIVES_IN,"Paris, France",Paris,France
+Alexander Taylor,MARRIED_TO,Anna Taylor,Paris,France
+Jerry Taylor,PARENT_OF,Alexander Taylor,Paris,France
+Melissa Taylor,PARENT_OF,Alexander Taylor,Paris,France
+Alexander Taylor,SIBLING_OF,Ruth Rivera,Paris,France
+Alexander Taylor,SIBLING_OF,Jessica Garcia,Paris,France
+Alexander Taylor,SIBLING_OF,Andrew Taylor,Paris,France
+Ruth Rivera,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Jerry Taylor,PARENT_OF,Ruth Rivera,Madrid,Spain
+Melissa Taylor,PARENT_OF,Ruth Rivera,Madrid,Spain
+Ruth Rivera,SIBLING_OF,Jessica Garcia,Madrid,Spain
+Ruth Rivera,SIBLING_OF,Andrew Taylor,Madrid,Spain
+Jessica Garcia,LIVES_IN,"Paris, France",Paris,France
+Jerry Taylor,PARENT_OF,Jessica Garcia,Paris,France
+Melissa Taylor,PARENT_OF,Jessica Garcia,Paris,France
+Jessica Garcia,SIBLING_OF,Andrew Taylor,Paris,France
+Andrew Taylor,LIVES_IN,"Paris, France",Paris,France
+Jerry Taylor,PARENT_OF,Andrew Taylor,Paris,France
+Melissa Taylor,PARENT_OF,Andrew Taylor,Paris,France
+Margaret Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Stephen Garcia,PARENT_OF,Margaret Garcia,Vienna,Austria
+Nicole Garcia,PARENT_OF,Margaret Garcia,Vienna,Austria
+Margaret Garcia,SIBLING_OF,Shirley Moore,Vienna,Austria
+Shirley Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Shirley Moore,MARRIED_TO,Andrew Moore,Rome,Italy
+Stephen Garcia,PARENT_OF,Shirley Moore,Rome,Italy
+Nicole Garcia,PARENT_OF,Shirley Moore,Rome,Italy
+Samuel Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Samuel Harris,MARRIED_TO,Christine Harris,Berlin,Germany
+Alexander Harris,PARENT_OF,Samuel Harris,Berlin,Germany
+Virginia Harris,PARENT_OF,Samuel Harris,Berlin,Germany
+Samuel Harris,SIBLING_OF,Jennifer Taylor,Berlin,Germany
+Jennifer Taylor,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Jennifer Taylor,MARRIED_TO,Stephen Taylor,Geneva,Switzerland
+Alexander Harris,PARENT_OF,Jennifer Taylor,Geneva,Switzerland
+Virginia Harris,PARENT_OF,Jennifer Taylor,Geneva,Switzerland
+Nancy Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+William Taylor,PARENT_OF,Nancy Moore,Rome,Italy
+Emma Taylor,PARENT_OF,Nancy Moore,Rome,Italy
+Nancy Moore,SIBLING_OF,Anna Taylor,Rome,Italy
+Nancy Moore,SIBLING_OF,Stephen Taylor,Rome,Italy
+Nancy Moore,SIBLING_OF,Jeffrey Taylor,Rome,Italy
+Anna Taylor,LIVES_IN,"Paris, France",Paris,France
+William Taylor,PARENT_OF,Anna Taylor,Paris,France
+Emma Taylor,PARENT_OF,Anna Taylor,Paris,France
+Anna Taylor,SIBLING_OF,Stephen Taylor,Paris,France
+Anna Taylor,SIBLING_OF,Jeffrey Taylor,Paris,France
+Stephen Taylor,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+William Taylor,PARENT_OF,Stephen Taylor,Geneva,Switzerland
+Emma Taylor,PARENT_OF,Stephen Taylor,Geneva,Switzerland
+Stephen Taylor,SIBLING_OF,Jeffrey Taylor,Geneva,Switzerland
+Jeffrey Taylor,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+William Taylor,PARENT_OF,Jeffrey Taylor,Dublin,Ireland
+Emma Taylor,PARENT_OF,Jeffrey Taylor,Dublin,Ireland
+George Nguyen,LIVES_IN,"New York, United States",New York,United States
+Michael Nguyen,PARENT_OF,George Nguyen,New York,United States
+Jessica Nguyen,PARENT_OF,George Nguyen,New York,United States
+George Nguyen,SIBLING_OF,Alexander Nguyen,New York,United States
+George Nguyen,SIBLING_OF,Samantha Garcia,New York,United States
+Alexander Nguyen,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Michael Nguyen,PARENT_OF,Alexander Nguyen,Oslo,Norway
+Jessica Nguyen,PARENT_OF,Alexander Nguyen,Oslo,Norway
+Alexander Nguyen,SIBLING_OF,Samantha Garcia,Oslo,Norway
+Samantha Garcia,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Michael Nguyen,PARENT_OF,Samantha Garcia,Helsinki,Finland
+Jessica Nguyen,PARENT_OF,Samantha Garcia,Helsinki,Finland
+Matthew Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Frank Rodriguez,PARENT_OF,Matthew Rodriguez,New York,United States
+Angela Rodriguez,PARENT_OF,Matthew Rodriguez,New York,United States
+Matthew Rodriguez,SIBLING_OF,Matthew Rodriguez,New York,United States
+Matthew Rodriguez,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Matthew Rodriguez,MARRIED_TO,Rachel Rodriguez,Berlin,Germany
+Frank Rodriguez,PARENT_OF,Matthew Rodriguez,Berlin,Germany
+Angela Rodriguez,PARENT_OF,Matthew Rodriguez,Berlin,Germany
+Ruth Garcia,LIVES_IN,"New York, United States",New York,United States
+Joshua Moore,PARENT_OF,Ruth Garcia,New York,United States
+Laura Moore,PARENT_OF,Ruth Garcia,New York,United States
+Ruth Garcia,SIBLING_OF,Andrew Moore,New York,United States
+Ruth Garcia,SIBLING_OF,Jennifer Garcia,New York,United States
+Andrew Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Joshua Moore,PARENT_OF,Andrew Moore,Rome,Italy
+Laura Moore,PARENT_OF,Andrew Moore,Rome,Italy
+Andrew Moore,SIBLING_OF,Jennifer Garcia,Rome,Italy
+Jennifer Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Joshua Moore,PARENT_OF,Jennifer Garcia,Vienna,Austria
+Laura Moore,PARENT_OF,Jennifer Garcia,Vienna,Austria
+Jacob Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jacob Taylor,MARRIED_TO,Jennifer Taylor,London,United Kingdom
+Richard Taylor,PARENT_OF,Jacob Taylor,London,United Kingdom
+Nancy Taylor,PARENT_OF,Jacob Taylor,London,United Kingdom
+Jacob Taylor,SIBLING_OF,Donald Taylor,London,United Kingdom
+Donald Taylor,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Donald Taylor,MARRIED_TO,Amanda Taylor,Madrid,Spain
+Richard Taylor,PARENT_OF,Donald Taylor,Madrid,Spain
+Nancy Taylor,PARENT_OF,Donald Taylor,Madrid,Spain
+Kimberly Rivera,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Samuel Moore,PARENT_OF,Kimberly Rivera,Madrid,Spain
+Sarah Moore,PARENT_OF,Kimberly Rivera,Madrid,Spain
+Kimberly Rivera,SIBLING_OF,Amanda Taylor,Madrid,Spain
+Kimberly Rivera,SIBLING_OF,Christine Harris,Madrid,Spain
+Amanda Taylor,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Samuel Moore,PARENT_OF,Amanda Taylor,Madrid,Spain
+Sarah Moore,PARENT_OF,Amanda Taylor,Madrid,Spain
+Amanda Taylor,SIBLING_OF,Christine Harris,Madrid,Spain
+Christine Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Samuel Moore,PARENT_OF,Christine Harris,Berlin,Germany
+Sarah Moore,PARENT_OF,Christine Harris,Berlin,Germany
+Patricia Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Paul Harris,PARENT_OF,Patricia Garcia,Vienna,Austria
+Margaret Harris,PARENT_OF,Patricia Garcia,Vienna,Austria
+Patricia Garcia,SIBLING_OF,Scott Harris,Vienna,Austria
+Patricia Garcia,SIBLING_OF,Jennifer Taylor,Vienna,Austria
+Patricia Garcia,SIBLING_OF,Rachel Rodriguez,Vienna,Austria
+Scott Harris,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Paul Harris,PARENT_OF,Scott Harris,Oslo,Norway
+Margaret Harris,PARENT_OF,Scott Harris,Oslo,Norway
+Scott Harris,SIBLING_OF,Jennifer Taylor,Oslo,Norway
+Scott Harris,SIBLING_OF,Rachel Rodriguez,Oslo,Norway
+Jennifer Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Paul Harris,PARENT_OF,Jennifer Taylor,London,United Kingdom
+Margaret Harris,PARENT_OF,Jennifer Taylor,London,United Kingdom
+Jennifer Taylor,SIBLING_OF,Rachel Rodriguez,London,United Kingdom
+Rachel Rodriguez,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Paul Harris,PARENT_OF,Rachel Rodriguez,Berlin,Germany
+Margaret Harris,PARENT_OF,Rachel Rodriguez,Berlin,Germany
+Ashley Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Ashley Garcia,MARRIED_TO,Richard Garcia,London,United Kingdom
+Samuel Harris,PARENT_OF,Ashley Garcia,London,United Kingdom
+Christine Harris,PARENT_OF,Ashley Garcia,London,United Kingdom
+Ashley Garcia,SIBLING_OF,Tyler Harris,London,United Kingdom
+Ashley Garcia,SIBLING_OF,Patrick Harris,London,United Kingdom
+Tyler Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Tyler Harris,MARRIED_TO,Elizabeth Harris,Berlin,Germany
+Samuel Harris,PARENT_OF,Tyler Harris,Berlin,Germany
+Christine Harris,PARENT_OF,Tyler Harris,Berlin,Germany
+Tyler Harris,SIBLING_OF,Patrick Harris,Berlin,Germany
+Patrick Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Patrick Harris,MARRIED_TO,Brenda Harris,Berlin,Germany
+Samuel Harris,PARENT_OF,Patrick Harris,Berlin,Germany
+Christine Harris,PARENT_OF,Patrick Harris,Berlin,Germany
+Thomas Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Thomas Garcia,MARRIED_TO,Susan Garcia,Geneva,Switzerland
+Timothy Garcia,PARENT_OF,Thomas Garcia,Geneva,Switzerland
+Samantha Garcia,PARENT_OF,Thomas Garcia,Geneva,Switzerland
+Thomas Garcia,SIBLING_OF,Ruth Garcia,Geneva,Switzerland
+Ruth Garcia,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Timothy Garcia,PARENT_OF,Ruth Garcia,Helsinki,Finland
+Samantha Garcia,PARENT_OF,Ruth Garcia,Helsinki,Finland
+Janet Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Janet Rodriguez,MARRIED_TO,Timothy Rodriguez,Rome,Italy
+Andrew Moore,PARENT_OF,Janet Rodriguez,Rome,Italy
+Shirley Moore,PARENT_OF,Janet Rodriguez,Rome,Italy
+Janet Rodriguez,SIBLING_OF,Anna Garcia,Rome,Italy
+Janet Rodriguez,SIBLING_OF,Dennis Moore,Rome,Italy
+Janet Rodriguez,SIBLING_OF,Dorothy Davis,Rome,Italy
+Anna Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Anna Garcia,MARRIED_TO,Edward Garcia,London,United Kingdom
+Andrew Moore,PARENT_OF,Anna Garcia,London,United Kingdom
+Shirley Moore,PARENT_OF,Anna Garcia,London,United Kingdom
+Anna Garcia,SIBLING_OF,Dennis Moore,London,United Kingdom
+Anna Garcia,SIBLING_OF,Dorothy Davis,London,United Kingdom
+Dennis Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Dennis Moore,MARRIED_TO,Ruth Moore,Rome,Italy
+Andrew Moore,PARENT_OF,Dennis Moore,Rome,Italy
+Shirley Moore,PARENT_OF,Dennis Moore,Rome,Italy
+Dennis Moore,SIBLING_OF,Dorothy Davis,Rome,Italy
+Dorothy Davis,LIVES_IN,"Rome, Italy",Rome,Italy
+Dorothy Davis,MARRIED_TO,Raymond Davis,Rome,Italy
+Andrew Moore,PARENT_OF,Dorothy Davis,Rome,Italy
+Shirley Moore,PARENT_OF,Dorothy Davis,Rome,Italy
+Virginia Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Matthew Rodriguez,PARENT_OF,Virginia Rodriguez,New York,United States
+Karen Rodriguez,PARENT_OF,Virginia Rodriguez,New York,United States
+Virginia Rodriguez,SIBLING_OF,Katherine Taylor,New York,United States
+Virginia Rodriguez,SIBLING_OF,Elizabeth Rodriguez,New York,United States
+Virginia Rodriguez,SIBLING_OF,Andrew Rodriguez,New York,United States
+Katherine Taylor,LIVES_IN,"Paris, France",Paris,France
+Katherine Taylor,MARRIED_TO,Joseph Taylor,Paris,France
+Matthew Rodriguez,PARENT_OF,Katherine Taylor,Paris,France
+Karen Rodriguez,PARENT_OF,Katherine Taylor,Paris,France
+Katherine Taylor,SIBLING_OF,Elizabeth Rodriguez,Paris,France
+Katherine Taylor,SIBLING_OF,Andrew Rodriguez,Paris,France
+Elizabeth Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Matthew Rodriguez,PARENT_OF,Elizabeth Rodriguez,New York,United States
+Karen Rodriguez,PARENT_OF,Elizabeth Rodriguez,New York,United States
+Elizabeth Rodriguez,SIBLING_OF,Andrew Rodriguez,New York,United States
+Andrew Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Andrew Rodriguez,MARRIED_TO,Virginia Rodriguez,New York,United States
+Matthew Rodriguez,PARENT_OF,Andrew Rodriguez,New York,United States
+Karen Rodriguez,PARENT_OF,Andrew Rodriguez,New York,United States
+Charles Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Charles Davis,MARRIED_TO,Mary Davis,London,United Kingdom
+Scott Davis,PARENT_OF,Charles Davis,London,United Kingdom
+Samantha Davis,PARENT_OF,Charles Davis,London,United Kingdom
+Charles Davis,SIBLING_OF,Raymond Davis,London,United Kingdom
+Charles Davis,SIBLING_OF,Rebecca Nguyen,London,United Kingdom
+Charles Davis,SIBLING_OF,Rebecca Davis,London,United Kingdom
+Raymond Davis,LIVES_IN,"Rome, Italy",Rome,Italy
+Scott Davis,PARENT_OF,Raymond Davis,Rome,Italy
+Samantha Davis,PARENT_OF,Raymond Davis,Rome,Italy
+Raymond Davis,SIBLING_OF,Rebecca Nguyen,Rome,Italy
+Raymond Davis,SIBLING_OF,Rebecca Davis,Rome,Italy
+Rebecca Nguyen,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Rebecca Nguyen,MARRIED_TO,Jeffrey Nguyen,Oslo,Norway
+Scott Davis,PARENT_OF,Rebecca Nguyen,Oslo,Norway
+Samantha Davis,PARENT_OF,Rebecca Nguyen,Oslo,Norway
+Rebecca Nguyen,SIBLING_OF,Rebecca Davis,Oslo,Norway
+Rebecca Davis,LIVES_IN,"Amsterdam, Netherlands",Amsterdam,Netherlands
+Scott Davis,PARENT_OF,Rebecca Davis,Amsterdam,Netherlands
+Samantha Davis,PARENT_OF,Rebecca Davis,Amsterdam,Netherlands
+Jerry Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jerry Davis,MARRIED_TO,Dorothy Davis,London,United Kingdom
+Scott Davis,PARENT_OF,Jerry Davis,London,United Kingdom
+Dorothy Davis,PARENT_OF,Jerry Davis,London,United Kingdom
+Jerry Davis,SIBLING_OF,Mary Davis,London,United Kingdom
+Jerry Davis,SIBLING_OF,Janet Nguyen,London,United Kingdom
+Mary Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Scott Davis,PARENT_OF,Mary Davis,London,United Kingdom
+Dorothy Davis,PARENT_OF,Mary Davis,London,United Kingdom
+Mary Davis,SIBLING_OF,Janet Nguyen,London,United Kingdom
+Janet Nguyen,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Janet Nguyen,MARRIED_TO,Jason Nguyen,London,United Kingdom
+Scott Davis,PARENT_OF,Janet Nguyen,London,United Kingdom
+Dorothy Davis,PARENT_OF,Janet Nguyen,London,United Kingdom
+Nicholas Nguyen,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Nicholas Nguyen,MARRIED_TO,Kimberly Nguyen,London,United Kingdom
+George Nguyen,PARENT_OF,Nicholas Nguyen,London,United Kingdom
+Cynthia Nguyen,PARENT_OF,Nicholas Nguyen,London,United Kingdom
+Nicholas Nguyen,SIBLING_OF,Amy Garcia,London,United Kingdom
+Nicholas Nguyen,SIBLING_OF,Rachel Rivera,London,United Kingdom
+Amy Garcia,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Amy Garcia,MARRIED_TO,Justin Garcia,Edinburgh,United Kingdom
+George Nguyen,PARENT_OF,Amy Garcia,Edinburgh,United Kingdom
+Cynthia Nguyen,PARENT_OF,Amy Garcia,Edinburgh,United Kingdom
+Amy Garcia,SIBLING_OF,Rachel Rivera,Edinburgh,United Kingdom
+Rachel Rivera,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Rachel Rivera,MARRIED_TO,Jerry Rivera,Brussels,Belgium
+George Nguyen,PARENT_OF,Rachel Rivera,Brussels,Belgium
+Cynthia Nguyen,PARENT_OF,Rachel Rivera,Brussels,Belgium
+Timothy Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Matthew Rodriguez,PARENT_OF,Timothy Rodriguez,Rome,Italy
+Rachel Rodriguez,PARENT_OF,Timothy Rodriguez,Rome,Italy
+Timothy Rodriguez,SIBLING_OF,Richard Rodriguez,Rome,Italy
+Richard Rodriguez,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Richard Rodriguez,MARRIED_TO,Catherine Rodriguez,Berlin,Germany
+Matthew Rodriguez,PARENT_OF,Richard Rodriguez,Berlin,Germany
+Rachel Rodriguez,PARENT_OF,Richard Rodriguez,Berlin,Germany
+Lisa Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Jacob Garcia,PARENT_OF,Lisa Garcia,Vienna,Austria
+Ruth Garcia,PARENT_OF,Lisa Garcia,Vienna,Austria
+Lisa Garcia,SIBLING_OF,Margaret Garcia,Vienna,Austria
+Margaret Garcia,LIVES_IN,"New York, United States",New York,United States
+Jacob Garcia,PARENT_OF,Margaret Garcia,New York,United States
+Ruth Garcia,PARENT_OF,Margaret Garcia,New York,United States
+Kimberly Nguyen,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jason Rivera,PARENT_OF,Kimberly Nguyen,London,United Kingdom
+Mary Rivera,PARENT_OF,Kimberly Nguyen,London,United Kingdom
+Kimberly Nguyen,SIBLING_OF,Dorothy Davis,London,United Kingdom
+Kimberly Nguyen,SIBLING_OF,Patricia Rivera,London,United Kingdom
+Dorothy Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jason Rivera,PARENT_OF,Dorothy Davis,London,United Kingdom
+Mary Rivera,PARENT_OF,Dorothy Davis,London,United Kingdom
+Dorothy Davis,SIBLING_OF,Patricia Rivera,London,United Kingdom
+Patricia Rivera,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jason Rivera,PARENT_OF,Patricia Rivera,London,United Kingdom
+Mary Rivera,PARENT_OF,Patricia Rivera,London,United Kingdom
+Sandra Rivera,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Ryan Rivera,PARENT_OF,Sandra Rivera,Madrid,Spain
+Ruth Rivera,PARENT_OF,Sandra Rivera,Madrid,Spain
+Sandra Rivera,SIBLING_OF,Jerry Rivera,Madrid,Spain
+Jerry Rivera,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Ryan Rivera,PARENT_OF,Jerry Rivera,Brussels,Belgium
+Ruth Rivera,PARENT_OF,Jerry Rivera,Brussels,Belgium
+Benjamin Rivera,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Benjamin Rivera,MARRIED_TO,Catherine Rivera,Madrid,Spain
+Alexander Rivera,PARENT_OF,Benjamin Rivera,Madrid,Spain
+Kimberly Rivera,PARENT_OF,Benjamin Rivera,Madrid,Spain
+Benjamin Rivera,SIBLING_OF,Ruth Moore,Madrid,Spain
+Ruth Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Alexander Rivera,PARENT_OF,Ruth Moore,Rome,Italy
+Kimberly Rivera,PARENT_OF,Ruth Moore,Rome,Italy
+Virginia Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Donald Taylor,PARENT_OF,Virginia Rodriguez,New York,United States
+Amanda Taylor,PARENT_OF,Virginia Rodriguez,New York,United States
+Virginia Rodriguez,SIBLING_OF,Tyler Taylor,New York,United States
+Virginia Rodriguez,SIBLING_OF,Susan Taylor,New York,United States
+Tyler Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Tyler Taylor,MARRIED_TO,Carol Taylor,Edinburgh,United Kingdom
+Donald Taylor,PARENT_OF,Tyler Taylor,Edinburgh,United Kingdom
+Amanda Taylor,PARENT_OF,Tyler Taylor,Edinburgh,United Kingdom
+Tyler Taylor,SIBLING_OF,Susan Taylor,Edinburgh,United Kingdom
+Susan Taylor,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Susan Taylor,MARRIED_TO,Kevin Taylor,Madrid,Spain
+Donald Taylor,PARENT_OF,Susan Taylor,Madrid,Spain
+Amanda Taylor,PARENT_OF,Susan Taylor,Madrid,Spain
+Stephanie Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Stephanie Moore,MARRIED_TO,Steven Moore,Rome,Italy
+Alexander Taylor,PARENT_OF,Stephanie Moore,Rome,Italy
+Anna Taylor,PARENT_OF,Stephanie Moore,Rome,Italy
+Stephanie Moore,SIBLING_OF,David Taylor,Rome,Italy
+Stephanie Moore,SIBLING_OF,Joseph Taylor,Rome,Italy
+David Taylor,LIVES_IN,"Paris, France",Paris,France
+David Taylor,MARRIED_TO,Michelle Taylor,Paris,France
+Alexander Taylor,PARENT_OF,David Taylor,Paris,France
+Anna Taylor,PARENT_OF,David Taylor,Paris,France
+David Taylor,SIBLING_OF,Joseph Taylor,Paris,France
+Joseph Taylor,LIVES_IN,"Paris, France",Paris,France
+Alexander Taylor,PARENT_OF,Joseph Taylor,Paris,France
+Anna Taylor,PARENT_OF,Joseph Taylor,Paris,France
+Justin Garcia,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+William Garcia,PARENT_OF,Justin Garcia,Edinburgh,United Kingdom
+Patricia Garcia,PARENT_OF,Justin Garcia,Edinburgh,United Kingdom
+Justin Garcia,SIBLING_OF,Helen Garcia,Edinburgh,United Kingdom
+Justin Garcia,SIBLING_OF,Elizabeth Harris,Edinburgh,United Kingdom
+Helen Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+William Garcia,PARENT_OF,Helen Garcia,Vienna,Austria
+Patricia Garcia,PARENT_OF,Helen Garcia,Vienna,Austria
+Helen Garcia,SIBLING_OF,Elizabeth Harris,Vienna,Austria
+Elizabeth Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+William Garcia,PARENT_OF,Elizabeth Harris,Berlin,Germany
+Patricia Garcia,PARENT_OF,Elizabeth Harris,Berlin,Germany
+Jason Nguyen,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Alexander Nguyen,PARENT_OF,Jason Nguyen,London,United Kingdom
+Janet Nguyen,PARENT_OF,Jason Nguyen,London,United Kingdom
+Jason Nguyen,SIBLING_OF,Jeffrey Nguyen,London,United Kingdom
+Jason Nguyen,SIBLING_OF,Debra Nguyen,London,United Kingdom
+Jeffrey Nguyen,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Alexander Nguyen,PARENT_OF,Jeffrey Nguyen,Oslo,Norway
+Janet Nguyen,PARENT_OF,Jeffrey Nguyen,Oslo,Norway
+Jeffrey Nguyen,SIBLING_OF,Debra Nguyen,Oslo,Norway
+Debra Nguyen,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Alexander Nguyen,PARENT_OF,Debra Nguyen,Tokyo,Japan
+Janet Nguyen,PARENT_OF,Debra Nguyen,Tokyo,Japan
+Samantha Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jacob Taylor,PARENT_OF,Samantha Taylor,London,United Kingdom
+Jennifer Taylor,PARENT_OF,Samantha Taylor,London,United Kingdom
+Samantha Taylor,SIBLING_OF,Cynthia Taylor,London,United Kingdom
+Samantha Taylor,SIBLING_OF,Michelle Taylor,London,United Kingdom
+Samantha Taylor,SIBLING_OF,Andrew Taylor,London,United Kingdom
+Cynthia Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jacob Taylor,PARENT_OF,Cynthia Taylor,London,United Kingdom
+Jennifer Taylor,PARENT_OF,Cynthia Taylor,London,United Kingdom
+Cynthia Taylor,SIBLING_OF,Michelle Taylor,London,United Kingdom
+Cynthia Taylor,SIBLING_OF,Andrew Taylor,London,United Kingdom
+Michelle Taylor,LIVES_IN,"Paris, France",Paris,France
+Jacob Taylor,PARENT_OF,Michelle Taylor,Paris,France
+Jennifer Taylor,PARENT_OF,Michelle Taylor,Paris,France
+Michelle Taylor,SIBLING_OF,Andrew Taylor,Paris,France
+Andrew Taylor,LIVES_IN,"Paris, France",Paris,France
+Andrew Taylor,MARRIED_TO,Dorothy Taylor,Paris,France
+Jacob Taylor,PARENT_OF,Andrew Taylor,Paris,France
+Jennifer Taylor,PARENT_OF,Andrew Taylor,Paris,France
+Brenda Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Jason Moore,PARENT_OF,Brenda Harris,Berlin,Germany
+Nancy Moore,PARENT_OF,Brenda Harris,Berlin,Germany
+Brenda Harris,SIBLING_OF,Carol Taylor,Berlin,Germany
+Carol Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Jason Moore,PARENT_OF,Carol Taylor,Edinburgh,United Kingdom
+Nancy Moore,PARENT_OF,Carol Taylor,Edinburgh,United Kingdom
+Margaret Harris,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Scott Harris,PARENT_OF,Margaret Harris,Oslo,Norway
+Sarah Harris,PARENT_OF,Margaret Harris,Oslo,Norway
+Margaret Harris,SIBLING_OF,Carol Harris,Oslo,Norway
+Carol Harris,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Scott Harris,PARENT_OF,Carol Harris,Oslo,Norway
+Sarah Harris,PARENT_OF,Carol Harris,Oslo,Norway
+Anna Moore,LIVES_IN,"New York, United States",New York,United States
+Timothy Moore,PARENT_OF,Anna Moore,New York,United States
+Ashley Moore,PARENT_OF,Anna Moore,New York,United States
+Anna Moore,SIBLING_OF,Steven Moore,New York,United States
+Anna Moore,SIBLING_OF,Anna Moore,New York,United States
+Anna Moore,SIBLING_OF,Emma Moore,New York,United States
+Steven Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Timothy Moore,PARENT_OF,Steven Moore,Rome,Italy
+Ashley Moore,PARENT_OF,Steven Moore,Rome,Italy
+Steven Moore,SIBLING_OF,Emma Moore,Rome,Italy
+Anna Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Timothy Moore,PARENT_OF,Anna Moore,Rome,Italy
+Ashley Moore,PARENT_OF,Anna Moore,Rome,Italy
+Emma Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Timothy Moore,PARENT_OF,Emma Moore,Rome,Italy
+Ashley Moore,PARENT_OF,Emma Moore,Rome,Italy
+Richard Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Scott Garcia,PARENT_OF,Richard Garcia,London,United Kingdom
+Jennifer Garcia,PARENT_OF,Richard Garcia,London,United Kingdom
+Richard Garcia,SIBLING_OF,Catherine Rivera,London,United Kingdom
+Richard Garcia,SIBLING_OF,Kathleen Garcia,London,United Kingdom
+Catherine Rivera,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Scott Garcia,PARENT_OF,Catherine Rivera,Madrid,Spain
+Jennifer Garcia,PARENT_OF,Catherine Rivera,Madrid,Spain
+Catherine Rivera,SIBLING_OF,Kathleen Garcia,Madrid,Spain
+Kathleen Garcia,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Scott Garcia,PARENT_OF,Kathleen Garcia,Vienna,Austria
+Jennifer Garcia,PARENT_OF,Kathleen Garcia,Vienna,Austria
+Carolyn Garcia,LIVES_IN,"Paris, France",Paris,France
+Matthew Garcia,PARENT_OF,Carolyn Garcia,Paris,France
+Jessica Garcia,PARENT_OF,Carolyn Garcia,Paris,France
+Carolyn Garcia,SIBLING_OF,Catherine Rodriguez,Paris,France
+Carolyn Garcia,SIBLING_OF,Dorothy Taylor,Paris,France
+Catherine Rodriguez,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Matthew Garcia,PARENT_OF,Catherine Rodriguez,Berlin,Germany
+Jessica Garcia,PARENT_OF,Catherine Rodriguez,Berlin,Germany
+Catherine Rodriguez,SIBLING_OF,Dorothy Taylor,Berlin,Germany
+Dorothy Taylor,LIVES_IN,"Paris, France",Paris,France
+Matthew Garcia,PARENT_OF,Dorothy Taylor,Paris,France
+Jessica Garcia,PARENT_OF,Dorothy Taylor,Paris,France
+Kevin Taylor,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Stephen Taylor,PARENT_OF,Kevin Taylor,Madrid,Spain
+Jennifer Taylor,PARENT_OF,Kevin Taylor,Madrid,Spain
+Kevin Taylor,SIBLING_OF,Anthony Taylor,Madrid,Spain
+Kevin Taylor,SIBLING_OF,Kimberly Garcia,Madrid,Spain
+Kevin Taylor,SIBLING_OF,Susan Garcia,Madrid,Spain
+Anthony Taylor,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Anthony Taylor,MARRIED_TO,Catherine Taylor,Vienna,Austria
+Stephen Taylor,PARENT_OF,Anthony Taylor,Vienna,Austria
+Jennifer Taylor,PARENT_OF,Anthony Taylor,Vienna,Austria
+Anthony Taylor,SIBLING_OF,Kimberly Garcia,Vienna,Austria
+Anthony Taylor,SIBLING_OF,Susan Garcia,Vienna,Austria
+Kimberly Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Kimberly Garcia,MARRIED_TO,Andrew Garcia,Geneva,Switzerland
+Stephen Taylor,PARENT_OF,Kimberly Garcia,Geneva,Switzerland
+Jennifer Taylor,PARENT_OF,Kimberly Garcia,Geneva,Switzerland
+Kimberly Garcia,SIBLING_OF,Susan Garcia,Geneva,Switzerland
+Susan Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Stephen Taylor,PARENT_OF,Susan Garcia,Geneva,Switzerland
+Jennifer Taylor,PARENT_OF,Susan Garcia,Geneva,Switzerland
+Edward Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+David Garcia,PARENT_OF,Edward Garcia,London,United Kingdom
+Margaret Garcia,PARENT_OF,Edward Garcia,London,United Kingdom
+Edward Garcia,SIBLING_OF,Andrew Garcia,London,United Kingdom
+Edward Garcia,SIBLING_OF,Catherine Taylor,London,United Kingdom
+Andrew Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+David Garcia,PARENT_OF,Andrew Garcia,Geneva,Switzerland
+Margaret Garcia,PARENT_OF,Andrew Garcia,Geneva,Switzerland
+Andrew Garcia,SIBLING_OF,Catherine Taylor,Geneva,Switzerland
+Catherine Taylor,LIVES_IN,"Vienna, Austria",Vienna,Austria
+David Garcia,PARENT_OF,Catherine Taylor,Vienna,Austria
+Margaret Garcia,PARENT_OF,Catherine Taylor,Vienna,Austria
+Richard Garcia,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Richard Garcia,MARRIED_TO,Jessica Garcia,Brussels,Belgium
+Justin Garcia,PARENT_OF,Richard Garcia,Brussels,Belgium
+Amy Garcia,PARENT_OF,Richard Garcia,Brussels,Belgium
+Richard Garcia,SIBLING_OF,Jerry Garcia,Brussels,Belgium
+Richard Garcia,SIBLING_OF,Brenda Garcia,Brussels,Belgium
+Jerry Garcia,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Jerry Garcia,MARRIED_TO,Catherine Garcia,Oslo,Norway
+Justin Garcia,PARENT_OF,Jerry Garcia,Oslo,Norway
+Amy Garcia,PARENT_OF,Jerry Garcia,Oslo,Norway
+Jerry Garcia,SIBLING_OF,Brenda Garcia,Oslo,Norway
+Brenda Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Brenda Garcia,MARRIED_TO,Gary Garcia,London,United Kingdom
+Justin Garcia,PARENT_OF,Brenda Garcia,London,United Kingdom
+Amy Garcia,PARENT_OF,Brenda Garcia,London,United Kingdom
+Kimberly Taylor,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Kimberly Taylor,MARRIED_TO,Ryan Taylor,Helsinki,Finland
+Kevin Taylor,PARENT_OF,Kimberly Taylor,Helsinki,Finland
+Susan Taylor,PARENT_OF,Kimberly Taylor,Helsinki,Finland
+Kimberly Taylor,SIBLING_OF,Katherine Taylor,Helsinki,Finland
+Kimberly Taylor,SIBLING_OF,Gary Taylor,Helsinki,Finland
+Katherine Taylor,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Kevin Taylor,PARENT_OF,Katherine Taylor,Madrid,Spain
+Susan Taylor,PARENT_OF,Katherine Taylor,Madrid,Spain
+Katherine Taylor,SIBLING_OF,Gary Taylor,Madrid,Spain
+Gary Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Gary Taylor,MARRIED_TO,Barbara Taylor,Edinburgh,United Kingdom
+Kevin Taylor,PARENT_OF,Gary Taylor,Edinburgh,United Kingdom
+Susan Taylor,PARENT_OF,Gary Taylor,Edinburgh,United Kingdom
+Ruth Taylor,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Ruth Taylor,MARRIED_TO,David Taylor,Tokyo,Japan
+Charles Davis,PARENT_OF,Ruth Taylor,Tokyo,Japan
+Mary Davis,PARENT_OF,Ruth Taylor,Tokyo,Japan
+Ruth Taylor,SIBLING_OF,Rebecca Nguyen,Tokyo,Japan
+Ruth Taylor,SIBLING_OF,Ruth Harris,Tokyo,Japan
+Rebecca Nguyen,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Rebecca Nguyen,MARRIED_TO,David Nguyen,London,United Kingdom
+Charles Davis,PARENT_OF,Rebecca Nguyen,London,United Kingdom
+Mary Davis,PARENT_OF,Rebecca Nguyen,London,United Kingdom
+Rebecca Nguyen,SIBLING_OF,Ruth Harris,London,United Kingdom
+Ruth Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Ruth Harris,MARRIED_TO,Patrick Harris,Berlin,Germany
+Charles Davis,PARENT_OF,Ruth Harris,Berlin,Germany
+Mary Davis,PARENT_OF,Ruth Harris,Berlin,Germany
+Jacob Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Jacob Taylor,MARRIED_TO,Carolyn Taylor,Sydney,Australia
+Andrew Taylor,PARENT_OF,Jacob Taylor,Sydney,Australia
+Dorothy Taylor,PARENT_OF,Jacob Taylor,Sydney,Australia
+Jacob Taylor,SIBLING_OF,Jessica Taylor,Sydney,Australia
+Jacob Taylor,SIBLING_OF,Shirley Taylor,Sydney,Australia
+Jacob Taylor,SIBLING_OF,Alexander Taylor,Sydney,Australia
+Jessica Taylor,LIVES_IN,"Paris, France",Paris,France
+Andrew Taylor,PARENT_OF,Jessica Taylor,Paris,France
+Dorothy Taylor,PARENT_OF,Jessica Taylor,Paris,France
+Jessica Taylor,SIBLING_OF,Shirley Taylor,Paris,France
+Jessica Taylor,SIBLING_OF,Alexander Taylor,Paris,France
+Shirley Taylor,LIVES_IN,"Paris, France",Paris,France
+Andrew Taylor,PARENT_OF,Shirley Taylor,Paris,France
+Dorothy Taylor,PARENT_OF,Shirley Taylor,Paris,France
+Shirley Taylor,SIBLING_OF,Alexander Taylor,Paris,France
+Alexander Taylor,LIVES_IN,"Paris, France",Paris,France
+Alexander Taylor,MARRIED_TO,Susan Taylor,Paris,France
+Andrew Taylor,PARENT_OF,Alexander Taylor,Paris,France
+Dorothy Taylor,PARENT_OF,Alexander Taylor,Paris,France
+Linda Nguyen,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Nicholas Nguyen,PARENT_OF,Linda Nguyen,Geneva,Switzerland
+Kimberly Nguyen,PARENT_OF,Linda Nguyen,Geneva,Switzerland
+Linda Nguyen,SIBLING_OF,Katherine Nguyen,Geneva,Switzerland
+Linda Nguyen,SIBLING_OF,Mark Nguyen,Geneva,Switzerland
+Katherine Nguyen,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Nicholas Nguyen,PARENT_OF,Katherine Nguyen,London,United Kingdom
+Kimberly Nguyen,PARENT_OF,Katherine Nguyen,London,United Kingdom
+Katherine Nguyen,SIBLING_OF,Mark Nguyen,London,United Kingdom
+Mark Nguyen,LIVES_IN,"New York, United States",New York,United States
+Mark Nguyen,MARRIED_TO,Susan Nguyen,New York,United States
+Nicholas Nguyen,PARENT_OF,Mark Nguyen,New York,United States
+Kimberly Nguyen,PARENT_OF,Mark Nguyen,New York,United States
+Laura Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Laura Garcia,MARRIED_TO,Brian Garcia,Geneva,Switzerland
+Benjamin Rivera,PARENT_OF,Laura Garcia,Geneva,Switzerland
+Catherine Rivera,PARENT_OF,Laura Garcia,Geneva,Switzerland
+Laura Garcia,SIBLING_OF,Jessica Garcia,Geneva,Switzerland
+Jessica Garcia,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Jessica Garcia,MARRIED_TO,Jack Garcia,Madrid,Spain
+Benjamin Rivera,PARENT_OF,Jessica Garcia,Madrid,Spain
+Catherine Rivera,PARENT_OF,Jessica Garcia,Madrid,Spain
+Kenneth Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Kenneth Taylor,MARRIED_TO,Amanda Taylor,Edinburgh,United Kingdom
+Tyler Taylor,PARENT_OF,Kenneth Taylor,Edinburgh,United Kingdom
+Carol Taylor,PARENT_OF,Kenneth Taylor,Edinburgh,United Kingdom
+Kenneth Taylor,SIBLING_OF,Barbara Taylor,Edinburgh,United Kingdom
+Barbara Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Tyler Taylor,PARENT_OF,Barbara Taylor,Edinburgh,United Kingdom
+Carol Taylor,PARENT_OF,Barbara Taylor,Edinburgh,United Kingdom
+Jessica Garcia,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Jerry Rivera,PARENT_OF,Jessica Garcia,Brussels,Belgium
+Rachel Rivera,PARENT_OF,Jessica Garcia,Brussels,Belgium
+Jessica Garcia,SIBLING_OF,Nicholas Rivera,Brussels,Belgium
+Nicholas Rivera,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Nicholas Rivera,MARRIED_TO,Carol Rivera,Brussels,Belgium
+Jerry Rivera,PARENT_OF,Nicholas Rivera,Brussels,Belgium
+Rachel Rivera,PARENT_OF,Nicholas Rivera,Brussels,Belgium
+Rebecca Taylor,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Rebecca Taylor,MARRIED_TO,Jacob Taylor,Vienna,Austria
+Raymond Davis,PARENT_OF,Rebecca Taylor,Vienna,Austria
+Dorothy Davis,PARENT_OF,Rebecca Taylor,Vienna,Austria
+Rebecca Taylor,SIBLING_OF,Ashley Davis,Vienna,Austria
+Rebecca Taylor,SIBLING_OF,Ronald Davis,Vienna,Austria
+Ashley Davis,LIVES_IN,"Rome, Italy",Rome,Italy
+Raymond Davis,PARENT_OF,Ashley Davis,Rome,Italy
+Dorothy Davis,PARENT_OF,Ashley Davis,Rome,Italy
+Ashley Davis,SIBLING_OF,Ronald Davis,Rome,Italy
+Ronald Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Ronald Davis,MARRIED_TO,Emily Davis,Oslo,Norway
+Raymond Davis,PARENT_OF,Ronald Davis,Oslo,Norway
+Dorothy Davis,PARENT_OF,Ronald Davis,Oslo,Norway
+David Nguyen,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jason Nguyen,PARENT_OF,David Nguyen,London,United Kingdom
+Janet Nguyen,PARENT_OF,David Nguyen,London,United Kingdom
+David Nguyen,SIBLING_OF,Carol Rivera,London,United Kingdom
+David Nguyen,SIBLING_OF,Mary Garcia,London,United Kingdom
+David Nguyen,SIBLING_OF,Pamela Rodriguez,London,United Kingdom
+Carol Rivera,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Jason Nguyen,PARENT_OF,Carol Rivera,Brussels,Belgium
+Janet Nguyen,PARENT_OF,Carol Rivera,Brussels,Belgium
+Carol Rivera,SIBLING_OF,Mary Garcia,Brussels,Belgium
+Carol Rivera,SIBLING_OF,Pamela Rodriguez,Brussels,Belgium
+Mary Garcia,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Mary Garcia,MARRIED_TO,Daniel Garcia,Reykjavik,Iceland
+Jason Nguyen,PARENT_OF,Mary Garcia,Reykjavik,Iceland
+Janet Nguyen,PARENT_OF,Mary Garcia,Reykjavik,Iceland
+Mary Garcia,SIBLING_OF,Pamela Rodriguez,Reykjavik,Iceland
+Pamela Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Pamela Rodriguez,MARRIED_TO,Steven Rodriguez,Rome,Italy
+Jason Nguyen,PARENT_OF,Pamela Rodriguez,Rome,Italy
+Janet Nguyen,PARENT_OF,Pamela Rodriguez,Rome,Italy
+Karen Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Patrick Harris,PARENT_OF,Karen Harris,Berlin,Germany
+Brenda Harris,PARENT_OF,Karen Harris,Berlin,Germany
+Karen Harris,SIBLING_OF,Amanda Taylor,Berlin,Germany
+Karen Harris,SIBLING_OF,Cynthia Moore,Berlin,Germany
+Karen Harris,SIBLING_OF,Patrick Harris,Berlin,Germany
+Amanda Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Patrick Harris,PARENT_OF,Amanda Taylor,Edinburgh,United Kingdom
+Brenda Harris,PARENT_OF,Amanda Taylor,Edinburgh,United Kingdom
+Amanda Taylor,SIBLING_OF,Cynthia Moore,Edinburgh,United Kingdom
+Amanda Taylor,SIBLING_OF,Patrick Harris,Edinburgh,United Kingdom
+Cynthia Moore,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Cynthia Moore,MARRIED_TO,Richard Moore,Berlin,Germany
+Patrick Harris,PARENT_OF,Cynthia Moore,Berlin,Germany
+Brenda Harris,PARENT_OF,Cynthia Moore,Berlin,Germany
+Cynthia Moore,SIBLING_OF,Patrick Harris,Berlin,Germany
+Patrick Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Patrick Harris,PARENT_OF,Patrick Harris,Berlin,Germany
+Brenda Harris,PARENT_OF,Patrick Harris,Berlin,Germany
+Tyler Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Tyler Davis,MARRIED_TO,Angela Davis,London,United Kingdom
+Jerry Davis,PARENT_OF,Tyler Davis,London,United Kingdom
+Dorothy Davis,PARENT_OF,Tyler Davis,London,United Kingdom
+Tyler Davis,SIBLING_OF,Carolyn Taylor,London,United Kingdom
+Tyler Davis,SIBLING_OF,Deborah Davis,London,United Kingdom
+Carolyn Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Jerry Davis,PARENT_OF,Carolyn Taylor,Sydney,Australia
+Dorothy Davis,PARENT_OF,Carolyn Taylor,Sydney,Australia
+Carolyn Taylor,SIBLING_OF,Deborah Davis,Sydney,Australia
+Deborah Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jerry Davis,PARENT_OF,Deborah Davis,London,United Kingdom
+Dorothy Davis,PARENT_OF,Deborah Davis,London,United Kingdom
+Nicholas Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Nicholas Rodriguez,MARRIED_TO,Emily Rodriguez,New York,United States
+Andrew Rodriguez,PARENT_OF,Nicholas Rodriguez,New York,United States
+Virginia Rodriguez,PARENT_OF,Nicholas Rodriguez,New York,United States
+Nicholas Rodriguez,SIBLING_OF,Eric Rodriguez,New York,United States
+Nicholas Rodriguez,SIBLING_OF,Susan Rodriguez,New York,United States
+Nicholas Rodriguez,SIBLING_OF,Susan Nguyen,New York,United States
+Eric Rodriguez,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Eric Rodriguez,MARRIED_TO,Pamela Rodriguez,Brussels,Belgium
+Andrew Rodriguez,PARENT_OF,Eric Rodriguez,Brussels,Belgium
+Virginia Rodriguez,PARENT_OF,Eric Rodriguez,Brussels,Belgium
+Eric Rodriguez,SIBLING_OF,Susan Rodriguez,Brussels,Belgium
+Eric Rodriguez,SIBLING_OF,Susan Nguyen,Brussels,Belgium
+Susan Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Andrew Rodriguez,PARENT_OF,Susan Rodriguez,New York,United States
+Virginia Rodriguez,PARENT_OF,Susan Rodriguez,New York,United States
+Susan Rodriguez,SIBLING_OF,Susan Nguyen,New York,United States
+Susan Nguyen,LIVES_IN,"New York, United States",New York,United States
+Andrew Rodriguez,PARENT_OF,Susan Nguyen,New York,United States
+Virginia Rodriguez,PARENT_OF,Susan Nguyen,New York,United States
+Jack Garcia,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Richard Garcia,PARENT_OF,Jack Garcia,Madrid,Spain
+Ashley Garcia,PARENT_OF,Jack Garcia,Madrid,Spain
+Jack Garcia,SIBLING_OF,Gary Garcia,Madrid,Spain
+Jack Garcia,SIBLING_OF,Carol Garcia,Madrid,Spain
+Gary Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Richard Garcia,PARENT_OF,Gary Garcia,London,United Kingdom
+Ashley Garcia,PARENT_OF,Gary Garcia,London,United Kingdom
+Gary Garcia,SIBLING_OF,Carol Garcia,London,United Kingdom
+Carol Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Richard Garcia,PARENT_OF,Carol Garcia,London,United Kingdom
+Ashley Garcia,PARENT_OF,Carol Garcia,London,United Kingdom
+Brian Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Thomas Garcia,PARENT_OF,Brian Garcia,Geneva,Switzerland
+Susan Garcia,PARENT_OF,Brian Garcia,Geneva,Switzerland
+Brian Garcia,SIBLING_OF,Michelle Moore,Geneva,Switzerland
+Brian Garcia,SIBLING_OF,Helen Taylor,Geneva,Switzerland
+Michelle Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Michelle Moore,MARRIED_TO,Jerry Moore,Rome,Italy
+Thomas Garcia,PARENT_OF,Michelle Moore,Rome,Italy
+Susan Garcia,PARENT_OF,Michelle Moore,Rome,Italy
+Michelle Moore,SIBLING_OF,Helen Taylor,Rome,Italy
+Helen Taylor,LIVES_IN,"Paris, France",Paris,France
+Helen Taylor,MARRIED_TO,Joshua Taylor,Paris,France
+Thomas Garcia,PARENT_OF,Helen Taylor,Paris,France
+Susan Garcia,PARENT_OF,Helen Taylor,Paris,France
+Sandra Rodriguez,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Richard Rodriguez,PARENT_OF,Sandra Rodriguez,Berlin,Germany
+Catherine Rodriguez,PARENT_OF,Sandra Rodriguez,Berlin,Germany
+Sandra Rodriguez,SIBLING_OF,Susan Taylor,Berlin,Germany
+Susan Taylor,LIVES_IN,"Paris, France",Paris,France
+Richard Rodriguez,PARENT_OF,Susan Taylor,Paris,France
+Catherine Rodriguez,PARENT_OF,Susan Taylor,Paris,France
+Ryan Taylor,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+David Taylor,PARENT_OF,Ryan Taylor,Helsinki,Finland
+Michelle Taylor,PARENT_OF,Ryan Taylor,Helsinki,Finland
+Ryan Taylor,SIBLING_OF,Michael Taylor,Helsinki,Finland
+Ryan Taylor,SIBLING_OF,Joshua Taylor,Helsinki,Finland
+Ryan Taylor,SIBLING_OF,Karen Taylor,Helsinki,Finland
+Michael Taylor,LIVES_IN,"Paris, France",Paris,France
+Michael Taylor,MARRIED_TO,Carolyn Taylor,Paris,France
+David Taylor,PARENT_OF,Michael Taylor,Paris,France
+Michelle Taylor,PARENT_OF,Michael Taylor,Paris,France
+Michael Taylor,SIBLING_OF,Joshua Taylor,Paris,France
+Michael Taylor,SIBLING_OF,Karen Taylor,Paris,France
+Joshua Taylor,LIVES_IN,"Paris, France",Paris,France
+David Taylor,PARENT_OF,Joshua Taylor,Paris,France
+Michelle Taylor,PARENT_OF,Joshua Taylor,Paris,France
+Joshua Taylor,SIBLING_OF,Karen Taylor,Paris,France
+Karen Taylor,LIVES_IN,"Paris, France",Paris,France
+David Taylor,PARENT_OF,Karen Taylor,Paris,France
+Michelle Taylor,PARENT_OF,Karen Taylor,Paris,France
+Daniel Garcia,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Andrew Garcia,PARENT_OF,Daniel Garcia,Reykjavik,Iceland
+Kimberly Garcia,PARENT_OF,Daniel Garcia,Reykjavik,Iceland
+Daniel Garcia,SIBLING_OF,Samantha Garcia,Reykjavik,Iceland
+Daniel Garcia,SIBLING_OF,Pamela Rodriguez,Reykjavik,Iceland
+Samantha Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Andrew Garcia,PARENT_OF,Samantha Garcia,Geneva,Switzerland
+Kimberly Garcia,PARENT_OF,Samantha Garcia,Geneva,Switzerland
+Samantha Garcia,SIBLING_OF,Pamela Rodriguez,Geneva,Switzerland
+Pamela Rodriguez,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Andrew Garcia,PARENT_OF,Pamela Rodriguez,Brussels,Belgium
+Kimberly Garcia,PARENT_OF,Pamela Rodriguez,Brussels,Belgium
+Cynthia Taylor,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Anthony Taylor,PARENT_OF,Cynthia Taylor,Vienna,Austria
+Catherine Taylor,PARENT_OF,Cynthia Taylor,Vienna,Austria
+Cynthia Taylor,SIBLING_OF,Jacob Taylor,Vienna,Austria
+Cynthia Taylor,SIBLING_OF,David Taylor,Vienna,Austria
+Cynthia Taylor,SIBLING_OF,Pamela Taylor,Vienna,Austria
+Jacob Taylor,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Anthony Taylor,PARENT_OF,Jacob Taylor,Vienna,Austria
+Catherine Taylor,PARENT_OF,Jacob Taylor,Vienna,Austria
+Jacob Taylor,SIBLING_OF,David Taylor,Vienna,Austria
+Jacob Taylor,SIBLING_OF,Pamela Taylor,Vienna,Austria
+David Taylor,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Anthony Taylor,PARENT_OF,David Taylor,Tokyo,Japan
+Catherine Taylor,PARENT_OF,David Taylor,Tokyo,Japan
+David Taylor,SIBLING_OF,Pamela Taylor,Tokyo,Japan
+Pamela Taylor,LIVES_IN,"Vienna, Austria",Vienna,Austria
+Anthony Taylor,PARENT_OF,Pamela Taylor,Vienna,Austria
+Catherine Taylor,PARENT_OF,Pamela Taylor,Vienna,Austria
+Cynthia Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Cynthia Garcia,MARRIED_TO,Paul Garcia,London,United Kingdom
+Timothy Rodriguez,PARENT_OF,Cynthia Garcia,London,United Kingdom
+Janet Rodriguez,PARENT_OF,Cynthia Garcia,London,United Kingdom
+Cynthia Garcia,SIBLING_OF,Ronald Rodriguez,London,United Kingdom
+Cynthia Garcia,SIBLING_OF,Steven Rodriguez,London,United Kingdom
+Ronald Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Ronald Rodriguez,MARRIED_TO,Jessica Rodriguez,Rome,Italy
+Timothy Rodriguez,PARENT_OF,Ronald Rodriguez,Rome,Italy
+Janet Rodriguez,PARENT_OF,Ronald Rodriguez,Rome,Italy
+Ronald Rodriguez,SIBLING_OF,Steven Rodriguez,Rome,Italy
+Steven Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Timothy Rodriguez,PARENT_OF,Steven Rodriguez,Rome,Italy
+Janet Rodriguez,PARENT_OF,Steven Rodriguez,Rome,Italy
+Catherine Garcia,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Jeffrey Nguyen,PARENT_OF,Catherine Garcia,Oslo,Norway
+Rebecca Nguyen,PARENT_OF,Catherine Garcia,Oslo,Norway
+Catherine Garcia,SIBLING_OF,Kimberly Taylor,Oslo,Norway
+Catherine Garcia,SIBLING_OF,Emily Davis,Oslo,Norway
+Kimberly Taylor,LIVES_IN,"Paris, France",Paris,France
+Kimberly Taylor,MARRIED_TO,Stephen Taylor,Paris,France
+Jeffrey Nguyen,PARENT_OF,Kimberly Taylor,Paris,France
+Rebecca Nguyen,PARENT_OF,Kimberly Taylor,Paris,France
+Kimberly Taylor,SIBLING_OF,Emily Davis,Paris,France
+Emily Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Jeffrey Nguyen,PARENT_OF,Emily Davis,Oslo,Norway
+Rebecca Nguyen,PARENT_OF,Emily Davis,Oslo,Norway
+Sandra Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Tyler Harris,PARENT_OF,Sandra Harris,Berlin,Germany
+Elizabeth Harris,PARENT_OF,Sandra Harris,Berlin,Germany
+Sandra Harris,SIBLING_OF,Christine Moore,Berlin,Germany
+Christine Moore,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Christine Moore,MARRIED_TO,Samuel Moore,Berlin,Germany
+Tyler Harris,PARENT_OF,Christine Moore,Berlin,Germany
+Elizabeth Harris,PARENT_OF,Christine Moore,Berlin,Germany
+Samuel Moore,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Dennis Moore,PARENT_OF,Samuel Moore,Berlin,Germany
+Ruth Moore,PARENT_OF,Samuel Moore,Berlin,Germany
+Samuel Moore,SIBLING_OF,Laura Moore,Berlin,Germany
+Samuel Moore,SIBLING_OF,Richard Moore,Berlin,Germany
+Samuel Moore,SIBLING_OF,Carolyn Taylor,Berlin,Germany
+Laura Moore,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Dennis Moore,PARENT_OF,Laura Moore,Geneva,Switzerland
+Ruth Moore,PARENT_OF,Laura Moore,Geneva,Switzerland
+Laura Moore,SIBLING_OF,Richard Moore,Geneva,Switzerland
+Laura Moore,SIBLING_OF,Carolyn Taylor,Geneva,Switzerland
+Richard Moore,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Dennis Moore,PARENT_OF,Richard Moore,Berlin,Germany
+Ruth Moore,PARENT_OF,Richard Moore,Berlin,Germany
+Richard Moore,SIBLING_OF,Carolyn Taylor,Berlin,Germany
+Carolyn Taylor,LIVES_IN,"Paris, France",Paris,France
+Dennis Moore,PARENT_OF,Carolyn Taylor,Paris,France
+Ruth Moore,PARENT_OF,Carolyn Taylor,Paris,France
+Stephen Taylor,LIVES_IN,"Paris, France",Paris,France
+Joseph Taylor,PARENT_OF,Stephen Taylor,Paris,France
+Katherine Taylor,PARENT_OF,Stephen Taylor,Paris,France
+Stephen Taylor,SIBLING_OF,Angela Davis,Paris,France
+Angela Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Joseph Taylor,PARENT_OF,Angela Davis,London,United Kingdom
+Katherine Taylor,PARENT_OF,Angela Davis,London,United Kingdom
+Paul Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Edward Garcia,PARENT_OF,Paul Garcia,London,United Kingdom
+Anna Garcia,PARENT_OF,Paul Garcia,London,United Kingdom
+Paul Garcia,SIBLING_OF,Emily Rodriguez,London,United Kingdom
+Paul Garcia,SIBLING_OF,Jessica Rodriguez,London,United Kingdom
+Emily Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Edward Garcia,PARENT_OF,Emily Rodriguez,New York,United States
+Anna Garcia,PARENT_OF,Emily Rodriguez,New York,United States
+Emily Rodriguez,SIBLING_OF,Jessica Rodriguez,New York,United States
+Jessica Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Edward Garcia,PARENT_OF,Jessica Rodriguez,Rome,Italy
+Anna Garcia,PARENT_OF,Jessica Rodriguez,Rome,Italy
+Jerry Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Steven Moore,PARENT_OF,Jerry Moore,Rome,Italy
+Stephanie Moore,PARENT_OF,Jerry Moore,Rome,Italy
+Jerry Moore,SIBLING_OF,Anna Moore,Rome,Italy
+Anna Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Steven Moore,PARENT_OF,Anna Moore,Rome,Italy
+Stephanie Moore,PARENT_OF,Anna Moore,Rome,Italy
+Ryan Rodriguez,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Ryan Rodriguez,MARRIED_TO,Stephanie Rodriguez,Edinburgh,United Kingdom
+Ronald Rodriguez,PARENT_OF,Ryan Rodriguez,Edinburgh,United Kingdom
+Jessica Rodriguez,PARENT_OF,Ryan Rodriguez,Edinburgh,United Kingdom
+Ryan Rodriguez,SIBLING_OF,Jack Rodriguez,Edinburgh,United Kingdom
+Ryan Rodriguez,SIBLING_OF,Cynthia Moore,Edinburgh,United Kingdom
+Ryan Rodriguez,SIBLING_OF,William Rodriguez,Edinburgh,United Kingdom
+Jack Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Jack Rodriguez,MARRIED_TO,Elizabeth Rodriguez,Rome,Italy
+Ronald Rodriguez,PARENT_OF,Jack Rodriguez,Rome,Italy
+Jessica Rodriguez,PARENT_OF,Jack Rodriguez,Rome,Italy
+Jack Rodriguez,SIBLING_OF,Cynthia Moore,Rome,Italy
+Jack Rodriguez,SIBLING_OF,William Rodriguez,Rome,Italy
+Cynthia Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Cynthia Moore,MARRIED_TO,Christopher Moore,Rome,Italy
+Ronald Rodriguez,PARENT_OF,Cynthia Moore,Rome,Italy
+Jessica Rodriguez,PARENT_OF,Cynthia Moore,Rome,Italy
+Cynthia Moore,SIBLING_OF,William Rodriguez,Rome,Italy
+William Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+William Rodriguez,MARRIED_TO,Elizabeth Rodriguez,Rome,Italy
+Ronald Rodriguez,PARENT_OF,William Rodriguez,Rome,Italy
+Jessica Rodriguez,PARENT_OF,William Rodriguez,Rome,Italy
+Christine Nguyen,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Christine Nguyen,MARRIED_TO,Charles Nguyen,Brussels,Belgium
+Alexander Taylor,PARENT_OF,Christine Nguyen,Brussels,Belgium
+Susan Taylor,PARENT_OF,Christine Nguyen,Brussels,Belgium
+Christine Nguyen,SIBLING_OF,Richard Taylor,Brussels,Belgium
+Christine Nguyen,SIBLING_OF,David Taylor,Brussels,Belgium
+Richard Taylor,LIVES_IN,"Paris, France",Paris,France
+Richard Taylor,MARRIED_TO,Rachel Taylor,Paris,France
+Alexander Taylor,PARENT_OF,Richard Taylor,Paris,France
+Susan Taylor,PARENT_OF,Richard Taylor,Paris,France
+Richard Taylor,SIBLING_OF,David Taylor,Paris,France
+David Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+David Taylor,MARRIED_TO,Patricia Taylor,Reykjavik,Iceland
+Alexander Taylor,PARENT_OF,David Taylor,Reykjavik,Iceland
+Susan Taylor,PARENT_OF,David Taylor,Reykjavik,Iceland
+Deborah Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Deborah Taylor,MARRIED_TO,Steven Taylor,Sydney,Australia
+Eric Rodriguez,PARENT_OF,Deborah Taylor,Sydney,Australia
+Pamela Rodriguez,PARENT_OF,Deborah Taylor,Sydney,Australia
+Deborah Taylor,SIBLING_OF,Cynthia Taylor,Sydney,Australia
+Deborah Taylor,SIBLING_OF,Susan Rivera,Sydney,Australia
+Deborah Taylor,SIBLING_OF,Gregory Rodriguez,Sydney,Australia
+Cynthia Taylor,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Cynthia Taylor,MARRIED_TO,Frank Taylor,Brussels,Belgium
+Eric Rodriguez,PARENT_OF,Cynthia Taylor,Brussels,Belgium
+Pamela Rodriguez,PARENT_OF,Cynthia Taylor,Brussels,Belgium
+Cynthia Taylor,SIBLING_OF,Susan Rivera,Brussels,Belgium
+Cynthia Taylor,SIBLING_OF,Gregory Rodriguez,Brussels,Belgium
+Susan Rivera,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Susan Rivera,MARRIED_TO,Jeffrey Rivera,Brussels,Belgium
+Eric Rodriguez,PARENT_OF,Susan Rivera,Brussels,Belgium
+Pamela Rodriguez,PARENT_OF,Susan Rivera,Brussels,Belgium
+Susan Rivera,SIBLING_OF,Gregory Rodriguez,Brussels,Belgium
+Gregory Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Gregory Rodriguez,MARRIED_TO,Shirley Rodriguez,New York,United States
+Eric Rodriguez,PARENT_OF,Gregory Rodriguez,New York,United States
+Pamela Rodriguez,PARENT_OF,Gregory Rodriguez,New York,United States
+Jeffrey Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Jeffrey Taylor,MARRIED_TO,Elizabeth Taylor,Edinburgh,United Kingdom
+Kenneth Taylor,PARENT_OF,Jeffrey Taylor,Edinburgh,United Kingdom
+Amanda Taylor,PARENT_OF,Jeffrey Taylor,Edinburgh,United Kingdom
+Jeffrey Taylor,SIBLING_OF,Jason Taylor,Edinburgh,United Kingdom
+Jeffrey Taylor,SIBLING_OF,Stephanie Rodriguez,Edinburgh,United Kingdom
+Jeffrey Taylor,SIBLING_OF,Kevin Taylor,Edinburgh,United Kingdom
+Jason Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Jason Taylor,MARRIED_TO,Jennifer Taylor,Reykjavik,Iceland
+Kenneth Taylor,PARENT_OF,Jason Taylor,Reykjavik,Iceland
+Amanda Taylor,PARENT_OF,Jason Taylor,Reykjavik,Iceland
+Jason Taylor,SIBLING_OF,Stephanie Rodriguez,Reykjavik,Iceland
+Jason Taylor,SIBLING_OF,Kevin Taylor,Reykjavik,Iceland
+Stephanie Rodriguez,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Kenneth Taylor,PARENT_OF,Stephanie Rodriguez,Edinburgh,United Kingdom
+Amanda Taylor,PARENT_OF,Stephanie Rodriguez,Edinburgh,United Kingdom
+Stephanie Rodriguez,SIBLING_OF,Kevin Taylor,Edinburgh,United Kingdom
+Kevin Taylor,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Kevin Taylor,MARRIED_TO,Ruth Taylor,Geneva,Switzerland
+Kenneth Taylor,PARENT_OF,Kevin Taylor,Geneva,Switzerland
+Amanda Taylor,PARENT_OF,Kevin Taylor,Geneva,Switzerland
+Melissa Moore,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Melissa Moore,MARRIED_TO,Ryan Moore,Berlin,Germany
+Gary Taylor,PARENT_OF,Melissa Moore,Berlin,Germany
+Barbara Taylor,PARENT_OF,Melissa Moore,Berlin,Germany
+Melissa Moore,SIBLING_OF,Elizabeth Taylor,Berlin,Germany
+Melissa Moore,SIBLING_OF,Jeffrey Taylor,Berlin,Germany
+Melissa Moore,SIBLING_OF,Larry Taylor,Berlin,Germany
+Elizabeth Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Gary Taylor,PARENT_OF,Elizabeth Taylor,Edinburgh,United Kingdom
+Barbara Taylor,PARENT_OF,Elizabeth Taylor,Edinburgh,United Kingdom
+Elizabeth Taylor,SIBLING_OF,Jeffrey Taylor,Edinburgh,United Kingdom
+Elizabeth Taylor,SIBLING_OF,Larry Taylor,Edinburgh,United Kingdom
+Jeffrey Taylor,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Jeffrey Taylor,MARRIED_TO,Katherine Taylor,Geneva,Switzerland
+Gary Taylor,PARENT_OF,Jeffrey Taylor,Geneva,Switzerland
+Barbara Taylor,PARENT_OF,Jeffrey Taylor,Geneva,Switzerland
+Jeffrey Taylor,SIBLING_OF,Larry Taylor,Geneva,Switzerland
+Larry Taylor,LIVES_IN,"New York, United States",New York,United States
+Larry Taylor,MARRIED_TO,Betty Taylor,New York,United States
+Gary Taylor,PARENT_OF,Larry Taylor,New York,United States
+Barbara Taylor,PARENT_OF,Larry Taylor,New York,United States
+Ruth Taylor,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Jerry Moore,PARENT_OF,Ruth Taylor,Geneva,Switzerland
+Michelle Moore,PARENT_OF,Ruth Taylor,Geneva,Switzerland
+Ruth Taylor,SIBLING_OF,Rachel Taylor,Geneva,Switzerland
+Ruth Taylor,SIBLING_OF,Amanda Garcia,Geneva,Switzerland
+Ruth Taylor,SIBLING_OF,Christopher Moore,Geneva,Switzerland
+Rachel Taylor,LIVES_IN,"Paris, France",Paris,France
+Jerry Moore,PARENT_OF,Rachel Taylor,Paris,France
+Michelle Moore,PARENT_OF,Rachel Taylor,Paris,France
+Rachel Taylor,SIBLING_OF,Amanda Garcia,Paris,France
+Rachel Taylor,SIBLING_OF,Christopher Moore,Paris,France
+Amanda Garcia,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Amanda Garcia,MARRIED_TO,Timothy Garcia,Edinburgh,United Kingdom
+Jerry Moore,PARENT_OF,Amanda Garcia,Edinburgh,United Kingdom
+Michelle Moore,PARENT_OF,Amanda Garcia,Edinburgh,United Kingdom
+Amanda Garcia,SIBLING_OF,Christopher Moore,Edinburgh,United Kingdom
+Christopher Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Jerry Moore,PARENT_OF,Christopher Moore,Rome,Italy
+Michelle Moore,PARENT_OF,Christopher Moore,Rome,Italy
+George Harris,LIVES_IN,"London, United Kingdom",London,United Kingdom
+George Harris,MARRIED_TO,Christine Harris,London,United Kingdom
+Patrick Harris,PARENT_OF,George Harris,London,United Kingdom
+Ruth Harris,PARENT_OF,George Harris,London,United Kingdom
+George Harris,SIBLING_OF,Jessica Rodriguez,London,United Kingdom
+Jessica Rodriguez,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Jessica Rodriguez,MARRIED_TO,Jonathan Rodriguez,Berlin,Germany
+Patrick Harris,PARENT_OF,Jessica Rodriguez,Berlin,Germany
+Ruth Harris,PARENT_OF,Jessica Rodriguez,Berlin,Germany
+Jeffrey Garcia,LIVES_IN,"Paris, France",Paris,France
+Jeffrey Garcia,MARRIED_TO,Debra Garcia,Paris,France
+Jerry Garcia,PARENT_OF,Jeffrey Garcia,Paris,France
+Catherine Garcia,PARENT_OF,Jeffrey Garcia,Paris,France
+Jeffrey Garcia,SIBLING_OF,Brandon Garcia,Paris,France
+Jeffrey Garcia,SIBLING_OF,Patricia Taylor,Paris,France
+Jeffrey Garcia,SIBLING_OF,Amanda Garcia,Paris,France
+Brandon Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Brandon Garcia,MARRIED_TO,Kimberly Garcia,London,United Kingdom
+Jerry Garcia,PARENT_OF,Brandon Garcia,London,United Kingdom
+Catherine Garcia,PARENT_OF,Brandon Garcia,London,United Kingdom
+Brandon Garcia,SIBLING_OF,Patricia Taylor,London,United Kingdom
+Brandon Garcia,SIBLING_OF,Amanda Garcia,London,United Kingdom
+Patricia Taylor,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Patricia Taylor,MARRIED_TO,Kenneth Taylor,Dublin,Ireland
+Jerry Garcia,PARENT_OF,Patricia Taylor,Dublin,Ireland
+Catherine Garcia,PARENT_OF,Patricia Taylor,Dublin,Ireland
+Patricia Taylor,SIBLING_OF,Amanda Garcia,Dublin,Ireland
+Amanda Garcia,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Amanda Garcia,MARRIED_TO,Edward Garcia,Madrid,Spain
+Jerry Garcia,PARENT_OF,Amanda Garcia,Madrid,Spain
+Catherine Garcia,PARENT_OF,Amanda Garcia,Madrid,Spain
+Elizabeth Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Elizabeth Davis,MARRIED_TO,Edward Davis,London,United Kingdom
+Brian Garcia,PARENT_OF,Elizabeth Davis,London,United Kingdom
+Laura Garcia,PARENT_OF,Elizabeth Davis,London,United Kingdom
+Elizabeth Davis,SIBLING_OF,Dennis Garcia,London,United Kingdom
+Elizabeth Davis,SIBLING_OF,Rebecca Taylor,London,United Kingdom
+Elizabeth Davis,SIBLING_OF,Edward Garcia,London,United Kingdom
+Dennis Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Dennis Garcia,MARRIED_TO,Brenda Garcia,Geneva,Switzerland
+Brian Garcia,PARENT_OF,Dennis Garcia,Geneva,Switzerland
+Laura Garcia,PARENT_OF,Dennis Garcia,Geneva,Switzerland
+Dennis Garcia,SIBLING_OF,Rebecca Taylor,Geneva,Switzerland
+Dennis Garcia,SIBLING_OF,Edward Garcia,Geneva,Switzerland
+Rebecca Taylor,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Rebecca Taylor,MARRIED_TO,Matthew Taylor,Geneva,Switzerland
+Brian Garcia,PARENT_OF,Rebecca Taylor,Geneva,Switzerland
+Laura Garcia,PARENT_OF,Rebecca Taylor,Geneva,Switzerland
+Rebecca Taylor,SIBLING_OF,Edward Garcia,Geneva,Switzerland
+Edward Garcia,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Brian Garcia,PARENT_OF,Edward Garcia,Madrid,Spain
+Laura Garcia,PARENT_OF,Edward Garcia,Madrid,Spain
+William Taylor,LIVES_IN,"Rome, Italy",Rome,Italy
+William Taylor,MARRIED_TO,Amanda Taylor,Rome,Italy
+Joshua Taylor,PARENT_OF,William Taylor,Rome,Italy
+Helen Taylor,PARENT_OF,William Taylor,Rome,Italy
+William Taylor,SIBLING_OF,Frank Taylor,Rome,Italy
+William Taylor,SIBLING_OF,Amy Garcia,Rome,Italy
+Frank Taylor,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Joshua Taylor,PARENT_OF,Frank Taylor,Brussels,Belgium
+Helen Taylor,PARENT_OF,Frank Taylor,Brussels,Belgium
+Frank Taylor,SIBLING_OF,Amy Garcia,Brussels,Belgium
+Amy Garcia,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Amy Garcia,MARRIED_TO,Tyler Garcia,Sydney,Australia
+Joshua Taylor,PARENT_OF,Amy Garcia,Sydney,Australia
+Helen Taylor,PARENT_OF,Amy Garcia,Sydney,Australia
+Margaret Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Margaret Davis,MARRIED_TO,Jack Davis,Oslo,Norway
+Mark Nguyen,PARENT_OF,Margaret Davis,Oslo,Norway
+Susan Nguyen,PARENT_OF,Margaret Davis,Oslo,Norway
+Margaret Davis,SIBLING_OF,George Nguyen,Oslo,Norway
+Margaret Davis,SIBLING_OF,Christine Taylor,Oslo,Norway
+George Nguyen,LIVES_IN,"New York, United States",New York,United States
+George Nguyen,MARRIED_TO,Barbara Nguyen,New York,United States
+Mark Nguyen,PARENT_OF,George Nguyen,New York,United States
+Susan Nguyen,PARENT_OF,George Nguyen,New York,United States
+George Nguyen,SIBLING_OF,Christine Taylor,New York,United States
+Christine Taylor,LIVES_IN,"New York, United States",New York,United States
+Christine Taylor,MARRIED_TO,Christopher Taylor,New York,United States
+Mark Nguyen,PARENT_OF,Christine Taylor,New York,United States
+Susan Nguyen,PARENT_OF,Christine Taylor,New York,United States
+Jennifer Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Daniel Garcia,PARENT_OF,Jennifer Taylor,Reykjavik,Iceland
+Mary Garcia,PARENT_OF,Jennifer Taylor,Reykjavik,Iceland
+Jennifer Taylor,SIBLING_OF,John Garcia,Reykjavik,Iceland
+Jennifer Taylor,SIBLING_OF,Tyler Garcia,Reykjavik,Iceland
+John Garcia,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+John Garcia,MARRIED_TO,Christine Garcia,Brussels,Belgium
+Daniel Garcia,PARENT_OF,John Garcia,Brussels,Belgium
+Mary Garcia,PARENT_OF,John Garcia,Brussels,Belgium
+John Garcia,SIBLING_OF,Tyler Garcia,Brussels,Belgium
+Tyler Garcia,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Daniel Garcia,PARENT_OF,Tyler Garcia,Sydney,Australia
+Mary Garcia,PARENT_OF,Tyler Garcia,Sydney,Australia
+Jessica Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Jessica Davis,MARRIED_TO,Matthew Davis,Oslo,Norway
+David Nguyen,PARENT_OF,Jessica Davis,Oslo,Norway
+Rebecca Nguyen,PARENT_OF,Jessica Davis,Oslo,Norway
+Jessica Davis,SIBLING_OF,Charles Nguyen,Oslo,Norway
+Jessica Davis,SIBLING_OF,Eric Nguyen,Oslo,Norway
+Charles Nguyen,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+David Nguyen,PARENT_OF,Charles Nguyen,Brussels,Belgium
+Rebecca Nguyen,PARENT_OF,Charles Nguyen,Brussels,Belgium
+Charles Nguyen,SIBLING_OF,Eric Nguyen,Brussels,Belgium
+Eric Nguyen,LIVES_IN,"London, United Kingdom",London,United Kingdom
+David Nguyen,PARENT_OF,Eric Nguyen,London,United Kingdom
+Rebecca Nguyen,PARENT_OF,Eric Nguyen,London,United Kingdom
+Elizabeth Taylor,LIVES_IN,"Paris, France",Paris,France
+Elizabeth Taylor,MARRIED_TO,Gregory Taylor,Paris,France
+Stephen Taylor,PARENT_OF,Elizabeth Taylor,Paris,France
+Kimberly Taylor,PARENT_OF,Elizabeth Taylor,Paris,France
+Elizabeth Taylor,SIBLING_OF,Brenda Garcia,Paris,France
+Elizabeth Taylor,SIBLING_OF,Debra Garcia,Paris,France
+Jeffrey Taylor,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Jeffrey Taylor,MARRIED_TO,Cynthia Taylor,Berlin,Germany
+Stephen Taylor,PARENT_OF,Jeffrey Taylor,Berlin,Germany
+Kimberly Taylor,PARENT_OF,Jeffrey Taylor,Berlin,Germany
+Jeffrey Taylor,SIBLING_OF,Brenda Garcia,Berlin,Germany
+Jeffrey Taylor,SIBLING_OF,Debra Garcia,Berlin,Germany
+Brenda Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Stephen Taylor,PARENT_OF,Brenda Garcia,Geneva,Switzerland
+Kimberly Taylor,PARENT_OF,Brenda Garcia,Geneva,Switzerland
+Brenda Garcia,SIBLING_OF,Debra Garcia,Geneva,Switzerland
+Debra Garcia,LIVES_IN,"Paris, France",Paris,France
+Stephen Taylor,PARENT_OF,Debra Garcia,Paris,France
+Kimberly Taylor,PARENT_OF,Debra Garcia,Paris,France
+Timothy Garcia,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Gary Garcia,PARENT_OF,Timothy Garcia,Edinburgh,United Kingdom
+Brenda Garcia,PARENT_OF,Timothy Garcia,Edinburgh,United Kingdom
+Timothy Garcia,SIBLING_OF,Benjamin Garcia,Edinburgh,United Kingdom
+Timothy Garcia,SIBLING_OF,Barbara Nguyen,Edinburgh,United Kingdom
+Benjamin Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Benjamin Garcia,MARRIED_TO,Betty Garcia,London,United Kingdom
+Gary Garcia,PARENT_OF,Benjamin Garcia,London,United Kingdom
+Brenda Garcia,PARENT_OF,Benjamin Garcia,London,United Kingdom
+Benjamin Garcia,SIBLING_OF,Barbara Nguyen,London,United Kingdom
+Barbara Nguyen,LIVES_IN,"New York, United States",New York,United States
+Gary Garcia,PARENT_OF,Barbara Nguyen,New York,United States
+Brenda Garcia,PARENT_OF,Barbara Nguyen,New York,United States
+Jeffrey Rivera,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Nicholas Rivera,PARENT_OF,Jeffrey Rivera,Brussels,Belgium
+Carol Rivera,PARENT_OF,Jeffrey Rivera,Brussels,Belgium
+Jeffrey Rivera,SIBLING_OF,Timothy Rivera,Brussels,Belgium
+Timothy Rivera,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Timothy Rivera,MARRIED_TO,Sarah Rivera,Sydney,Australia
+Nicholas Rivera,PARENT_OF,Timothy Rivera,Sydney,Australia
+Carol Rivera,PARENT_OF,Timothy Rivera,Sydney,Australia
+Sandra Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Sandra Moore,MARRIED_TO,Gregory Moore,Rome,Italy
+Steven Rodriguez,PARENT_OF,Sandra Moore,Rome,Italy
+Pamela Rodriguez,PARENT_OF,Sandra Moore,Rome,Italy
+Sandra Moore,SIBLING_OF,David Rodriguez,Rome,Italy
+Sandra Moore,SIBLING_OF,Jonathan Rodriguez,Rome,Italy
+Sandra Moore,SIBLING_OF,Amanda Taylor,Rome,Italy
+David Rodriguez,LIVES_IN,"London, United Kingdom",London,United Kingdom
+David Rodriguez,MARRIED_TO,Elizabeth Rodriguez,London,United Kingdom
+Steven Rodriguez,PARENT_OF,David Rodriguez,London,United Kingdom
+Pamela Rodriguez,PARENT_OF,David Rodriguez,London,United Kingdom
+David Rodriguez,SIBLING_OF,Jonathan Rodriguez,London,United Kingdom
+David Rodriguez,SIBLING_OF,Amanda Taylor,London,United Kingdom
+Jonathan Rodriguez,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Steven Rodriguez,PARENT_OF,Jonathan Rodriguez,Berlin,Germany
+Pamela Rodriguez,PARENT_OF,Jonathan Rodriguez,Berlin,Germany
+Jonathan Rodriguez,SIBLING_OF,Amanda Taylor,Berlin,Germany
+Amanda Taylor,LIVES_IN,"Rome, Italy",Rome,Italy
+Steven Rodriguez,PARENT_OF,Amanda Taylor,Rome,Italy
+Pamela Rodriguez,PARENT_OF,Amanda Taylor,Rome,Italy
+Steven Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+David Taylor,PARENT_OF,Steven Taylor,Sydney,Australia
+Ruth Taylor,PARENT_OF,Steven Taylor,Sydney,Australia
+Steven Taylor,SIBLING_OF,Matthew Taylor,Sydney,Australia
+Steven Taylor,SIBLING_OF,Cynthia Davis,Sydney,Australia
+Matthew Taylor,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Matthew Taylor,MARRIED_TO,Donna Taylor,Tokyo,Japan
+David Taylor,PARENT_OF,Matthew Taylor,Tokyo,Japan
+Ruth Taylor,PARENT_OF,Matthew Taylor,Tokyo,Japan
+Matthew Taylor,SIBLING_OF,Matthew Taylor,Tokyo,Japan
+Matthew Taylor,SIBLING_OF,Cynthia Davis,Tokyo,Japan
+Matthew Taylor,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+David Taylor,PARENT_OF,Matthew Taylor,Geneva,Switzerland
+Ruth Taylor,PARENT_OF,Matthew Taylor,Geneva,Switzerland
+Cynthia Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Cynthia Davis,MARRIED_TO,Brandon Davis,Oslo,Norway
+David Taylor,PARENT_OF,Cynthia Davis,Oslo,Norway
+Ruth Taylor,PARENT_OF,Cynthia Davis,Oslo,Norway
+Christine Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Christine Taylor,MARRIED_TO,Steven Taylor,London,United Kingdom
+Paul Garcia,PARENT_OF,Christine Taylor,London,United Kingdom
+Cynthia Garcia,PARENT_OF,Christine Taylor,London,United Kingdom
+Christine Taylor,SIBLING_OF,Katherine Taylor,London,United Kingdom
+Christine Taylor,SIBLING_OF,Elizabeth Rodriguez,London,United Kingdom
+Christine Taylor,SIBLING_OF,Kimberly Garcia,London,United Kingdom
+Katherine Taylor,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Paul Garcia,PARENT_OF,Katherine Taylor,Geneva,Switzerland
+Cynthia Garcia,PARENT_OF,Katherine Taylor,Geneva,Switzerland
+Katherine Taylor,SIBLING_OF,Kimberly Garcia,Geneva,Switzerland
+Elizabeth Rodriguez,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Paul Garcia,PARENT_OF,Elizabeth Rodriguez,London,United Kingdom
+Cynthia Garcia,PARENT_OF,Elizabeth Rodriguez,London,United Kingdom
+Elizabeth Rodriguez,SIBLING_OF,Kimberly Garcia,London,United Kingdom
+Kimberly Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Paul Garcia,PARENT_OF,Kimberly Garcia,London,United Kingdom
+Cynthia Garcia,PARENT_OF,Kimberly Garcia,London,United Kingdom
+Kenneth Taylor,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Kenneth Taylor,MARRIED_TO,Emily Taylor,Madrid,Spain
+Michael Taylor,PARENT_OF,Kenneth Taylor,Madrid,Spain
+Carolyn Taylor,PARENT_OF,Kenneth Taylor,Madrid,Spain
+Kenneth Taylor,SIBLING_OF,William Taylor,Madrid,Spain
+Kenneth Taylor,SIBLING_OF,Elizabeth Rodriguez,Madrid,Spain
+William Taylor,LIVES_IN,"Paris, France",Paris,France
+Michael Taylor,PARENT_OF,William Taylor,Paris,France
+Carolyn Taylor,PARENT_OF,William Taylor,Paris,France
+William Taylor,SIBLING_OF,Elizabeth Rodriguez,Paris,France
+Elizabeth Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Michael Taylor,PARENT_OF,Elizabeth Rodriguez,Rome,Italy
+Carolyn Taylor,PARENT_OF,Elizabeth Rodriguez,Rome,Italy
+Cynthia Taylor,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Richard Moore,PARENT_OF,Cynthia Taylor,Berlin,Germany
+Cynthia Moore,PARENT_OF,Cynthia Taylor,Berlin,Germany
+Cynthia Taylor,SIBLING_OF,Ryan Moore,Berlin,Germany
+Ryan Moore,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Richard Moore,PARENT_OF,Ryan Moore,Berlin,Germany
+Cynthia Moore,PARENT_OF,Ryan Moore,Berlin,Germany
+Kevin Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Kevin Taylor,MARRIED_TO,Deborah Taylor,London,United Kingdom
+Jacob Taylor,PARENT_OF,Kevin Taylor,London,United Kingdom
+Rebecca Taylor,PARENT_OF,Kevin Taylor,London,United Kingdom
+Kevin Taylor,SIBLING_OF,William Taylor,London,United Kingdom
+Kevin Taylor,SIBLING_OF,Debra Garcia,London,United Kingdom
+Kevin Taylor,SIBLING_OF,Steven Taylor,London,United Kingdom
+William Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+William Taylor,MARRIED_TO,Sarah Taylor,Sydney,Australia
+Jacob Taylor,PARENT_OF,William Taylor,Sydney,Australia
+Rebecca Taylor,PARENT_OF,William Taylor,Sydney,Australia
+William Taylor,SIBLING_OF,Debra Garcia,Sydney,Australia
+William Taylor,SIBLING_OF,Steven Taylor,Sydney,Australia
+Debra Garcia,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Debra Garcia,MARRIED_TO,Brian Garcia,Tokyo,Japan
+Jacob Taylor,PARENT_OF,Debra Garcia,Tokyo,Japan
+Rebecca Taylor,PARENT_OF,Debra Garcia,Tokyo,Japan
+Debra Garcia,SIBLING_OF,Steven Taylor,Tokyo,Japan
+Steven Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jacob Taylor,PARENT_OF,Steven Taylor,London,United Kingdom
+Rebecca Taylor,PARENT_OF,Steven Taylor,London,United Kingdom
+Edward Davis,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Tyler Davis,PARENT_OF,Edward Davis,London,United Kingdom
+Angela Davis,PARENT_OF,Edward Davis,London,United Kingdom
+Edward Davis,SIBLING_OF,Deborah Taylor,London,United Kingdom
+Edward Davis,SIBLING_OF,Christine Harris,London,United Kingdom
+Deborah Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Tyler Davis,PARENT_OF,Deborah Taylor,London,United Kingdom
+Angela Davis,PARENT_OF,Deborah Taylor,London,United Kingdom
+Deborah Taylor,SIBLING_OF,Christine Harris,London,United Kingdom
+Christine Harris,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Tyler Davis,PARENT_OF,Christine Harris,London,United Kingdom
+Angela Davis,PARENT_OF,Christine Harris,London,United Kingdom
+Elizabeth Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Jack Garcia,PARENT_OF,Elizabeth Rodriguez,Rome,Italy
+Jessica Garcia,PARENT_OF,Elizabeth Rodriguez,Rome,Italy
+Elizabeth Rodriguez,SIBLING_OF,Emily Taylor,Rome,Italy
+Elizabeth Rodriguez,SIBLING_OF,Brian Garcia,Rome,Italy
+Elizabeth Rodriguez,SIBLING_OF,Donna Taylor,Rome,Italy
+Emily Taylor,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Jack Garcia,PARENT_OF,Emily Taylor,Madrid,Spain
+Jessica Garcia,PARENT_OF,Emily Taylor,Madrid,Spain
+Emily Taylor,SIBLING_OF,Brian Garcia,Madrid,Spain
+Emily Taylor,SIBLING_OF,Donna Taylor,Madrid,Spain
+Brian Garcia,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Jack Garcia,PARENT_OF,Brian Garcia,Tokyo,Japan
+Jessica Garcia,PARENT_OF,Brian Garcia,Tokyo,Japan
+Brian Garcia,SIBLING_OF,Donna Taylor,Tokyo,Japan
+Donna Taylor,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Jack Garcia,PARENT_OF,Donna Taylor,Tokyo,Japan
+Jessica Garcia,PARENT_OF,Donna Taylor,Tokyo,Japan
+Sarah Rivera,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Jacob Taylor,PARENT_OF,Sarah Rivera,Sydney,Australia
+Carolyn Taylor,PARENT_OF,Sarah Rivera,Sydney,Australia
+Sarah Rivera,SIBLING_OF,Kenneth Taylor,Sydney,Australia
+Sarah Rivera,SIBLING_OF,Sarah Taylor,Sydney,Australia
+Sarah Rivera,SIBLING_OF,Gregory Taylor,Sydney,Australia
+Kenneth Taylor,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Jacob Taylor,PARENT_OF,Kenneth Taylor,Dublin,Ireland
+Carolyn Taylor,PARENT_OF,Kenneth Taylor,Dublin,Ireland
+Kenneth Taylor,SIBLING_OF,Sarah Taylor,Dublin,Ireland
+Kenneth Taylor,SIBLING_OF,Gregory Taylor,Dublin,Ireland
+Sarah Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Jacob Taylor,PARENT_OF,Sarah Taylor,Sydney,Australia
+Carolyn Taylor,PARENT_OF,Sarah Taylor,Sydney,Australia
+Sarah Taylor,SIBLING_OF,Gregory Taylor,Sydney,Australia
+Gregory Taylor,LIVES_IN,"Paris, France",Paris,France
+Jacob Taylor,PARENT_OF,Gregory Taylor,Paris,France
+Carolyn Taylor,PARENT_OF,Gregory Taylor,Paris,France
+Patricia Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Ryan Taylor,PARENT_OF,Patricia Taylor,Reykjavik,Iceland
+Kimberly Taylor,PARENT_OF,Patricia Taylor,Reykjavik,Iceland
+Patricia Taylor,SIBLING_OF,Mark Taylor,Reykjavik,Iceland
+Patricia Taylor,SIBLING_OF,Betty Garcia,Reykjavik,Iceland
+Patricia Taylor,SIBLING_OF,Christopher Taylor,Reykjavik,Iceland
+Mark Taylor,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Mark Taylor,MARRIED_TO,Samantha Taylor,Helsinki,Finland
+Ryan Taylor,PARENT_OF,Mark Taylor,Helsinki,Finland
+Kimberly Taylor,PARENT_OF,Mark Taylor,Helsinki,Finland
+Mark Taylor,SIBLING_OF,Betty Garcia,Helsinki,Finland
+Mark Taylor,SIBLING_OF,Christopher Taylor,Helsinki,Finland
+Betty Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Ryan Taylor,PARENT_OF,Betty Garcia,London,United Kingdom
+Kimberly Taylor,PARENT_OF,Betty Garcia,London,United Kingdom
+Betty Garcia,SIBLING_OF,Christopher Taylor,London,United Kingdom
+Christopher Taylor,LIVES_IN,"New York, United States",New York,United States
+Ryan Taylor,PARENT_OF,Christopher Taylor,New York,United States
+Kimberly Taylor,PARENT_OF,Christopher Taylor,New York,United States
+Alexander Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Alexander Davis,MARRIED_TO,Sandra Davis,Oslo,Norway
+Ronald Davis,PARENT_OF,Alexander Davis,Oslo,Norway
+Emily Davis,PARENT_OF,Alexander Davis,Oslo,Norway
+Alexander Davis,SIBLING_OF,Brandon Davis,Oslo,Norway
+Alexander Davis,SIBLING_OF,Matthew Davis,Oslo,Norway
+Alexander Davis,SIBLING_OF,Jack Davis,Oslo,Norway
+Brandon Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Ronald Davis,PARENT_OF,Brandon Davis,Oslo,Norway
+Emily Davis,PARENT_OF,Brandon Davis,Oslo,Norway
+Brandon Davis,SIBLING_OF,Matthew Davis,Oslo,Norway
+Brandon Davis,SIBLING_OF,Jack Davis,Oslo,Norway
+Matthew Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Ronald Davis,PARENT_OF,Matthew Davis,Oslo,Norway
+Emily Davis,PARENT_OF,Matthew Davis,Oslo,Norway
+Matthew Davis,SIBLING_OF,Jack Davis,Oslo,Norway
+Jack Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Ronald Davis,PARENT_OF,Jack Davis,Oslo,Norway
+Emily Davis,PARENT_OF,Jack Davis,Oslo,Norway
+Christine Garcia,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Richard Garcia,PARENT_OF,Christine Garcia,Brussels,Belgium
+Jessica Garcia,PARENT_OF,Christine Garcia,Brussels,Belgium
+Christine Garcia,SIBLING_OF,Samantha Taylor,Brussels,Belgium
+Christine Garcia,SIBLING_OF,Sandra Davis,Brussels,Belgium
+Samantha Taylor,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Richard Garcia,PARENT_OF,Samantha Taylor,Helsinki,Finland
+Jessica Garcia,PARENT_OF,Samantha Taylor,Helsinki,Finland
+Samantha Taylor,SIBLING_OF,Sandra Davis,Helsinki,Finland
+Sandra Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Richard Garcia,PARENT_OF,Sandra Davis,Oslo,Norway
+Jessica Garcia,PARENT_OF,Sandra Davis,Oslo,Norway
+Betty Taylor,LIVES_IN,"New York, United States",New York,United States
+Nicholas Rodriguez,PARENT_OF,Betty Taylor,New York,United States
+Emily Rodriguez,PARENT_OF,Betty Taylor,New York,United States
+Betty Taylor,SIBLING_OF,Cynthia Moore,New York,United States
+Betty Taylor,SIBLING_OF,Shirley Rodriguez,New York,United States
+Cynthia Moore,LIVES_IN,"New York, United States",New York,United States
+Cynthia Moore,MARRIED_TO,Brandon Moore,New York,United States
+Nicholas Rodriguez,PARENT_OF,Cynthia Moore,New York,United States
+Emily Rodriguez,PARENT_OF,Cynthia Moore,New York,United States
+Cynthia Moore,SIBLING_OF,Shirley Rodriguez,New York,United States
+Shirley Rodriguez,LIVES_IN,"New York, United States",New York,United States
+Nicholas Rodriguez,PARENT_OF,Shirley Rodriguez,New York,United States
+Emily Rodriguez,PARENT_OF,Shirley Rodriguez,New York,United States
+Brandon Moore,LIVES_IN,"New York, United States",New York,United States
+Samuel Moore,PARENT_OF,Brandon Moore,New York,United States
+Christine Moore,PARENT_OF,Brandon Moore,New York,United States
+Brandon Moore,SIBLING_OF,Gregory Moore,New York,United States
+Gregory Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Samuel Moore,PARENT_OF,Gregory Moore,Rome,Italy
+Christine Moore,PARENT_OF,Gregory Moore,Rome,Italy
+Ruth Taylor,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Kenneth Taylor,PARENT_OF,Ruth Taylor,Dublin,Ireland
+Patricia Taylor,PARENT_OF,Ruth Taylor,Dublin,Ireland
+Ruth Taylor,SIBLING_OF,Nicole Taylor,Dublin,Ireland
+Nicole Taylor,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Nicole Taylor,MARRIED_TO,Gregory Taylor,Dublin,Ireland
+Kenneth Taylor,PARENT_OF,Nicole Taylor,Dublin,Ireland
+Patricia Taylor,PARENT_OF,Nicole Taylor,Dublin,Ireland
+Amanda Garcia,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+John Garcia,PARENT_OF,Amanda Garcia,Brussels,Belgium
+Christine Garcia,PARENT_OF,Amanda Garcia,Brussels,Belgium
+Amanda Garcia,SIBLING_OF,Samantha Garcia,Brussels,Belgium
+Samantha Garcia,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Samantha Garcia,MARRIED_TO,Patrick Garcia,Tokyo,Japan
+John Garcia,PARENT_OF,Samantha Garcia,Tokyo,Japan
+Christine Garcia,PARENT_OF,Samantha Garcia,Tokyo,Japan
+David Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+David Taylor,MARRIED_TO,Samantha Taylor,London,United Kingdom
+Kevin Taylor,PARENT_OF,David Taylor,London,United Kingdom
+Deborah Taylor,PARENT_OF,David Taylor,London,United Kingdom
+David Taylor,SIBLING_OF,Melissa Taylor,London,United Kingdom
+David Taylor,SIBLING_OF,Robert Taylor,London,United Kingdom
+Melissa Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Melissa Taylor,MARRIED_TO,Matthew Taylor,London,United Kingdom
+Kevin Taylor,PARENT_OF,Melissa Taylor,London,United Kingdom
+Deborah Taylor,PARENT_OF,Melissa Taylor,London,United Kingdom
+Melissa Taylor,SIBLING_OF,Robert Taylor,London,United Kingdom
+Robert Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Robert Taylor,MARRIED_TO,Ruth Taylor,Reykjavik,Iceland
+Kevin Taylor,PARENT_OF,Robert Taylor,Reykjavik,Iceland
+Deborah Taylor,PARENT_OF,Robert Taylor,Reykjavik,Iceland
+Jennifer Garcia,LIVES_IN,"Toronto, Canada",Toronto,Canada
+Jennifer Garcia,MARRIED_TO,Jason Garcia,Toronto,Canada
+David Rodriguez,PARENT_OF,Jennifer Garcia,Toronto,Canada
+Elizabeth Rodriguez,PARENT_OF,Jennifer Garcia,Toronto,Canada
+Jennifer Garcia,SIBLING_OF,Melissa Taylor,Toronto,Canada
+Jennifer Garcia,SIBLING_OF,Brandon Rodriguez,Toronto,Canada
+Jennifer Garcia,SIBLING_OF,Melissa Rodriguez,Toronto,Canada
+Melissa Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Melissa Taylor,MARRIED_TO,Paul Taylor,London,United Kingdom
+David Rodriguez,PARENT_OF,Melissa Taylor,London,United Kingdom
+Elizabeth Rodriguez,PARENT_OF,Melissa Taylor,London,United Kingdom
+Melissa Taylor,SIBLING_OF,Brandon Rodriguez,London,United Kingdom
+Melissa Taylor,SIBLING_OF,Melissa Rodriguez,London,United Kingdom
+Brandon Rodriguez,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Brandon Rodriguez,MARRIED_TO,Pamela Rodriguez,Brussels,Belgium
+David Rodriguez,PARENT_OF,Brandon Rodriguez,Brussels,Belgium
+Elizabeth Rodriguez,PARENT_OF,Brandon Rodriguez,Brussels,Belgium
+Brandon Rodriguez,SIBLING_OF,Melissa Rodriguez,Brussels,Belgium
+Melissa Rodriguez,LIVES_IN,"London, United Kingdom",London,United Kingdom
+David Rodriguez,PARENT_OF,Melissa Rodriguez,London,United Kingdom
+Elizabeth Rodriguez,PARENT_OF,Melissa Rodriguez,London,United Kingdom
+Jonathan Nguyen,LIVES_IN,"Rome, Italy",Rome,Italy
+Jonathan Nguyen,MARRIED_TO,Nancy Nguyen,Rome,Italy
+George Nguyen,PARENT_OF,Jonathan Nguyen,Rome,Italy
+Barbara Nguyen,PARENT_OF,Jonathan Nguyen,Rome,Italy
+Jonathan Nguyen,SIBLING_OF,Emma Taylor,Rome,Italy
+Emma Taylor,LIVES_IN,"Paris, France",Paris,France
+Emma Taylor,MARRIED_TO,Justin Taylor,Paris,France
+George Nguyen,PARENT_OF,Emma Taylor,Paris,France
+Barbara Nguyen,PARENT_OF,Emma Taylor,Paris,France
+Dennis Davis,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Dennis Davis,MARRIED_TO,Lisa Davis,Geneva,Switzerland
+Jack Davis,PARENT_OF,Dennis Davis,Geneva,Switzerland
+Margaret Davis,PARENT_OF,Dennis Davis,Geneva,Switzerland
+Dennis Davis,SIBLING_OF,Anna Davis,Geneva,Switzerland
+Anna Davis,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Jack Davis,PARENT_OF,Anna Davis,Sydney,Australia
+Margaret Davis,PARENT_OF,Anna Davis,Sydney,Australia
+Margaret Rodriguez,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Margaret Rodriguez,MARRIED_TO,Joseph Rodriguez,Geneva,Switzerland
+Kevin Taylor,PARENT_OF,Margaret Rodriguez,Geneva,Switzerland
+Ruth Taylor,PARENT_OF,Margaret Rodriguez,Geneva,Switzerland
+Margaret Rodriguez,SIBLING_OF,Catherine Moore,Geneva,Switzerland
+Margaret Rodriguez,SIBLING_OF,Betty Garcia,Geneva,Switzerland
+Margaret Rodriguez,SIBLING_OF,Lisa Davis,Geneva,Switzerland
+Catherine Moore,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Catherine Moore,MARRIED_TO,Eric Moore,Berlin,Germany
+Kevin Taylor,PARENT_OF,Catherine Moore,Berlin,Germany
+Ruth Taylor,PARENT_OF,Catherine Moore,Berlin,Germany
+Catherine Moore,SIBLING_OF,Betty Garcia,Berlin,Germany
+Catherine Moore,SIBLING_OF,Lisa Davis,Berlin,Germany
+Betty Garcia,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Kevin Taylor,PARENT_OF,Betty Garcia,Berlin,Germany
+Ruth Taylor,PARENT_OF,Betty Garcia,Berlin,Germany
+Betty Garcia,SIBLING_OF,Lisa Davis,Berlin,Germany
+Lisa Davis,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Kevin Taylor,PARENT_OF,Lisa Davis,Geneva,Switzerland
+Ruth Taylor,PARENT_OF,Lisa Davis,Geneva,Switzerland
+Frank Taylor,LIVES_IN,"New York, United States",New York,United States
+Frank Taylor,MARRIED_TO,Brenda Taylor,New York,United States
+Kenneth Taylor,PARENT_OF,Frank Taylor,New York,United States
+Emily Taylor,PARENT_OF,Frank Taylor,New York,United States
+Frank Taylor,SIBLING_OF,Ruth Garcia,New York,United States
+Frank Taylor,SIBLING_OF,Larry Taylor,New York,United States
+Ruth Garcia,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Ruth Garcia,MARRIED_TO,Paul Garcia,Madrid,Spain
+Kenneth Taylor,PARENT_OF,Ruth Garcia,Madrid,Spain
+Emily Taylor,PARENT_OF,Ruth Garcia,Madrid,Spain
+Ruth Garcia,SIBLING_OF,Larry Taylor,Madrid,Spain
+Larry Taylor,LIVES_IN,"Rome, Italy",Rome,Italy
+Larry Taylor,MARRIED_TO,Sarah Taylor,Rome,Italy
+Kenneth Taylor,PARENT_OF,Larry Taylor,Rome,Italy
+Emily Taylor,PARENT_OF,Larry Taylor,Rome,Italy
+Raymond Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Raymond Garcia,MARRIED_TO,Brenda Garcia,Geneva,Switzerland
+Dennis Garcia,PARENT_OF,Raymond Garcia,Geneva,Switzerland
+Brenda Garcia,PARENT_OF,Raymond Garcia,Geneva,Switzerland
+Raymond Garcia,SIBLING_OF,Edward Garcia,Geneva,Switzerland
+Raymond Garcia,SIBLING_OF,Anthony Garcia,Geneva,Switzerland
+Edward Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Edward Garcia,MARRIED_TO,Shirley Garcia,Geneva,Switzerland
+Dennis Garcia,PARENT_OF,Edward Garcia,Geneva,Switzerland
+Brenda Garcia,PARENT_OF,Edward Garcia,Geneva,Switzerland
+Edward Garcia,SIBLING_OF,Anthony Garcia,Geneva,Switzerland
+Anthony Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Anthony Garcia,MARRIED_TO,Emma Garcia,Geneva,Switzerland
+Dennis Garcia,PARENT_OF,Anthony Garcia,Geneva,Switzerland
+Brenda Garcia,PARENT_OF,Anthony Garcia,Geneva,Switzerland
+Patricia Rivera,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Patricia Rivera,MARRIED_TO,Michael Rivera,Sydney,Australia
+Edward Davis,PARENT_OF,Patricia Rivera,Sydney,Australia
+Elizabeth Davis,PARENT_OF,Patricia Rivera,Sydney,Australia
+Patricia Rivera,SIBLING_OF,Cynthia Garcia,Sydney,Australia
+Cynthia Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Cynthia Garcia,MARRIED_TO,Jason Garcia,London,United Kingdom
+Edward Davis,PARENT_OF,Cynthia Garcia,London,United Kingdom
+Elizabeth Davis,PARENT_OF,Cynthia Garcia,London,United Kingdom
+Benjamin Garcia,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Timothy Garcia,PARENT_OF,Benjamin Garcia,Berlin,Germany
+Amanda Garcia,PARENT_OF,Benjamin Garcia,Berlin,Germany
+Benjamin Garcia,SIBLING_OF,Kenneth Garcia,Berlin,Germany
+Benjamin Garcia,SIBLING_OF,Angela Garcia,Berlin,Germany
+Benjamin Garcia,SIBLING_OF,Brenda Garcia,Berlin,Germany
+Kenneth Garcia,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Kenneth Garcia,MARRIED_TO,Stephanie Garcia,Tokyo,Japan
+Timothy Garcia,PARENT_OF,Kenneth Garcia,Tokyo,Japan
+Amanda Garcia,PARENT_OF,Kenneth Garcia,Tokyo,Japan
+Kenneth Garcia,SIBLING_OF,Angela Garcia,Tokyo,Japan
+Kenneth Garcia,SIBLING_OF,Brenda Garcia,Tokyo,Japan
+Angela Garcia,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Angela Garcia,MARRIED_TO,William Garcia,Sydney,Australia
+Timothy Garcia,PARENT_OF,Angela Garcia,Sydney,Australia
+Amanda Garcia,PARENT_OF,Angela Garcia,Sydney,Australia
+Angela Garcia,SIBLING_OF,Brenda Garcia,Sydney,Australia
+Brenda Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Timothy Garcia,PARENT_OF,Brenda Garcia,Geneva,Switzerland
+Amanda Garcia,PARENT_OF,Brenda Garcia,Geneva,Switzerland
+Ryan Taylor,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Ryan Taylor,MARRIED_TO,Samantha Taylor,Berlin,Germany
+Jeffrey Taylor,PARENT_OF,Ryan Taylor,Berlin,Germany
+Cynthia Taylor,PARENT_OF,Ryan Taylor,Berlin,Germany
+Ryan Taylor,SIBLING_OF,Sarah Garcia,Berlin,Germany
+Ryan Taylor,SIBLING_OF,Tyler Taylor,Berlin,Germany
+Ryan Taylor,SIBLING_OF,Shirley Harris,Berlin,Germany
+Sarah Garcia,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Sarah Garcia,MARRIED_TO,George Garcia,Berlin,Germany
+Jeffrey Taylor,PARENT_OF,Sarah Garcia,Berlin,Germany
+Cynthia Taylor,PARENT_OF,Sarah Garcia,Berlin,Germany
+Sarah Garcia,SIBLING_OF,Tyler Taylor,Berlin,Germany
+Sarah Garcia,SIBLING_OF,Shirley Harris,Berlin,Germany
+Tyler Taylor,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Tyler Taylor,MARRIED_TO,Emma Taylor,Berlin,Germany
+Jeffrey Taylor,PARENT_OF,Tyler Taylor,Berlin,Germany
+Cynthia Taylor,PARENT_OF,Tyler Taylor,Berlin,Germany
+Tyler Taylor,SIBLING_OF,Shirley Harris,Berlin,Germany
+Shirley Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Shirley Harris,MARRIED_TO,Jack Harris,Berlin,Germany
+Jeffrey Taylor,PARENT_OF,Shirley Harris,Berlin,Germany
+Cynthia Taylor,PARENT_OF,Shirley Harris,Berlin,Germany
+Jonathan Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Jonathan Moore,MARRIED_TO,Karen Moore,Rome,Italy
+Gregory Moore,PARENT_OF,Jonathan Moore,Rome,Italy
+Sandra Moore,PARENT_OF,Jonathan Moore,Rome,Italy
+Jonathan Moore,SIBLING_OF,Kevin Moore,Rome,Italy
+Kevin Moore,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Kevin Moore,MARRIED_TO,Deborah Moore,Brussels,Belgium
+Gregory Moore,PARENT_OF,Kevin Moore,Brussels,Belgium
+Sandra Moore,PARENT_OF,Kevin Moore,Brussels,Belgium
+Angela Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Angela Davis,MARRIED_TO,Brandon Davis,Oslo,Norway
+Jeffrey Garcia,PARENT_OF,Angela Davis,Oslo,Norway
+Debra Garcia,PARENT_OF,Angela Davis,Oslo,Norway
+Angela Davis,SIBLING_OF,Paul Garcia,Oslo,Norway
+Paul Garcia,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Jeffrey Garcia,PARENT_OF,Paul Garcia,Madrid,Spain
+Debra Garcia,PARENT_OF,Paul Garcia,Madrid,Spain
+Samuel Moore,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Samuel Moore,MARRIED_TO,Emily Moore,Tokyo,Japan
+Ryan Moore,PARENT_OF,Samuel Moore,Tokyo,Japan
+Melissa Moore,PARENT_OF,Samuel Moore,Tokyo,Japan
+Samuel Moore,SIBLING_OF,Eric Moore,Tokyo,Japan
+Samuel Moore,SIBLING_OF,Daniel Moore,Tokyo,Japan
+Eric Moore,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Ryan Moore,PARENT_OF,Eric Moore,Berlin,Germany
+Melissa Moore,PARENT_OF,Eric Moore,Berlin,Germany
+Eric Moore,SIBLING_OF,Daniel Moore,Berlin,Germany
+Daniel Moore,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Daniel Moore,MARRIED_TO,Sarah Moore,Reykjavik,Iceland
+Ryan Moore,PARENT_OF,Daniel Moore,Reykjavik,Iceland
+Melissa Moore,PARENT_OF,Daniel Moore,Reykjavik,Iceland
+Brenda Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Steven Taylor,PARENT_OF,Brenda Taylor,London,United Kingdom
+Christine Taylor,PARENT_OF,Brenda Taylor,London,United Kingdom
+Brenda Taylor,SIBLING_OF,Michael Taylor,London,United Kingdom
+Brenda Taylor,SIBLING_OF,Emma Garcia,London,United Kingdom
+Brenda Taylor,SIBLING_OF,Samantha Rodriguez,London,United Kingdom
+Michael Taylor,LIVES_IN,"Paris, France",Paris,France
+Michael Taylor,MARRIED_TO,Donna Taylor,Paris,France
+Steven Taylor,PARENT_OF,Michael Taylor,Paris,France
+Christine Taylor,PARENT_OF,Michael Taylor,Paris,France
+Michael Taylor,SIBLING_OF,Emma Garcia,Paris,France
+Michael Taylor,SIBLING_OF,Samantha Rodriguez,Paris,France
+Emma Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Steven Taylor,PARENT_OF,Emma Garcia,Geneva,Switzerland
+Christine Taylor,PARENT_OF,Emma Garcia,Geneva,Switzerland
+Emma Garcia,SIBLING_OF,Samantha Rodriguez,Geneva,Switzerland
+Samantha Rodriguez,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Samantha Rodriguez,MARRIED_TO,Joshua Rodriguez,Edinburgh,United Kingdom
+Steven Taylor,PARENT_OF,Samantha Rodriguez,Edinburgh,United Kingdom
+Christine Taylor,PARENT_OF,Samantha Rodriguez,Edinburgh,United Kingdom
+Emma Taylor,LIVES_IN,"Paris, France",Paris,France
+Emma Taylor,MARRIED_TO,Mark Taylor,Paris,France
+Brandon Davis,PARENT_OF,Emma Taylor,Paris,France
+Cynthia Davis,PARENT_OF,Emma Taylor,Paris,France
+Emma Taylor,SIBLING_OF,Ashley Taylor,Paris,France
+Emma Taylor,SIBLING_OF,Donna Davis,Paris,France
+Ashley Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Ashley Taylor,MARRIED_TO,Anthony Taylor,Edinburgh,United Kingdom
+Brandon Davis,PARENT_OF,Ashley Taylor,Edinburgh,United Kingdom
+Cynthia Davis,PARENT_OF,Ashley Taylor,Edinburgh,United Kingdom
+Ashley Taylor,SIBLING_OF,Donna Davis,Edinburgh,United Kingdom
+Donna Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Brandon Davis,PARENT_OF,Donna Davis,Oslo,Norway
+Cynthia Davis,PARENT_OF,Donna Davis,Oslo,Norway
+Daniel Davis,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Daniel Davis,MARRIED_TO,Patricia Davis,Madrid,Spain
+Matthew Davis,PARENT_OF,Daniel Davis,Madrid,Spain
+Jessica Davis,PARENT_OF,Daniel Davis,Madrid,Spain
+Daniel Davis,SIBLING_OF,Cynthia Harris,Madrid,Spain
+Daniel Davis,SIBLING_OF,Kevin Davis,Madrid,Spain
+Daniel Davis,SIBLING_OF,Rachel Taylor,Madrid,Spain
+Cynthia Harris,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Cynthia Harris,MARRIED_TO,Jonathan Harris,Oslo,Norway
+Matthew Davis,PARENT_OF,Cynthia Harris,Oslo,Norway
+Jessica Davis,PARENT_OF,Cynthia Harris,Oslo,Norway
+Cynthia Harris,SIBLING_OF,Kevin Davis,Oslo,Norway
+Cynthia Harris,SIBLING_OF,Rachel Taylor,Oslo,Norway
+Kevin Davis,LIVES_IN,"Rome, Italy",Rome,Italy
+Kevin Davis,MARRIED_TO,Shirley Davis,Rome,Italy
+Matthew Davis,PARENT_OF,Kevin Davis,Rome,Italy
+Jessica Davis,PARENT_OF,Kevin Davis,Rome,Italy
+Kevin Davis,SIBLING_OF,Rachel Taylor,Rome,Italy
+Rachel Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Rachel Taylor,MARRIED_TO,Andrew Taylor,Reykjavik,Iceland
+Matthew Davis,PARENT_OF,Rachel Taylor,Reykjavik,Iceland
+Jessica Davis,PARENT_OF,Rachel Taylor,Reykjavik,Iceland
+Sarah Moore,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+David Taylor,PARENT_OF,Sarah Moore,Reykjavik,Iceland
+Patricia Taylor,PARENT_OF,Sarah Moore,Reykjavik,Iceland
+Sarah Moore,SIBLING_OF,Kevin Taylor,Reykjavik,Iceland
+Sarah Moore,SIBLING_OF,Andrew Taylor,Reykjavik,Iceland
+Kevin Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+David Taylor,PARENT_OF,Kevin Taylor,Reykjavik,Iceland
+Patricia Taylor,PARENT_OF,Kevin Taylor,Reykjavik,Iceland
+Kevin Taylor,SIBLING_OF,Andrew Taylor,Reykjavik,Iceland
+Andrew Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+David Taylor,PARENT_OF,Andrew Taylor,Reykjavik,Iceland
+Patricia Taylor,PARENT_OF,Andrew Taylor,Reykjavik,Iceland
+William Garcia,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Tyler Garcia,PARENT_OF,William Garcia,Sydney,Australia
+Amy Garcia,PARENT_OF,William Garcia,Sydney,Australia
+William Garcia,SIBLING_OF,Samantha Taylor,Sydney,Australia
+Samantha Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Tyler Garcia,PARENT_OF,Samantha Taylor,London,United Kingdom
+Amy Garcia,PARENT_OF,Samantha Taylor,London,United Kingdom
+Brenda Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Steven Taylor,PARENT_OF,Brenda Taylor,Sydney,Australia
+Deborah Taylor,PARENT_OF,Brenda Taylor,Sydney,Australia
+Brenda Taylor,SIBLING_OF,Jerry Taylor,Sydney,Australia
+Jerry Taylor,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+Jerry Taylor,MARRIED_TO,Anna Taylor,Stockholm,Sweden
+Steven Taylor,PARENT_OF,Jerry Taylor,Stockholm,Sweden
+Deborah Taylor,PARENT_OF,Jerry Taylor,Stockholm,Sweden
+Donna Taylor,LIVES_IN,"Paris, France",Paris,France
+Gregory Taylor,PARENT_OF,Donna Taylor,Paris,France
+Elizabeth Taylor,PARENT_OF,Donna Taylor,Paris,France
+Donna Taylor,SIBLING_OF,Timothy Taylor,Paris,France
+Donna Taylor,SIBLING_OF,Mark Taylor,Paris,France
+Timothy Taylor,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Timothy Taylor,MARRIED_TO,Emily Taylor,Oslo,Norway
+Gregory Taylor,PARENT_OF,Timothy Taylor,Oslo,Norway
+Elizabeth Taylor,PARENT_OF,Timothy Taylor,Oslo,Norway
+Timothy Taylor,SIBLING_OF,Mark Taylor,Oslo,Norway
+Mark Taylor,LIVES_IN,"Paris, France",Paris,France
+Gregory Taylor,PARENT_OF,Mark Taylor,Paris,France
+Elizabeth Taylor,PARENT_OF,Mark Taylor,Paris,France
+Joshua Rodriguez,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Ryan Rodriguez,PARENT_OF,Joshua Rodriguez,Edinburgh,United Kingdom
+Stephanie Rodriguez,PARENT_OF,Joshua Rodriguez,Edinburgh,United Kingdom
+Joshua Rodriguez,SIBLING_OF,Emily Taylor,Edinburgh,United Kingdom
+Emily Taylor,LIVES_IN,"Rome, Italy",Rome,Italy
+Emily Taylor,MARRIED_TO,Brian Taylor,Rome,Italy
+Ryan Rodriguez,PARENT_OF,Emily Taylor,Rome,Italy
+Stephanie Rodriguez,PARENT_OF,Emily Taylor,Rome,Italy
+Sarah Davis,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Sarah Davis,MARRIED_TO,Michael Davis,Sydney,Australia
+William Taylor,PARENT_OF,Sarah Davis,Sydney,Australia
+Sarah Taylor,PARENT_OF,Sarah Davis,Sydney,Australia
+Sarah Davis,SIBLING_OF,Janet Taylor,Sydney,Australia
+Janet Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Janet Taylor,MARRIED_TO,Jason Taylor,Sydney,Australia
+William Taylor,PARENT_OF,Janet Taylor,Sydney,Australia
+Sarah Taylor,PARENT_OF,Janet Taylor,Sydney,Australia
+Linda Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Linda Rodriguez,MARRIED_TO,Jonathan Rodriguez,Rome,Italy
+Brandon Moore,PARENT_OF,Linda Rodriguez,Rome,Italy
+Cynthia Moore,PARENT_OF,Linda Rodriguez,Rome,Italy
+Linda Rodriguez,SIBLING_OF,Edward Moore,Rome,Italy
+Edward Moore,LIVES_IN,"New York, United States",New York,United States
+Edward Moore,MARRIED_TO,Helen Moore,New York,United States
+Brandon Moore,PARENT_OF,Edward Moore,New York,United States
+Cynthia Moore,PARENT_OF,Edward Moore,New York,United States
+Shirley Davis,LIVES_IN,"Rome, Italy",Rome,Italy
+William Rodriguez,PARENT_OF,Shirley Davis,Rome,Italy
+Elizabeth Rodriguez,PARENT_OF,Shirley Davis,Rome,Italy
+Shirley Davis,SIBLING_OF,Samantha Rodriguez,Rome,Italy
+Samantha Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+William Rodriguez,PARENT_OF,Samantha Rodriguez,Rome,Italy
+Elizabeth Rodriguez,PARENT_OF,Samantha Rodriguez,Rome,Italy
+Joseph Rodriguez,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Jonathan Rodriguez,PARENT_OF,Joseph Rodriguez,Geneva,Switzerland
+Jessica Rodriguez,PARENT_OF,Joseph Rodriguez,Geneva,Switzerland
+Joseph Rodriguez,SIBLING_OF,Anna Taylor,Geneva,Switzerland
+Anna Taylor,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+Jonathan Rodriguez,PARENT_OF,Anna Taylor,Stockholm,Sweden
+Jessica Rodriguez,PARENT_OF,Anna Taylor,Stockholm,Sweden
+Brandon Davis,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Alexander Davis,PARENT_OF,Brandon Davis,Oslo,Norway
+Sandra Davis,PARENT_OF,Brandon Davis,Oslo,Norway
+Brandon Davis,SIBLING_OF,Michael Davis,Oslo,Norway
+Michael Davis,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Alexander Davis,PARENT_OF,Michael Davis,Sydney,Australia
+Sandra Davis,PARENT_OF,Michael Davis,Sydney,Australia
+Karen Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Christopher Moore,PARENT_OF,Karen Moore,Rome,Italy
+Cynthia Moore,PARENT_OF,Karen Moore,Rome,Italy
+Karen Moore,SIBLING_OF,Kevin Moore,Rome,Italy
+Karen Moore,SIBLING_OF,Nancy Rivera,Rome,Italy
+Kevin Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Kevin Moore,MARRIED_TO,Carolyn Moore,Rome,Italy
+Christopher Moore,PARENT_OF,Kevin Moore,Rome,Italy
+Cynthia Moore,PARENT_OF,Kevin Moore,Rome,Italy
+Kevin Moore,SIBLING_OF,Nancy Rivera,Rome,Italy
+Nancy Rivera,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Nancy Rivera,MARRIED_TO,John Rivera,Sydney,Australia
+Christopher Moore,PARENT_OF,Nancy Rivera,Sydney,Australia
+Cynthia Moore,PARENT_OF,Nancy Rivera,Sydney,Australia
+Pamela Rodriguez,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Edward Garcia,PARENT_OF,Pamela Rodriguez,Brussels,Belgium
+Amanda Garcia,PARENT_OF,Pamela Rodriguez,Brussels,Belgium
+Pamela Rodriguez,SIBLING_OF,Debra Taylor,Brussels,Belgium
+Pamela Rodriguez,SIBLING_OF,Patricia Davis,Brussels,Belgium
+Pamela Rodriguez,SIBLING_OF,Jason Garcia,Brussels,Belgium
+Debra Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Debra Taylor,MARRIED_TO,William Taylor,Reykjavik,Iceland
+Edward Garcia,PARENT_OF,Debra Taylor,Reykjavik,Iceland
+Amanda Garcia,PARENT_OF,Debra Taylor,Reykjavik,Iceland
+Debra Taylor,SIBLING_OF,Patricia Davis,Reykjavik,Iceland
+Debra Taylor,SIBLING_OF,Jason Garcia,Reykjavik,Iceland
+Patricia Davis,LIVES_IN,"Madrid, Spain",Madrid,Spain
+Edward Garcia,PARENT_OF,Patricia Davis,Madrid,Spain
+Amanda Garcia,PARENT_OF,Patricia Davis,Madrid,Spain
+Patricia Davis,SIBLING_OF,Jason Garcia,Madrid,Spain
+Jason Garcia,LIVES_IN,"Toronto, Canada",Toronto,Canada
+Edward Garcia,PARENT_OF,Jason Garcia,Toronto,Canada
+Amanda Garcia,PARENT_OF,Jason Garcia,Toronto,Canada
+Brandon Harris,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Brandon Harris,MARRIED_TO,Kathleen Harris,Tokyo,Japan
+George Harris,PARENT_OF,Brandon Harris,Tokyo,Japan
+Christine Harris,PARENT_OF,Brandon Harris,Tokyo,Japan
+Brandon Harris,SIBLING_OF,Jack Harris,Tokyo,Japan
+Brandon Harris,SIBLING_OF,Jonathan Harris,Tokyo,Japan
+Brandon Harris,SIBLING_OF,Karen Taylor,Tokyo,Japan
+Jack Harris,LIVES_IN,"Berlin, Germany",Berlin,Germany
+George Harris,PARENT_OF,Jack Harris,Berlin,Germany
+Christine Harris,PARENT_OF,Jack Harris,Berlin,Germany
+Jack Harris,SIBLING_OF,Jonathan Harris,Berlin,Germany
+Jack Harris,SIBLING_OF,Karen Taylor,Berlin,Germany
+Jonathan Harris,LIVES_IN,"Oslo, Norway",Oslo,Norway
+George Harris,PARENT_OF,Jonathan Harris,Oslo,Norway
+Christine Harris,PARENT_OF,Jonathan Harris,Oslo,Norway
+Jonathan Harris,SIBLING_OF,Karen Taylor,Oslo,Norway
+Karen Taylor,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Karen Taylor,MARRIED_TO,Stephen Taylor,Helsinki,Finland
+George Harris,PARENT_OF,Karen Taylor,Helsinki,Finland
+Christine Harris,PARENT_OF,Karen Taylor,Helsinki,Finland
+Justin Taylor,LIVES_IN,"Paris, France",Paris,France
+Richard Taylor,PARENT_OF,Justin Taylor,Paris,France
+Rachel Taylor,PARENT_OF,Justin Taylor,Paris,France
+Justin Taylor,SIBLING_OF,Anthony Taylor,Paris,France
+Anthony Taylor,LIVES_IN,"Edinburgh, United Kingdom",Edinburgh,United Kingdom
+Richard Taylor,PARENT_OF,Anthony Taylor,Edinburgh,United Kingdom
+Rachel Taylor,PARENT_OF,Anthony Taylor,Edinburgh,United Kingdom
+Jason Garcia,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Benjamin Garcia,PARENT_OF,Jason Garcia,London,United Kingdom
+Betty Garcia,PARENT_OF,Jason Garcia,London,United Kingdom
+Jason Garcia,SIBLING_OF,Shirley Garcia,London,United Kingdom
+Jason Garcia,SIBLING_OF,Carolyn Moore,London,United Kingdom
+Shirley Garcia,LIVES_IN,"Geneva, Switzerland",Geneva,Switzerland
+Benjamin Garcia,PARENT_OF,Shirley Garcia,Geneva,Switzerland
+Betty Garcia,PARENT_OF,Shirley Garcia,Geneva,Switzerland
+Shirley Garcia,SIBLING_OF,Carolyn Moore,Geneva,Switzerland
+Carolyn Moore,LIVES_IN,"Rome, Italy",Rome,Italy
+Benjamin Garcia,PARENT_OF,Carolyn Moore,Rome,Italy
+Betty Garcia,PARENT_OF,Carolyn Moore,Rome,Italy
+Jonathan Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Jack Rodriguez,PARENT_OF,Jonathan Rodriguez,Rome,Italy
+Elizabeth Rodriguez,PARENT_OF,Jonathan Rodriguez,Rome,Italy
+Jonathan Rodriguez,SIBLING_OF,Ruth Taylor,Rome,Italy
+Jonathan Rodriguez,SIBLING_OF,Michelle Rodriguez,Rome,Italy
+Jonathan Rodriguez,SIBLING_OF,Helen Moore,Rome,Italy
+Ruth Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Jack Rodriguez,PARENT_OF,Ruth Taylor,Reykjavik,Iceland
+Elizabeth Rodriguez,PARENT_OF,Ruth Taylor,Reykjavik,Iceland
+Ruth Taylor,SIBLING_OF,Michelle Rodriguez,Reykjavik,Iceland
+Ruth Taylor,SIBLING_OF,Helen Moore,Reykjavik,Iceland
+Michelle Rodriguez,LIVES_IN,"Rome, Italy",Rome,Italy
+Jack Rodriguez,PARENT_OF,Michelle Rodriguez,Rome,Italy
+Elizabeth Rodriguez,PARENT_OF,Michelle Rodriguez,Rome,Italy
+Michelle Rodriguez,SIBLING_OF,Helen Moore,Rome,Italy
+Helen Moore,LIVES_IN,"New York, United States",New York,United States
+Jack Rodriguez,PARENT_OF,Helen Moore,New York,United States
+Elizabeth Rodriguez,PARENT_OF,Helen Moore,New York,United States
+Samantha Taylor,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Charles Nguyen,PARENT_OF,Samantha Taylor,Berlin,Germany
+Christine Nguyen,PARENT_OF,Samantha Taylor,Berlin,Germany
+Samantha Taylor,SIBLING_OF,Andrew Nguyen,Berlin,Germany
+Samantha Taylor,SIBLING_OF,Kenneth Nguyen,Berlin,Germany
+Andrew Nguyen,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Andrew Nguyen,MARRIED_TO,Jennifer Nguyen,Brussels,Belgium
+Charles Nguyen,PARENT_OF,Andrew Nguyen,Brussels,Belgium
+Christine Nguyen,PARENT_OF,Andrew Nguyen,Brussels,Belgium
+Andrew Nguyen,SIBLING_OF,Kenneth Nguyen,Brussels,Belgium
+Kenneth Nguyen,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Kenneth Nguyen,MARRIED_TO,Amy Nguyen,Brussels,Belgium
+Charles Nguyen,PARENT_OF,Kenneth Nguyen,Brussels,Belgium
+Christine Nguyen,PARENT_OF,Kenneth Nguyen,Brussels,Belgium
+Patrick Garcia,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Brian Garcia,PARENT_OF,Patrick Garcia,Tokyo,Japan
+Debra Garcia,PARENT_OF,Patrick Garcia,Tokyo,Japan
+Patrick Garcia,SIBLING_OF,Kathleen Harris,Tokyo,Japan
+Patrick Garcia,SIBLING_OF,Emily Taylor,Tokyo,Japan
+Patrick Garcia,SIBLING_OF,Stephanie Garcia,Tokyo,Japan
+Kathleen Harris,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Brian Garcia,PARENT_OF,Kathleen Harris,Tokyo,Japan
+Debra Garcia,PARENT_OF,Kathleen Harris,Tokyo,Japan
+Kathleen Harris,SIBLING_OF,Emily Taylor,Tokyo,Japan
+Kathleen Harris,SIBLING_OF,Stephanie Garcia,Tokyo,Japan
+Emily Taylor,LIVES_IN,"Oslo, Norway",Oslo,Norway
+Brian Garcia,PARENT_OF,Emily Taylor,Oslo,Norway
+Debra Garcia,PARENT_OF,Emily Taylor,Oslo,Norway
+Emily Taylor,SIBLING_OF,Stephanie Garcia,Oslo,Norway
+Stephanie Garcia,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Brian Garcia,PARENT_OF,Stephanie Garcia,Tokyo,Japan
+Debra Garcia,PARENT_OF,Stephanie Garcia,Tokyo,Japan
+Jennifer Nguyen,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Brandon Garcia,PARENT_OF,Jennifer Nguyen,Brussels,Belgium
+Kimberly Garcia,PARENT_OF,Jennifer Nguyen,Brussels,Belgium
+Jennifer Nguyen,SIBLING_OF,George Garcia,Brussels,Belgium
+George Garcia,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Brandon Garcia,PARENT_OF,George Garcia,Berlin,Germany
+Kimberly Garcia,PARENT_OF,George Garcia,Berlin,Germany
+Carolyn Rivera,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Carolyn Rivera,MARRIED_TO,Matthew Rivera,Sydney,Australia
+Mark Taylor,PARENT_OF,Carolyn Rivera,Sydney,Australia
+Samantha Taylor,PARENT_OF,Carolyn Rivera,Sydney,Australia
+Carolyn Rivera,SIBLING_OF,Stephen Taylor,Sydney,Australia
+Carolyn Rivera,SIBLING_OF,Sarah Taylor,Sydney,Australia
+Carolyn Rivera,SIBLING_OF,Steven Taylor,Sydney,Australia
+Stephen Taylor,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Mark Taylor,PARENT_OF,Stephen Taylor,Helsinki,Finland
+Samantha Taylor,PARENT_OF,Stephen Taylor,Helsinki,Finland
+Stephen Taylor,SIBLING_OF,Sarah Taylor,Helsinki,Finland
+Stephen Taylor,SIBLING_OF,Steven Taylor,Helsinki,Finland
+Sarah Taylor,LIVES_IN,"Helsinki, Finland",Helsinki,Finland
+Mark Taylor,PARENT_OF,Sarah Taylor,Helsinki,Finland
+Samantha Taylor,PARENT_OF,Sarah Taylor,Helsinki,Finland
+Sarah Taylor,SIBLING_OF,Steven Taylor,Helsinki,Finland
+Steven Taylor,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+Steven Taylor,MARRIED_TO,Debra Taylor,Stockholm,Sweden
+Mark Taylor,PARENT_OF,Steven Taylor,Stockholm,Sweden
+Samantha Taylor,PARENT_OF,Steven Taylor,Stockholm,Sweden
+William Rivera,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+William Rivera,MARRIED_TO,Donna Rivera,Stockholm,Sweden
+Jeffrey Rivera,PARENT_OF,William Rivera,Stockholm,Sweden
+Susan Rivera,PARENT_OF,William Rivera,Stockholm,Sweden
+William Rivera,SIBLING_OF,Susan Rivera,Stockholm,Sweden
+Susan Rivera,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Jeffrey Rivera,PARENT_OF,Susan Rivera,Brussels,Belgium
+Susan Rivera,PARENT_OF,Susan Rivera,Brussels,Belgium
+Larry Taylor,LIVES_IN,"New York, United States",New York,United States
+Larry Taylor,MARRIED_TO,Michelle Taylor,New York,United States
+Jeffrey Taylor,PARENT_OF,Larry Taylor,New York,United States
+Katherine Taylor,PARENT_OF,Larry Taylor,New York,United States
+Larry Taylor,SIBLING_OF,Jason Taylor,New York,United States
+Jason Taylor,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Jeffrey Taylor,PARENT_OF,Jason Taylor,Sydney,Australia
+Katherine Taylor,PARENT_OF,Jason Taylor,Sydney,Australia
+Emma Taylor,LIVES_IN,"Berlin, Germany",Berlin,Germany
+Matthew Taylor,PARENT_OF,Emma Taylor,Berlin,Germany
+Donna Taylor,PARENT_OF,Emma Taylor,Berlin,Germany
+Emma Taylor,SIBLING_OF,Emily Moore,Berlin,Germany
+Emma Taylor,SIBLING_OF,Gregory Taylor,Berlin,Germany
+Emily Moore,LIVES_IN,"Tokyo, Japan",Tokyo,Japan
+Matthew Taylor,PARENT_OF,Emily Moore,Tokyo,Japan
+Donna Taylor,PARENT_OF,Emily Moore,Tokyo,Japan
+Emily Moore,SIBLING_OF,Gregory Taylor,Tokyo,Japan
+Gregory Taylor,LIVES_IN,"Dublin, Ireland",Dublin,Ireland
+Matthew Taylor,PARENT_OF,Gregory Taylor,Dublin,Ireland
+Donna Taylor,PARENT_OF,Gregory Taylor,Dublin,Ireland
+Matthew Rivera,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Timothy Rivera,PARENT_OF,Matthew Rivera,Sydney,Australia
+Sarah Rivera,PARENT_OF,Matthew Rivera,Sydney,Australia
+Matthew Rivera,SIBLING_OF,Michael Rivera,Sydney,Australia
+Matthew Rivera,SIBLING_OF,Amy Nguyen,Sydney,Australia
+Matthew Rivera,SIBLING_OF,John Rivera,Sydney,Australia
+Michael Rivera,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Timothy Rivera,PARENT_OF,Michael Rivera,Sydney,Australia
+Sarah Rivera,PARENT_OF,Michael Rivera,Sydney,Australia
+Michael Rivera,SIBLING_OF,Amy Nguyen,Sydney,Australia
+Michael Rivera,SIBLING_OF,John Rivera,Sydney,Australia
+Amy Nguyen,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Timothy Rivera,PARENT_OF,Amy Nguyen,Brussels,Belgium
+Sarah Rivera,PARENT_OF,Amy Nguyen,Brussels,Belgium
+Amy Nguyen,SIBLING_OF,John Rivera,Brussels,Belgium
+John Rivera,LIVES_IN,"Sydney, Australia",Sydney,Australia
+Timothy Rivera,PARENT_OF,John Rivera,Sydney,Australia
+Sarah Rivera,PARENT_OF,John Rivera,Sydney,Australia
+Brian Taylor,LIVES_IN,"Rome, Italy",Rome,Italy
+William Taylor,PARENT_OF,Brian Taylor,Rome,Italy
+Amanda Taylor,PARENT_OF,Brian Taylor,Rome,Italy
+Brian Taylor,SIBLING_OF,Sarah Taylor,Rome,Italy
+Brian Taylor,SIBLING_OF,Kimberly Taylor,Rome,Italy
+Brian Taylor,SIBLING_OF,Nancy Nguyen,Rome,Italy
+Sarah Taylor,LIVES_IN,"Rome, Italy",Rome,Italy
+William Taylor,PARENT_OF,Sarah Taylor,Rome,Italy
+Amanda Taylor,PARENT_OF,Sarah Taylor,Rome,Italy
+Sarah Taylor,SIBLING_OF,Kimberly Taylor,Rome,Italy
+Sarah Taylor,SIBLING_OF,Nancy Nguyen,Rome,Italy
+Kimberly Taylor,LIVES_IN,"Rome, Italy",Rome,Italy
+William Taylor,PARENT_OF,Kimberly Taylor,Rome,Italy
+Amanda Taylor,PARENT_OF,Kimberly Taylor,Rome,Italy
+Kimberly Taylor,SIBLING_OF,Nancy Nguyen,Rome,Italy
+Nancy Nguyen,LIVES_IN,"Rome, Italy",Rome,Italy
+William Taylor,PARENT_OF,Nancy Nguyen,Rome,Italy
+Amanda Taylor,PARENT_OF,Nancy Nguyen,Rome,Italy
+Debra Taylor,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+Larry Taylor,PARENT_OF,Debra Taylor,Stockholm,Sweden
+Betty Taylor,PARENT_OF,Debra Taylor,Stockholm,Sweden
+Debra Taylor,SIBLING_OF,Brenda Taylor,Stockholm,Sweden
+Debra Taylor,SIBLING_OF,Matthew Taylor,Stockholm,Sweden
+Debra Taylor,SIBLING_OF,Sharon Taylor,Stockholm,Sweden
+Brenda Taylor,LIVES_IN,"New York, United States",New York,United States
+Larry Taylor,PARENT_OF,Brenda Taylor,New York,United States
+Betty Taylor,PARENT_OF,Brenda Taylor,New York,United States
+Brenda Taylor,SIBLING_OF,Matthew Taylor,New York,United States
+Brenda Taylor,SIBLING_OF,Sharon Taylor,New York,United States
+Matthew Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Larry Taylor,PARENT_OF,Matthew Taylor,London,United Kingdom
+Betty Taylor,PARENT_OF,Matthew Taylor,London,United Kingdom
+Matthew Taylor,SIBLING_OF,Sharon Taylor,London,United Kingdom
+Sharon Taylor,LIVES_IN,"New York, United States",New York,United States
+Larry Taylor,PARENT_OF,Sharon Taylor,New York,United States
+Betty Taylor,PARENT_OF,Sharon Taylor,New York,United States
+Ruth Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Gregory Rodriguez,PARENT_OF,Ruth Taylor,Reykjavik,Iceland
+Shirley Rodriguez,PARENT_OF,Ruth Taylor,Reykjavik,Iceland
+Ruth Taylor,SIBLING_OF,Michelle Taylor,Reykjavik,Iceland
+Michelle Taylor,LIVES_IN,"New York, United States",New York,United States
+Gregory Rodriguez,PARENT_OF,Michelle Taylor,New York,United States
+Shirley Rodriguez,PARENT_OF,Michelle Taylor,New York,United States
+Deborah Moore,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Frank Taylor,PARENT_OF,Deborah Moore,Brussels,Belgium
+Cynthia Taylor,PARENT_OF,Deborah Moore,Brussels,Belgium
+Deborah Moore,SIBLING_OF,Carol Taylor,Brussels,Belgium
+Carol Taylor,LIVES_IN,"Brussels, Belgium",Brussels,Belgium
+Frank Taylor,PARENT_OF,Carol Taylor,Brussels,Belgium
+Cynthia Taylor,PARENT_OF,Carol Taylor,Brussels,Belgium
+Paul Taylor,LIVES_IN,"London, United Kingdom",London,United Kingdom
+Jason Taylor,PARENT_OF,Paul Taylor,London,United Kingdom
+Jennifer Taylor,PARENT_OF,Paul Taylor,London,United Kingdom
+Paul Taylor,SIBLING_OF,William Taylor,London,United Kingdom
+Paul Taylor,SIBLING_OF,Donna Rivera,London,United Kingdom
+William Taylor,LIVES_IN,"Reykjavik, Iceland",Reykjavik,Iceland
+Jason Taylor,PARENT_OF,William Taylor,Reykjavik,Iceland
+Jennifer Taylor,PARENT_OF,William Taylor,Reykjavik,Iceland
+William Taylor,SIBLING_OF,Donna Rivera,Reykjavik,Iceland
+Donna Rivera,LIVES_IN,"Stockholm, Sweden",Stockholm,Sweden
+Jason Taylor,PARENT_OF,Donna Rivera,Stockholm,Sweden
+Jennifer Taylor,PARENT_OF,Donna Rivera,Stockholm,Sweden

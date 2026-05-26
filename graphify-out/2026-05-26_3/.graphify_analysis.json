@@ -1,0 +1,445 @@
+{
+  "communities": {
+    "0": [
+      "backfill_types_route_genai",
+      "backfill_types_route_post",
+      "conversations_route_get",
+      "conversations_route_post",
+      "dedup_route_post",
+      "documents_route_delete",
+      "documents_route_get",
+      "expand_route_post",
+      "full_route_get",
+      "id_route_delete",
+      "id_route_get",
+      "id_route_patch",
+      "messages_route_post",
+      "neo4j_neo4j_driver",
+      "neo4j_neo4j_initschema",
+      "node_route_post",
+      "path_route_post",
+      "scripts_init_neo4j_main",
+      "scripts_init_neo4j_ts",
+      "search_route_post",
+      "src_app_api_conversations_id_messages_route_ts",
+      "src_app_api_conversations_id_route_ts",
+      "src_app_api_conversations_route_ts",
+      "src_app_api_documents_route_ts",
+      "src_app_api_documents_summary_route_ts",
+      "src_app_api_graph_backfill_types_route_ts",
+      "src_app_api_graph_dedup_route_ts",
+      "src_app_api_graph_expand_route_ts",
+      "src_app_api_graph_full_route_ts",
+      "src_app_api_graph_node_route_ts",
+      "src_app_api_graph_path_route_ts",
+      "src_app_api_graph_search_route_ts",
+      "src_app_api_graph_stats_route_ts",
+      "src_lib_neo4j_neo4j_ts",
+      "src_lib_supabase_server_ts",
+      "stats_route_get",
+      "summary_route_genai",
+      "summary_route_post",
+      "supabase_server_createclient"
+    ],
+    "1": [
+      "chat_route_getopenrouter",
+      "chat_route_post",
+      "config_models_models",
+      "embeddings_index_dimensions",
+      "embeddings_index_embedbatch",
+      "embeddings_index_embeddingsenabled",
+      "embeddings_index_embedtext",
+      "embeddings_index_getclient",
+      "inngest_client_inngest",
+      "inngest_functions_getopenrouter",
+      "inngest_functions_graphtriple",
+      "inngest_functions_name_synonyms",
+      "inngest_functions_normaliseentityname",
+      "inngest_functions_parsecsvtograph",
+      "inngest_functions_parsejsontograph",
+      "inngest_functions_parsexlsxtograph",
+      "inngest_functions_processdocument",
+      "inngest_functions_rel_column_map",
+      "inngest_functions_valid_entity_types",
+      "inngest_route_get_post_put",
+      "reprocess_route_post",
+      "src_app_api_chat_route_ts",
+      "src_app_api_documents_reprocess_route_ts",
+      "src_app_api_inngest_route_ts",
+      "src_app_api_upload_route_ts",
+      "src_lib_config_models_ts",
+      "src_lib_embeddings_index_ts",
+      "src_lib_inngest_client_ts",
+      "src_lib_inngest_functions_ts",
+      "src_lib_supabase_service_ts",
+      "src_lib_utils_retry_ts",
+      "supabase_service_supabaseadmin",
+      "upload_route_post",
+      "utils_retry_withretry"
+    ],
+    "2": [
+      "app_layout_geistmono",
+      "app_layout_geistsans",
+      "app_layout_jetbrainsmono",
+      "app_layout_metadata",
+      "app_layout_rootlayout",
+      "components_globaldropzone_globaldropzone",
+      "dashboard_layout_dashboardlayout",
+      "documents_page_doc",
+      "documents_page_documentspage",
+      "documents_page_processing_steps",
+      "documents_page_statusbadge",
+      "forgot_password_page_forgotpasswordpage",
+      "login_page_loginpage",
+      "reset_password_page_resetpasswordpage",
+      "signup_page_signuppage",
+      "src_app_auth_forgot_password_page_tsx",
+      "src_app_auth_login_page_tsx",
+      "src_app_auth_reset_password_page_tsx",
+      "src_app_auth_signup_page_tsx",
+      "src_app_dashboard_documents_page_tsx",
+      "src_app_dashboard_layout_tsx",
+      "src_app_layout_tsx",
+      "src_components_globaldropzone_tsx",
+      "src_lib_supabase_browser_client_ts",
+      "supabase_browser_client_createclient"
+    ],
+    "3": [
+      "package_json",
+      "web_package_devdependencies",
+      "web_package_devdependencies_dotenv",
+      "web_package_devdependencies_eslint",
+      "web_package_devdependencies_eslint_config_next",
+      "web_package_devdependencies_tailwindcss",
+      "web_package_devdependencies_tailwindcss_postcss",
+      "web_package_devdependencies_ts_node",
+      "web_package_devdependencies_types_node",
+      "web_package_devdependencies_types_papaparse",
+      "web_package_devdependencies_types_pdf_parse",
+      "web_package_devdependencies_types_react",
+      "web_package_devdependencies_types_react_dom",
+      "web_package_devdependencies_typescript",
+      "web_package_name",
+      "web_package_private",
+      "web_package_scripts",
+      "web_package_scripts_build",
+      "web_package_scripts_dev",
+      "web_package_scripts_lint",
+      "web_package_scripts_start",
+      "web_package_version"
+    ],
+    "4": [
+      "chat_page_chatpage",
+      "chat_page_conversation",
+      "chat_page_empty_graph",
+      "chat_page_fmtdate",
+      "chat_page_graphstats",
+      "chat_page_message",
+      "chat_page_nodedetail",
+      "chat_page_starterquestions",
+      "chat_page_type_dot_color",
+      "components_forcegraph_all_types",
+      "components_forcegraph_forcegraph",
+      "components_forcegraph_forcegraph2d",
+      "components_forcegraph_graphdata",
+      "components_forcegraph_graphlayout",
+      "components_forcegraph_graphlink",
+      "components_forcegraph_graphnode",
+      "components_forcegraph_noderadius",
+      "components_forcegraph_props",
+      "components_forcegraph_thinkingphase",
+      "components_forcegraph_type_colors",
+      "src_app_dashboard_chat_page_tsx",
+      "src_components_forcegraph_tsx"
+    ],
+    "5": [
+      "tsconfig_json",
+      "web_tsconfig_compileroptions",
+      "web_tsconfig_compileroptions_allowjs",
+      "web_tsconfig_compileroptions_esmoduleinterop",
+      "web_tsconfig_compileroptions_incremental",
+      "web_tsconfig_compileroptions_isolatedmodules",
+      "web_tsconfig_compileroptions_jsx",
+      "web_tsconfig_compileroptions_lib",
+      "web_tsconfig_compileroptions_module",
+      "web_tsconfig_compileroptions_moduleresolution",
+      "web_tsconfig_compileroptions_noemit",
+      "web_tsconfig_compileroptions_paths",
+      "web_tsconfig_compileroptions_plugins",
+      "web_tsconfig_compileroptions_resolvejsonmodule",
+      "web_tsconfig_compileroptions_skiplibcheck",
+      "web_tsconfig_compileroptions_strict",
+      "web_tsconfig_compileroptions_target",
+      "web_tsconfig_exclude",
+      "web_tsconfig_include",
+      "web_tsconfig_paths"
+    ],
+    "6": [
+      "web_package_dependencies",
+      "web_package_dependencies_framer_motion",
+      "web_package_dependencies_google_generative_ai",
+      "web_package_dependencies_inngest",
+      "web_package_dependencies_lucide_react",
+      "web_package_dependencies_mammoth",
+      "web_package_dependencies_neo4j_driver",
+      "web_package_dependencies_next",
+      "web_package_dependencies_openai",
+      "web_package_dependencies_papaparse",
+      "web_package_dependencies_pdf_parse",
+      "web_package_dependencies_react",
+      "web_package_dependencies_react_dom",
+      "web_package_dependencies_react_force_graph_2d",
+      "web_package_dependencies_react_markdown",
+      "web_package_dependencies_remark_gfm",
+      "web_package_dependencies_supabase_ssr",
+      "web_package_dependencies_supabase_supabase_js",
+      "web_package_dependencies_xlsx"
+    ],
+    "7": [
+      "components_uploaddropzone_accepted_types",
+      "components_uploaddropzone_uploaddropzone",
+      "components_uploaddropzone_uploaddropzoneprops",
+      "src_app_dashboard_upload_page_tsx",
+      "src_components_uploaddropzone_tsx",
+      "upload_page_processing_steps",
+      "upload_page_processingstepper",
+      "upload_page_uploaditem",
+      "upload_page_uploaditemrow",
+      "upload_page_uploadpage",
+      "upload_page_uploadphase"
+    ],
+    "8": [
+      "functions_deterministic_parser",
+      "functions_normalise_entity_name",
+      "functions_process_document",
+      "neo4j_driver_config",
+      "neo4j_init_schema",
+      "route_chat_post",
+      "route_rag_pipeline",
+      "route_upload_post",
+      "supabase_client"
+    ],
+    "9": [
+      "app_page_featurecard",
+      "app_page_home",
+      "components_landinggraph_landinggraph",
+      "components_landinggraph_node",
+      "src_app_page_tsx",
+      "src_components_landinggraph_tsx"
+    ],
+    "10": [
+      "src_middleware_config",
+      "src_middleware_middleware",
+      "src_middleware_ts"
+    ],
+    "11": [
+      "page_feature_card",
+      "page_graphwarp_concept",
+      "page_home_component"
+    ],
+    "12": [
+      "src_app_terms_page_tsx",
+      "terms_page_termspage"
+    ],
+    "13": [
+      "next_config_ts",
+      "web_next_config_nextconfig"
+    ],
+    "14": [
+      "agents_nextjs_agent_rules",
+      "claude_setup"
+    ],
+    "15": [
+      "eslint_config_mjs",
+      "web_eslint_config_eslintconfig"
+    ],
+    "16": [
+      "callback_route_get",
+      "src_app_auth_callback_route_ts"
+    ],
+    "17": [
+      "src_lib_supabase_supabase_ts",
+      "supabase_supabase_supabase"
+    ],
+    "18": [
+      "postcss_config_mjs",
+      "web_postcss_config_config"
+    ],
+    "19": [
+      "privacy_page_privacypage",
+      "src_app_privacy_page_tsx"
+    ],
+    "20": [
+      "readme_graphwarp_readme"
+    ]
+  },
+  "cohesion": {
+    "0": 0.09581646423751687,
+    "1": 0.09982174688057041,
+    "2": 0.10666666666666667,
+    "3": 0.09090909090909091,
+    "4": 0.12987012987012986,
+    "5": 0.1,
+    "6": 0.10526315789473684,
+    "7": 0.18181818181818182,
+    "8": 0.3333333333333333,
+    "9": 0.3333333333333333,
+    "10": 0.6666666666666666,
+    "11": 0.6666666666666666,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0,
+    "15": 1.0,
+    "16": 1.0,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0
+  },
+  "gods": [
+    {
+      "id": "supabase_server_createclient",
+      "label": "createClient()",
+      "degree": 17
+    },
+    {
+      "id": "web_tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "neo4j_neo4j_driver",
+      "label": "driver",
+      "degree": 15
+    },
+    {
+      "id": "supabase_browser_client_createclient",
+      "label": "createClient()",
+      "degree": 10
+    },
+    {
+      "id": "functions_process_document",
+      "label": "processDocument Inngest Handler",
+      "degree": 6
+    },
+    {
+      "id": "web_package_scripts",
+      "label": "scripts",
+      "degree": 5
+    },
+    {
+      "id": "inngest_client_inngest",
+      "label": "inngest",
+      "degree": 5
+    },
+    {
+      "id": "route_chat_post",
+      "label": "Chat API POST Handler",
+      "degree": 5
+    },
+    {
+      "id": "supabase_service_supabaseadmin",
+      "label": "supabaseAdmin",
+      "degree": 4
+    },
+    {
+      "id": "chat_page_chatpage",
+      "label": "ChatPage()",
+      "degree": 3
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Chat API POST Handler",
+      "target": "Supabase Client Creator",
+      "source_files": [
+        "web/src/app/api/chat/route.ts",
+        "web/src/lib/supabase/supabase.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `Supabase Client Creator` unexpectedly reaches hub `Chat API POST Handler`"
+    },
+    {
+      "source": "Chat API POST Handler",
+      "target": "initSchema Function",
+      "source_files": [
+        "web/src/app/api/chat/route.ts",
+        "web/src/lib/neo4j/neo4j.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source"
+    },
+    {
+      "source": "Chat API POST Handler",
+      "target": "processDocument Inngest Handler",
+      "source_files": [
+        "web/src/app/api/chat/route.ts",
+        "web/src/lib/inngest/functions.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "shares_data_with",
+      "why": "inferred connection - not explicitly stated in source"
+    },
+    {
+      "source": "Upload API POST Handler",
+      "target": "processDocument Inngest Handler",
+      "source_files": [
+        "web/src/app/api/upload/route.ts",
+        "web/src/lib/inngest/functions.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "shares_data_with",
+      "why": "peripheral node `Upload API POST Handler` unexpectedly reaches hub `processDocument Inngest Handler`"
+    },
+    {
+      "source": "processDocument Inngest Handler",
+      "target": "initSchema Function",
+      "source_files": [
+        "web/src/lib/inngest/functions.ts",
+        "web/src/lib/neo4j/neo4j.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `createClient()` connect `Community 2` to `Community 4`, `Community 7`?",
+      "why": "High betweenness centrality (0.023) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `Community 6` to `Community 3`?",
+      "why": "High betweenness centrality (0.021) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `createClient()` connect `Community 0` to `Community 1`?",
+      "why": "High betweenness centrality (0.018) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `eslintConfig`, `nextConfig`, `name` to the rest of the system?",
+      "why": "94 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 0` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.09581646423751687 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 1` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.09982174688057041 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 2` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.10666666666666667 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

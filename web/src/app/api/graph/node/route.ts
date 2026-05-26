@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     const session = driver.session();
     try {
       // Run sequentially — Neo4j sessions don't support concurrent transactions
-      const nodeRes = await session.executeRead((tx) =>
+      const nodeRes = await session.executeRead((tx: any) =>
         tx.run(
           `MATCH (n:Entity {user_id: $uid})
            WHERE toLower(n.name) = toLower($nodeId)
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
           { nodeId, uid: user.id }
         )
       );
-      const relRes = await session.executeRead((tx) =>
+      const relRes = await session.executeRead((tx: any) =>
         tx.run(
           `MATCH (n:Entity {user_id: $uid})-[r:RELATION]-(m:Entity {user_id: $uid})
            WHERE toLower(n.name) = toLower($nodeId)
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
       }
 
       const n = nodeRes.records[0];
-      const relationships = relRes.records.map((r) => ({
+      const relationships = relRes.records.map((r: any) => ({
         relType:    r.get('relType'),
         other:      r.get('other'),
         otherType:  r.get('otherType') ?? 'Entity',
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
       // Collect all unique source documents across all relationships (both old and new format)
       const sourceDocs = [...new Set(
-        relationships.flatMap((r) => r.sourceFiles.length > 0 ? r.sourceFiles : [r.sourceFile])
+        relationships.flatMap((r: any) => r.sourceFiles.length > 0 ? r.sourceFiles : [r.sourceFile])
       )].filter((f) => f && f !== 'Unknown');
 
       return NextResponse.json({

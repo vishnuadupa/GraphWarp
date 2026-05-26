@@ -58,7 +58,7 @@ export async function DELETE(req: NextRequest) {
     // 2. Delete the edges from Neo4j associated with this source_file
     const session = driver.session();
     try {
-      await session.executeWrite(async (tx) => {
+      await session.executeWrite(async (tx: any) => {
         // Delete relationships created by this file.
         // Handles both formats:
         //   - Old edges: source_file (string) written before the MERGE-key fix

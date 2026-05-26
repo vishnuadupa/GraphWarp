@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     const session = driver.session();
     try {
-      const result = await session.executeRead((tx) =>
+      const result = await session.executeRead((tx: any) =>
         tx.run(
           `MATCH (n:Entity {user_id: $uid})
            WHERE toLower(n.name) CONTAINS toLower($query)
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       );
 
       return NextResponse.json({
-        nodes: result.records.map((r) => ({
+        nodes: result.records.map((r: any) => ({
           id:     r.get('name'),
           name:   r.get('name'),
           type:   r.get('type') ?? 'Entity',
