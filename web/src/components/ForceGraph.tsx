@@ -387,15 +387,15 @@ export function ForceGraph({
       ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
       ctx.fillStyle = color; ctx.fill();
 
-      // Border (thick solid black ink borders for a brutalist feel)
+      // Border (glassy translucent white borders for dark theme)
       ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.strokeStyle = isOnPath ? "rgba(13,148,136,0.95)" : isHighlight ? "rgba(217,119,6,0.95)" : isActive && phase ? "rgba(0,0,0,0.95)" : "rgba(0,0,0,0.85)";
+      ctx.strokeStyle = isOnPath ? "rgba(13,148,136,0.95)" : isHighlight ? "rgba(217,119,6,0.95)" : isActive && phase ? "rgba(255,255,255,0.95)" : "rgba(255,255,255,0.3)";
       ctx.lineWidth = (isOnPath || isHighlight || (isActive && phase) ? 2 : 1) / globalScale; ctx.stroke();
 
-      // Label (JetBrains Mono text styling)
+      // Label (Inter geometric display typography)
       const fontSize = Math.max(9 / globalScale, 2.5);
-      ctx.font = `${isOnPath ? "bold " : ""}500 ${fontSize}px "JetBrains Mono", var(--font-mono), monospace`;
-      ctx.fillStyle = isOnPath ? "rgba(13,148,136,1)" : isHighlight ? "rgba(217,119,6,1)" : isActive && phase ? "rgba(0,0,0,1)" : isDimmed ? "rgba(0,0,0,0.04)" : "rgba(26,26,26,0.85)";
+      ctx.font = `${isOnPath ? "bold " : ""}500 ${fontSize}px var(--font-body), "Inter", sans-serif`;
+      ctx.fillStyle = isOnPath ? "rgba(45,212,191,1)" : isHighlight ? "rgba(251,191,36,1)" : isActive && phase ? "rgba(255,255,255,1)" : isDimmed ? "rgba(255,255,255,0.06)" : "rgba(243,244,246,0.85)";
       ctx.textAlign = "center"; ctx.textBaseline = "top";
       ctx.fillText(n.name ?? "", x, y + r + 3 / globalScale);
       ctx.globalAlpha = 1;
@@ -482,7 +482,7 @@ export function ForceGraph({
           width={dims.width}
           height={dims.height}
           graphData={filteredData}
-          backgroundColor="#ffffff"
+          backgroundColor="rgba(0,0,0,0)"
           nodeLabel="name"
           nodeRelSize={6}
           nodeCanvasObjectMode={() => "replace"}
@@ -494,17 +494,17 @@ export function ForceGraph({
             // Path finder links take top priority
             if (pathLinkRef.current.size > 0) {
               const lid = link.__pathId ?? `${sId}-${tId}`;
-              if (pathLinkRef.current.has(sId) && pathLinkRef.current.has(tId)) return "rgba(13,148,136,0.9)";
-              return "rgba(0,0,0,0.02)";
+              if (pathLinkRef.current.has(sId) && pathLinkRef.current.has(tId)) return "rgba(45,212,191,0.9)";
+              return "rgba(255,255,255,0.015)";
             }
             if (phase && activeRef.current.has(sId) && activeRef.current.has(tId)) {
-              return phase === "answering" ? "rgba(5,150,105,0.65)" : "rgba(37,99,235,0.65)";
+              return phase === "answering" ? "rgba(16,185,129,0.5)" : "rgba(99,102,241,0.5)";
             }
             if (highlightRef.current.size > 0 && highlightRef.current.has(sId) && highlightRef.current.has(tId)) {
-              return "rgba(217,119,6,0.65)";
+              return "rgba(245,158,11,0.5)";
             }
-            if (highlightRef.current.size > 0) return "rgba(0,0,0,0.02)";
-            return "rgba(0,0,0,0.12)";
+            if (highlightRef.current.size > 0) return "rgba(255,255,255,0.015)";
+            return "rgba(255,255,255,0.08)";
           }}
           linkWidth={(link: any) => {
             const sId = typeof link.source === "object" ? link.source.id : link.source;
