@@ -108,8 +108,8 @@ export default function PrivacyPage() {
                 Storage and Neo4j.
               </li>
               <li>
-                For complete account wipeout, please contact me directly at the project's public contact email: 
-                <span className="font-mono text-[var(--color-ink)] font-bold ml-1">privacy-graphwarp@outlook.com</span>.
+                For complete account wipeout, please open a request directly on the project's public GitHub repository by submitting a new issue: 
+                <a href="https://github.com/vishnuadupa/GraphWeave/issues" target="_blank" rel="noopener noreferrer" className="font-mono text-[var(--color-ink)] font-bold ml-1 underline">GitHub Issues</a>.
               </li>
             </ul>
           </section>

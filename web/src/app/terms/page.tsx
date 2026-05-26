@@ -95,8 +95,8 @@ export default function TermsPage() {
             <h2 className="text-lg font-bold font-mono text-[var(--color-ink)] uppercase tracking-wide">05 — Contact Information</h2>
             <p>
               For inquiries regarding these terms, data deletions, or general technical questions about the architecture, 
-              please open an issue on the project's public GitHub repository or reach out via:
-              <span className="font-mono text-[var(--color-ink)] font-bold ml-1">privacy-graphwarp@outlook.com</span>.
+              please open a request or report directly by submitting a new issue on the project's public GitHub repository: 
+              <a href="https://github.com/vishnuadupa/GraphWeave/issues" target="_blank" rel="noopener noreferrer" className="font-mono text-[var(--color-ink)] font-bold ml-1 underline">GitHub Issues</a>.
             </p>
           </section>
         </div>
