@@ -25,7 +25,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <header className="dash-topbar">
         <div className="flex items-center gap-8">
           <Link href="/" className="dash-wordmark uppercase hover:opacity-80 transition-opacity">
-            GRAPHWEAVE
+            GRAPHWARP
           </Link>
           <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => {

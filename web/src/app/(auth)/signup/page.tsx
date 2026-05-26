@@ -46,7 +46,7 @@ export default function SignupPage() {
       <div className="auth-shell">
         <div className="auth-card">
           <Link href="/" className="auth-wordmark uppercase tracking-widest text-[var(--color-ink)] hover:opacity-80 transition-opacity">
-            GRAPHWEAVE
+            GRAPHWARP
           </Link>
           <div className="flex flex-col items-center gap-4 py-6 text-center">
             <MailCheck className="w-10 h-10 text-[var(--color-ink)]" />
@@ -68,10 +68,10 @@ export default function SignupPage() {
     <div className="auth-shell">
       <div className="auth-card">
         <Link href="/" className="auth-wordmark uppercase tracking-widest text-[var(--color-ink)] hover:opacity-80 transition-opacity">
-          GRAPHWEAVE
+          GRAPHWARP
         </Link>
         <h1 className="auth-heading">Create account</h1>
-        <p className="auth-lede">Start building your knowledge graph for free.</p>
+        <p className="auth-lede">Start building your custom knowledge graph.</p>
 
         {error && <div className="form-error">{error}</div>}
 
@@ -104,6 +104,10 @@ export default function SignupPage() {
             {loading ? "Creating..." : "Sign up"}
           </button>
         </form>
+
+        <p className="mt-6 text-[10px] text-amber-800 border border-amber-200 bg-amber-50/50 p-2.5 leading-[1.6]">
+          <strong>⚠️ Disclaimer:</strong> GraphWarp is a personal portfolio and educational demonstration. Please do not upload sensitive, proprietary, or personal private documents.
+        </p>
 
         <div className="auth-footer mt-6">
           Already have an account? <Link href="/login">Log in</Link>

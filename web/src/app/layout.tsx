@@ -20,12 +20,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GraphRAG Knowledge Engine",
+  title: "GraphWarp | Personal GraphRAG Engine",
   description:
     "Transform your documents into an intelligent knowledge graph. Ask questions, discover connections, and surface insights that flat search misses.",
-  keywords: ["knowledge graph", "RAG", "GraphRAG", "Neo4j", "AI", "document intelligence"],
+  keywords: ["knowledge graph", "RAG", "GraphRAG", "Neo4j", "AI", "document intelligence", "GraphWarp"],
   openGraph: {
-    title: "GraphRAG Knowledge Engine",
+    title: "GraphWarp | Personal GraphRAG Engine",
     description: "Transform your documents into an intelligent knowledge graph.",
     type: "website",
   },

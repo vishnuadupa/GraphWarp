@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
       <div className="auth-shell">
         <div className="auth-card">
           <Link href="/" className="auth-wordmark uppercase tracking-widest text-[var(--color-ink)] hover:opacity-80 transition-opacity">
-            GRAPHWEAVE
+            GRAPHWARP
           </Link>
           <div className="flex flex-col items-center gap-4 py-6 text-center">
             <CheckCircle className="w-10 h-10 text-[var(--color-ink)]" />
@@ -74,7 +74,7 @@ export default function ResetPasswordPage() {
     <div className="auth-shell">
       <div className="auth-card">
         <Link href="/" className="auth-wordmark uppercase tracking-widest text-[var(--color-ink)] hover:opacity-80 transition-opacity">
-          GRAPHWEAVE
+          GRAPHWARP
         </Link>
         <h1 className="auth-heading">New password</h1>
         <p className="auth-lede">Choose a strong password for your account.</p>

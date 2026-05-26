@@ -59,7 +59,7 @@ export default function LoginPage() {
     <div className="auth-shell">
       <div className="auth-card">
         <Link href="/" className="auth-wordmark uppercase tracking-widest text-[var(--color-ink)] hover:opacity-80 transition-opacity">
-          GRAPHWEAVE
+          GRAPHWARP
         </Link>
         <h1 className="auth-heading">Log in</h1>
         <p className="auth-lede">Continue to your GraphRAG dashboard.</p>
@@ -101,10 +101,12 @@ export default function LoginPage() {
           </button>
         </form>
 
-
+        <p className="mt-6 text-[10px] text-amber-800 border border-amber-200 bg-amber-50/50 p-2.5 leading-[1.6]">
+          <strong>⚠️ Disclaimer:</strong> GraphWarp is a personal portfolio and educational demonstration. Please do not upload sensitive, proprietary, or personal private documents.
+        </p>
 
         <div className="auth-footer mt-6">
-          Don't have an account? <Link href="/signup">Start free</Link>
+          Don't have an account? <Link href="/signup">Get started</Link>
         </div>
       </div>
     </div>

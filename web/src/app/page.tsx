@@ -8,7 +8,7 @@ export default function Home() {
       {/* N9 Edge-aligned minimal */}
       <nav className="flex items-center justify-between px-6 py-8">
         <Link href="/" className="font-mono text-sm tracking-[0.15em] font-bold text-[var(--color-ink)] uppercase">
-          GraphWeave
+          GraphWarp
         </Link>
         <div className="flex items-center gap-8">
           <Link href="/login" className="text-sm font-medium text-[var(--color-neutral)] hover:text-[var(--color-ink)] transition-colors hidden sm:block">
@@ -39,7 +39,7 @@ export default function Home() {
             
             <div className="flex flex-col md:flex-row gap-8 md:gap-24 items-start md:items-end mt-8">
               <p className="text-xl max-w-xl text-[var(--color-muted)] leading-[1.6] pointer-events-auto">
-                Stop trusting probabilistic text chunks. I built GraphWeave to extract a strict semantic knowledge graph from your documents, ensuring highly accurate, fully traceable facts.
+                Stop trusting probabilistic text chunks. I built GraphWarp to extract a strict semantic knowledge graph from your documents, ensuring highly accurate, fully traceable facts.
               </p>
               <div className="flex items-center gap-6 pointer-events-auto">
                 <Link
@@ -82,13 +82,16 @@ export default function Home() {
         {/* Ft4 Dense colophon footer */}
         <footer className="px-6 py-16 grid grid-cols-1 md:grid-cols-12 gap-12 font-mono text-xs leading-[1.7] text-[var(--color-neutral)] bg-[var(--color-paper-2)]">
           <div className="md:col-span-6 max-w-md">
-            <div className="font-bold text-[var(--color-ink)] uppercase tracking-widest mb-4">GraphWeave Project</div>
-            <p className="mb-6">
+            <div className="font-bold text-[var(--color-ink)] uppercase tracking-widest mb-4">GraphWarp Project</div>
+            <p className="mb-4">
               A premium personal knowledge engine built for confident retrieval.
               I designed the architecture around Neo4j graph traversal and OpenRouter LLMs for
               verifiable, factual synthesis.
             </p>
-            <p>Built in 2026. All rights reserved.</p>
+            <p className="text-[10px] text-amber-800 border border-amber-200 bg-amber-50/50 p-3 leading-[1.6]">
+              <strong>⚠️ DISCLAIMER:</strong> GraphWarp is a personal portfolio and educational demonstration project. It is not a commercial product. Please do not upload sensitive, proprietary, or personal private documents (financial records, medical data, trade secrets).
+            </p>
+            <p className="mt-4">Built in 2026. All rights reserved.</p>
           </div>
           
           <div className="md:col-span-3">
@@ -103,8 +106,8 @@ export default function Home() {
           <div className="md:col-span-3">
             <div className="font-bold text-[var(--color-ink)] uppercase tracking-widest mb-4">Legal</div>
             <div className="flex flex-col gap-2">
-              <span className="hover:text-[var(--color-ink)] transition-colors cursor-pointer">Privacy Policy</span>
-              <span className="hover:text-[var(--color-ink)] transition-colors cursor-pointer">Terms of Service</span>
+              <Link href="/privacy" className="hover:text-[var(--color-ink)] transition-colors">Privacy Policy</Link>
+              <Link href="/terms" className="hover:text-[var(--color-ink)] transition-colors">Terms of Service</Link>
             </div>
           </div>
         </footer>
