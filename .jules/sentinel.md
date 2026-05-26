@@ -1,0 +1,4 @@
+## 2024-05-26 - Path Traversal in File Uploads
+**Vulnerability:** The document upload API endpoint (`web/src/app/api/upload/route.ts`) accepted a user-provided `filePath` string directly from the request body. While it checked that the path started with the user's ID (`user.id/`), it did not prevent the use of `..` characters. This allowed a malicious user to craft a `filePath` like `userId/../otherUserId/file.txt`, effectively bypassing the prefix check and accessing or writing to other users' storage areas in Supabase.
+**Learning:** Checking a prefix (`startsWith`) is not sufficient for path validation if the rest of the path is user-controlled and not sanitized for path traversal characters like `..`.
+**Prevention:** Always validate and sanitize user-provided file paths. A simple and effective prevention is to explicitly reject any path containing `..`.
