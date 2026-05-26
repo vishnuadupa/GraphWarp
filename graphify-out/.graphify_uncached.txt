@@ -1,0 +1,9 @@
+D:\Graph\web\AGENTS.md
+D:\Graph\web\CLAUDE.md
+D:\Graph\web\README.md
+D:\Graph\web\src\app\page.tsx
+D:\Graph\web\src\app\api\chat\route.ts
+D:\Graph\web\src\app\api\upload\route.ts
+D:\Graph\web\src\lib\inngest\functions.ts
+D:\Graph\web\src\lib\neo4j\neo4j.ts
+D:\Graph\web\src\lib\supabase\supabase.ts

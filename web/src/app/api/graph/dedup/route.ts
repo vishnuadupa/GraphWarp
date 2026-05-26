@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     try {
       // 1. Find all entities and their degrees
-      const entityRes = await session.executeRead((tx) =>
+      const entityRes = await session.executeRead((tx: any) =>
         tx.run(
           `MATCH (n:Entity {user_id: $uid})
            WITH n, COUNT { (n)-[:RELATION]-() } AS degree
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
       }
 
       // 3. For each group, transfer relationships from duplicates to canonical then delete
-      await session.executeWrite(async (tx) => {
+      await session.executeWrite(async (tx: any) => {
         for (const group of groups) {
           for (const dupName of group.duplicates) {
             // Transfer outgoing relationships from duplicate to canonical

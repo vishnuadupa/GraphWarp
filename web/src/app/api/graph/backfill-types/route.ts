@@ -22,7 +22,7 @@ export async function POST() {
 
     try {
       // Find nodes missing a specific type
-      const result = await session.executeRead((tx) =>
+      const result = await session.executeRead((tx: any) =>
         tx.run(
           `MATCH (n:Entity {user_id: $uid})
            WHERE n.type IS NULL OR n.type = 'Entity'
@@ -31,7 +31,7 @@ export async function POST() {
         )
       );
 
-      const names: string[] = result.records.map((r) => r.get('name'));
+      const names: string[] = result.records.map((r: any) => r.get('name'));
       if (names.length === 0) {
         return NextResponse.json({ updated: 0, message: 'All entities already have types.' });
       }
@@ -63,7 +63,7 @@ export async function POST() {
       const VALID_TYPES = new Set(['Person','Organization','Location','Event','Concept','Technology','Entity']);
 
       // Write types back to Neo4j
-      await session.executeWrite(async (tx) => {
+      await session.executeWrite(async (tx: any) => {
         for (const [name, rawType] of Object.entries(typeMap)) {
           const type = VALID_TYPES.has(rawType) ? rawType : 'Entity';
           if (type === 'Entity') continue; // no change

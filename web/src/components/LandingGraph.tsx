@@ -11,6 +11,7 @@ interface Node {
   baseY: number;
   radius: number;
   color: string;
+  isClose?: boolean;
 }
 
 export default function LandingGraph() {
@@ -121,8 +122,20 @@ export default function LandingGraph() {
 
       ctx.clearRect(0, 0, w, h);
 
-      // 1. Update positions
-      nodes.forEach((node) => {
+      const pullDist = 220;
+      const pullDistSq = pullDist * pullDist;
+      const connectionDistSq = connectionDist * connectionDist;
+      const closeDistSq = 70 * 70;
+      const mouse = mouseRef.current;
+      const mouseActive = mouse.active;
+      const mouseX = mouse.x;
+      const mouseY = mouse.y;
+
+      // 1. Update positions & pre-calculate mouse distances
+      // We store isClose on the node so we don't recalculate it in the drawing pass
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+
         // Natural drift
         node.x += node.vx;
         node.y += node.vy;
@@ -131,37 +144,45 @@ export default function LandingGraph() {
         if (node.x < 10 || node.x > w - 10) node.vx *= -1;
         if (node.y < 10 || node.y > h - 10) node.vy *= -1;
 
-        // Cursor pull interaction
-        const mouse = mouseRef.current;
-        if (mouse.active) {
-          const dx = mouse.x - node.x;
-          const dy = mouse.y - node.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const pullDist = 220;
+        // Reset state
+        node.isClose = false;
 
-          if (dist < pullDist) {
+        if (mouseActive) {
+          const dx = mouseX - node.x;
+          const dy = mouseY - node.y;
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < pullDistSq) {
+            const dist = Math.sqrt(distSq);
             const force = (pullDist - dist) / pullDist;
             node.x += (dx / dist) * force * 1.5;
             node.y += (dy / dist) * force * 1.5;
           }
+          if (distSq < closeDistSq) {
+            node.isClose = true;
+          }
         }
-      });
+      }
 
       // 2. Draw connections
       ctx.lineWidth = 0.8;
       for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const n1 = nodes[i];
-          const n2 = nodes[j];
-          const dx = n1.x - n2.x;
-          const dy = n1.y - n2.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+        const n1 = nodes[i];
+        const n1x = n1.x;
+        const n1y = n1.y;
 
-          if (dist < connectionDist) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const n2 = nodes[j];
+          const dx = n1x - n2.x;
+          const dy = n1y - n2.y;
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < connectionDistSq) {
+            const dist = Math.sqrt(distSq);
             const alpha = (1 - dist / connectionDist) * 0.16;
             ctx.strokeStyle = `rgba(0, 0, 0, ${alpha})`;
             ctx.beginPath();
-            ctx.moveTo(n1.x, n1.y);
+            ctx.moveTo(n1x, n1y);
             ctx.lineTo(n2.x, n2.y);
             ctx.stroke();
           }
@@ -169,12 +190,9 @@ export default function LandingGraph() {
       }
 
       // 3. Draw nodes
-      nodes.forEach((node) => {
-        const mouse = mouseRef.current;
-        const dx = mouse.x - node.x;
-        const dy = mouse.y - node.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        const isClose = dist < 70;
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i];
+        const isClose = node.isClose;
 
         ctx.beginPath();
         ctx.arc(node.x, node.y, isClose ? node.radius + 2 : node.radius, 0, Math.PI * 2);
@@ -187,7 +205,7 @@ export default function LandingGraph() {
           ctx.lineWidth = 1.2;
           ctx.stroke();
         }
-      });
+      }
 
       animationFrameId = requestAnimationFrame(render);
     };

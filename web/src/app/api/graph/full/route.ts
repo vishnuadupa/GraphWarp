@@ -35,7 +35,7 @@ export async function GET(req: Request) {
            RETURN n, r, m, nDegree, mDegree
            LIMIT 500`;
 
-      const result = await session.executeRead((tx) =>
+      const result = await session.executeRead((tx: any) =>
         tx.run(query, { userId: user.id, docFilter: docFilter ?? '' })
       );
 
@@ -43,7 +43,7 @@ export async function GET(req: Request) {
       const linkMap = new Map<string, boolean>();
       const links: any[] = [];
 
-      result.records.forEach((record) => {
+      result.records.forEach((record: any) => {
         const n       = record.get('n');
         const r       = record.get('r');
         const m       = record.get('m');

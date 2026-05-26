@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     let topEntities: string[] = [];
 
     try {
-      const result = await session.executeRead((tx) =>
+      const result = await session.executeRead((tx: any) =>
         tx.run(
           `MATCH (s:Entity {user_id: $uid})-[r:RELATION {source_file: $filename, user_id: $uid}]->(t:Entity {user_id: $uid})
            RETURN s.name AS src, r.type AS rel, t.name AS tgt, s.type AS srcType, t.type AS tgtType
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       );
 
       const entitySet = new Set<string>();
-      result.records.forEach((rec) => {
+      result.records.forEach((rec: any) => {
         const src = rec.get('src'); const rel = rec.get('rel'); const tgt = rec.get('tgt');
         entitySet.add(src); entitySet.add(tgt);
         pathStrings.push(`${src} --[${rel}]--> ${tgt}`);
@@ -46,14 +46,14 @@ export async function POST(req: NextRequest) {
       entityCount = entitySet.size;
 
       // Top entities by degree within this doc
-      const topRes = await session.executeRead((tx) =>
+      const topRes = await session.executeRead((tx: any) =>
         tx.run(
           `MATCH (n:Entity {user_id: $uid})-[r:RELATION {source_file: $filename, user_id: $uid}]-()
            RETURN n.name AS name, count(r) AS cnt ORDER BY cnt DESC LIMIT 5`,
           { uid: user.id, filename }
         )
       );
-      topEntities = topRes.records.map((r) => r.get('name'));
+      topEntities = topRes.records.map((r: any) => r.get('name'));
     } finally {
       await session.close();
     }

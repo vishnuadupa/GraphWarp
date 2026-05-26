@@ -56,7 +56,17 @@
       "Bash(git grep *)",
       "Bash(del .env.production)",
       "Bash(del .env.local)",
-      "Bash(npx vercel *)"
+      "Bash(npx vercel *)",
+      "WebSearch",
+      "mcp__8a971c25-1ea2-4f80-89ec-53e3724f100d__list_tables",
+      "mcp__8a971c25-1ea2-4f80-89ec-53e3724f100d__get_advisors",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); deps={**p.get\\('dependencies',{}\\), **p.get\\('devDependencies',{}\\)}; [print\\(k,v\\) for k in ['inngest','neo4j-driver','openai','next'] if k in deps and \\(v:=deps[k]\\)]\")",
+      "Read(//mnt/**)",
+      "Read(//d//**)",
+      "Bash(cmd.exe /c \"cd D:\\\\Graph\\\\web && npx tsc --noEmit --skipLibCheck 2>&1\")",
+      "Bash(cmd.exe /c \"cd /d D:\\\\Graph\\\\web && npx tsc --noEmit --skipLibCheck 2>&1\")",
+      "PowerShell(cd D:\\\\Graph\\\\web; npx tsc --noEmit --skipLibCheck 2>&1 | Where-Object { $_ -notmatch 'ForceGraph' })",
+      "Bash(npm view *)"
     ]
   }
 }

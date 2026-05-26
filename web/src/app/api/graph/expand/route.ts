@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     const session = driver.session();
     try {
-      const result = await session.executeRead(async (tx) =>
+      const result = await session.executeRead(async (tx: any) =>
         tx.run(
           `MATCH (n:Entity {name: $nodeId, user_id: $userId})-[r:RELATION]-(m:Entity {user_id: $userId})
            WITH n, r, m,
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       const linkMap = new Map<string, boolean>();
       const links: any[] = [];
 
-      result.records.forEach((record) => {
+      result.records.forEach((record: any) => {
         const n       = record.get('n');
         const r       = record.get('r');
         const m       = record.get('m');

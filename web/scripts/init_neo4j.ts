@@ -6,7 +6,7 @@ async function main() {
   const session = driver.session();
   try {
     console.log("Creating Neo4j constraints...");
-    await session.executeWrite(tx => 
+    await session.executeWrite((tx: any) => 
       tx.run(`CREATE CONSTRAINT entity_user_unique IF NOT EXISTS FOR (e:Entity) REQUIRE (e.name, e.user_id) IS NODE KEY;`)
     );
     console.log("Successfully created Neo4j constraints.");

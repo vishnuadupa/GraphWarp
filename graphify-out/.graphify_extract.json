@@ -1,0 +1,5927 @@
+{
+  "nodes": [
+    {
+      "id": "eslint_config_mjs",
+      "label": "eslint.config.mjs",
+      "file_type": "code",
+      "source_file": "eslint.config.mjs",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_eslint_config_eslintconfig",
+      "label": "eslintConfig",
+      "file_type": "code",
+      "source_file": "eslint.config.mjs",
+      "source_location": "L5"
+    },
+    {
+      "id": "next_config_ts",
+      "label": "next.config.ts",
+      "file_type": "code",
+      "source_file": "next.config.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_next_config_nextconfig",
+      "label": "nextConfig",
+      "file_type": "code",
+      "source_file": "next.config.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "package_json",
+      "label": "package.json",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_package_name",
+      "label": "name",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "web_package_version",
+      "label": "version",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_package_private",
+      "label": "private",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "web_package_scripts",
+      "label": "scripts",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "web_package_scripts_dev",
+      "label": "dev",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "web_package_scripts_build",
+      "label": "build",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "web_package_scripts_start",
+      "label": "start",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "web_package_scripts_lint",
+      "label": "lint",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "web_package_dependencies",
+      "label": "dependencies",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L11"
+    },
+    {
+      "id": "web_package_dependencies_google_generative_ai",
+      "label": "@google/generative-ai",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L12"
+    },
+    {
+      "id": "web_package_dependencies_supabase_ssr",
+      "label": "@supabase/ssr",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "web_package_dependencies_supabase_supabase_js",
+      "label": "@supabase/supabase-js",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L14"
+    },
+    {
+      "id": "web_package_dependencies_framer_motion",
+      "label": "framer-motion",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "web_package_dependencies_inngest",
+      "label": "inngest",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "web_package_dependencies_lucide_react",
+      "label": "lucide-react",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "web_package_dependencies_mammoth",
+      "label": "mammoth",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "web_package_dependencies_neo4j_driver",
+      "label": "neo4j-driver",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "web_package_dependencies_next",
+      "label": "next",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "web_package_dependencies_openai",
+      "label": "openai",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "web_package_dependencies_papaparse",
+      "label": "papaparse",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "web_package_dependencies_pdf_parse",
+      "label": "pdf-parse",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "web_package_dependencies_react",
+      "label": "react",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "web_package_dependencies_react_dom",
+      "label": "react-dom",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "web_package_dependencies_react_force_graph_2d",
+      "label": "react-force-graph-2d",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "web_package_dependencies_react_markdown",
+      "label": "react-markdown",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "web_package_dependencies_remark_gfm",
+      "label": "remark-gfm",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L28"
+    },
+    {
+      "id": "web_package_dependencies_xlsx",
+      "label": "xlsx",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L29"
+    },
+    {
+      "id": "web_package_devdependencies",
+      "label": "devDependencies",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "web_package_devdependencies_tailwindcss_postcss",
+      "label": "@tailwindcss/postcss",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "web_package_devdependencies_types_node",
+      "label": "@types/node",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "web_package_devdependencies_types_papaparse",
+      "label": "@types/papaparse",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "web_package_devdependencies_types_pdf_parse",
+      "label": "@types/pdf-parse",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "web_package_devdependencies_types_react",
+      "label": "@types/react",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L36"
+    },
+    {
+      "id": "web_package_devdependencies_types_react_dom",
+      "label": "@types/react-dom",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L37"
+    },
+    {
+      "id": "web_package_devdependencies_dotenv",
+      "label": "dotenv",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "web_package_devdependencies_eslint",
+      "label": "eslint",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L39"
+    },
+    {
+      "id": "web_package_devdependencies_eslint_config_next",
+      "label": "eslint-config-next",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L40"
+    },
+    {
+      "id": "web_package_devdependencies_tailwindcss",
+      "label": "tailwindcss",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L41"
+    },
+    {
+      "id": "web_package_devdependencies_ts_node",
+      "label": "ts-node",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L42"
+    },
+    {
+      "id": "web_package_devdependencies_typescript",
+      "label": "typescript",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L43"
+    },
+    {
+      "id": "postcss_config_mjs",
+      "label": "postcss.config.mjs",
+      "file_type": "code",
+      "source_file": "postcss.config.mjs",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_postcss_config_config",
+      "label": "config",
+      "file_type": "code",
+      "source_file": "postcss.config.mjs",
+      "source_location": "L1"
+    },
+    {
+      "id": "tsconfig_json",
+      "label": "tsconfig.json",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "web_tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_target",
+      "label": "target",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_lib",
+      "label": "lib",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_allowjs",
+      "label": "allowJs",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_skiplibcheck",
+      "label": "skipLibCheck",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_strict",
+      "label": "strict",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_noemit",
+      "label": "noEmit",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_esmoduleinterop",
+      "label": "esModuleInterop",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_module",
+      "label": "module",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_moduleresolution",
+      "label": "moduleResolution",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L11"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_resolvejsonmodule",
+      "label": "resolveJsonModule",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L12"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_isolatedmodules",
+      "label": "isolatedModules",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_jsx",
+      "label": "jsx",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L14"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_incremental",
+      "label": "incremental",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_plugins",
+      "label": "plugins",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "web_tsconfig_compileroptions_paths",
+      "label": "paths",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "web_tsconfig_paths",
+      "label": "@/*",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "web_tsconfig_include",
+      "label": "include",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "web_tsconfig_exclude",
+      "label": "exclude",
+      "file_type": "code",
+      "source_file": "tsconfig.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "scripts_init_neo4j_ts",
+      "label": "init_neo4j.ts",
+      "file_type": "code",
+      "source_file": "scripts\\init_neo4j.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "scripts_init_neo4j_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts\\init_neo4j.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_middleware_ts",
+      "label": "middleware.ts",
+      "file_type": "code",
+      "source_file": "src\\middleware.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "src_middleware_middleware",
+      "label": "middleware()",
+      "file_type": "code",
+      "source_file": "src\\middleware.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_middleware_config",
+      "label": "config",
+      "file_type": "code",
+      "source_file": "src\\middleware.ts",
+      "source_location": "L61"
+    },
+    {
+      "id": "src_app_layout_tsx",
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_layout_geistsans",
+      "label": "geistSans",
+      "file_type": "code",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "app_layout_geistmono",
+      "label": "geistMono",
+      "file_type": "code",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L11"
+    },
+    {
+      "id": "app_layout_jetbrainsmono",
+      "label": "jetbrainsMono",
+      "file_type": "code",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "app_layout_metadata",
+      "label": "metadata",
+      "file_type": "code",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L22"
+    },
+    {
+      "id": "app_layout_rootlayout",
+      "label": "RootLayout()",
+      "file_type": "code",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L34"
+    },
+    {
+      "id": "src_app_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "app_page_home",
+      "label": "Home()",
+      "file_type": "code",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "app_page_featurecard",
+      "label": "FeatureCard()",
+      "file_type": "code",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L119"
+    },
+    {
+      "id": "src_app_auth_forgot_password_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "forgot_password_page_forgotpasswordpage",
+      "label": "ForgotPasswordPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_app_auth_login_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "login_page_loginpage",
+      "label": "LoginPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_app_auth_reset_password_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "reset_password_page_resetpasswordpage",
+      "label": "ResetPasswordPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_app_auth_signup_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "signup_page_signuppage",
+      "label": "SignupPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_app_dashboard_layout_tsx",
+      "label": "layout.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "dashboard_layout_dashboardlayout",
+      "label": "DashboardLayout()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_app_dashboard_chat_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "chat_page_message",
+      "label": "Message",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L24"
+    },
+    {
+      "id": "chat_page_conversation",
+      "label": "Conversation",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L30"
+    },
+    {
+      "id": "chat_page_graphstats",
+      "label": "GraphStats",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L36"
+    },
+    {
+      "id": "chat_page_nodedetail",
+      "label": "NodeDetail",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L45"
+    },
+    {
+      "id": "chat_page_empty_graph",
+      "label": "EMPTY_GRAPH",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L51"
+    },
+    {
+      "id": "chat_page_type_dot_color",
+      "label": "TYPE_DOT_COLOR()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L53"
+    },
+    {
+      "id": "chat_page_starterquestions",
+      "label": "starterQuestions()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L56"
+    },
+    {
+      "id": "chat_page_fmtdate",
+      "label": "fmtDate()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L67"
+    },
+    {
+      "id": "chat_page_chatpage",
+      "label": "ChatPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L77"
+    },
+    {
+      "id": "src_app_dashboard_documents_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "documents_page_doc",
+      "label": "Doc",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "documents_page_processing_steps",
+      "label": "PROCESSING_STEPS",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L24"
+    },
+    {
+      "id": "documents_page_statusbadge",
+      "label": "StatusBadge()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L31"
+    },
+    {
+      "id": "documents_page_documentspage",
+      "label": "DocumentsPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L93"
+    },
+    {
+      "id": "src_app_dashboard_upload_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "upload_page_processing_steps",
+      "label": "PROCESSING_STEPS",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L15"
+    },
+    {
+      "id": "upload_page_uploadphase",
+      "label": "UploadPhase",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L21"
+    },
+    {
+      "id": "upload_page_uploaditem",
+      "label": "UploadItem",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L30"
+    },
+    {
+      "id": "upload_page_processingstepper",
+      "label": "ProcessingStepper()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L40"
+    },
+    {
+      "id": "upload_page_uploaditemrow",
+      "label": "UploadItemRow()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L70"
+    },
+    {
+      "id": "upload_page_uploadpage",
+      "label": "UploadPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L111"
+    },
+    {
+      "id": "src_app_api_chat_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "chat_route_getopenrouter",
+      "label": "getOpenRouter()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "chat_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L19"
+    },
+    {
+      "id": "src_app_api_conversations_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "conversations_route_get",
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\route.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "conversations_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\route.ts",
+      "source_location": "L24"
+    },
+    {
+      "id": "src_app_api_conversations_id_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "id_route_get",
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "id_route_patch",
+      "label": "PATCH()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L41"
+    },
+    {
+      "id": "id_route_delete",
+      "label": "DELETE()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L62"
+    },
+    {
+      "id": "src_app_api_conversations_id_messages_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\[id]\\messages\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "messages_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\conversations\\[id]\\messages\\route.ts",
+      "source_location": "L11"
+    },
+    {
+      "id": "src_app_api_documents_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "documents_route_get",
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "documents_route_delete",
+      "label": "DELETE()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L30"
+    },
+    {
+      "id": "src_app_api_documents_reprocess_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "reprocess_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_app_api_documents_summary_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "summary_route_genai",
+      "label": "genAI",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "summary_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_app_api_graph_backfill_types_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "backfill_types_route_genai",
+      "label": "genAI",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "backfill_types_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L14"
+    },
+    {
+      "id": "src_app_api_graph_dedup_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\dedup\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "dedup_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\dedup\\route.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "src_app_api_graph_expand_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\expand\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "expand_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\expand\\route.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_app_api_graph_full_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\full\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "full_route_get",
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\full\\route.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_app_api_graph_node_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\node\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "node_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\node\\route.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "src_app_api_graph_path_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\path\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "path_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\path\\route.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "src_app_api_graph_search_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\search\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "search_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\search\\route.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "src_app_api_graph_stats_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\stats\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "stats_route_get",
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\graph\\stats\\route.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "src_app_api_inngest_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\inngest\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "inngest_route_get_post_put",
+      "label": "{ GET, POST, PUT }",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\inngest\\route.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "src_app_api_upload_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "upload_route_post",
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "src_app_auth_callback_route_ts",
+      "label": "route.ts",
+      "file_type": "code",
+      "source_file": "src\\app\\auth\\callback\\route.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "callback_route_get",
+      "label": "GET()",
+      "file_type": "code",
+      "source_file": "src\\app\\auth\\callback\\route.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_app_privacy_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\privacy\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "privacy_page_privacypage",
+      "label": "PrivacyPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\privacy\\page.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_app_terms_page_tsx",
+      "label": "page.tsx",
+      "file_type": "code",
+      "source_file": "src\\app\\terms\\page.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "terms_page_termspage",
+      "label": "TermsPage()",
+      "file_type": "code",
+      "source_file": "src\\app\\terms\\page.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_components_forcegraph_tsx",
+      "label": "ForceGraph.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_forcegraph_thinkingphase",
+      "label": "ThinkingPhase",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "components_forcegraph_graphlayout",
+      "label": "GraphLayout",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L7"
+    },
+    {
+      "id": "components_forcegraph_graphnode",
+      "label": "GraphNode",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L9"
+    },
+    {
+      "id": "components_forcegraph_graphlink",
+      "label": "GraphLink",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L18"
+    },
+    {
+      "id": "components_forcegraph_graphdata",
+      "label": "GraphData",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L25"
+    },
+    {
+      "id": "components_forcegraph_forcegraph2d",
+      "label": "ForceGraph2D",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L30"
+    },
+    {
+      "id": "components_forcegraph_type_colors",
+      "label": "TYPE_COLORS",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L32"
+    },
+    {
+      "id": "components_forcegraph_all_types",
+      "label": "ALL_TYPES",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L41"
+    },
+    {
+      "id": "components_forcegraph_noderadius",
+      "label": "nodeRadius()",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L44"
+    },
+    {
+      "id": "components_forcegraph_props",
+      "label": "Props",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L48"
+    },
+    {
+      "id": "components_forcegraph_forcegraph",
+      "label": "ForceGraph()",
+      "file_type": "code",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L62"
+    },
+    {
+      "id": "src_components_globaldropzone_tsx",
+      "label": "GlobalDropzone.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\GlobalDropzone.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_globaldropzone_globaldropzone",
+      "label": "GlobalDropzone()",
+      "file_type": "code",
+      "source_file": "src\\components\\GlobalDropzone.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_components_landinggraph_tsx",
+      "label": "LandingGraph.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\LandingGraph.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_landinggraph_node",
+      "label": "Node",
+      "file_type": "code",
+      "source_file": "src\\components\\LandingGraph.tsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "components_landinggraph_landinggraph",
+      "label": "LandingGraph()",
+      "file_type": "code",
+      "source_file": "src\\components\\LandingGraph.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "src_components_uploaddropzone_tsx",
+      "label": "UploadDropzone.tsx",
+      "file_type": "code",
+      "source_file": "src\\components\\UploadDropzone.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_uploaddropzone_uploaddropzoneprops",
+      "label": "UploadDropzoneProps",
+      "file_type": "code",
+      "source_file": "src\\components\\UploadDropzone.tsx",
+      "source_location": "L5"
+    },
+    {
+      "id": "components_uploaddropzone_accepted_types",
+      "label": "ACCEPTED_TYPES",
+      "file_type": "code",
+      "source_file": "src\\components\\UploadDropzone.tsx",
+      "source_location": "L10"
+    },
+    {
+      "id": "components_uploaddropzone_uploaddropzone",
+      "label": "UploadDropzone()",
+      "file_type": "code",
+      "source_file": "src\\components\\UploadDropzone.tsx",
+      "source_location": "L13"
+    },
+    {
+      "id": "src_lib_config_models_ts",
+      "label": "models.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\config\\models.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "config_models_models",
+      "label": "MODELS",
+      "file_type": "code",
+      "source_file": "src\\lib\\config\\models.ts",
+      "source_location": "L5"
+    },
+    {
+      "id": "src_lib_embeddings_index_ts",
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "embeddings_index_dimensions",
+      "label": "DIMENSIONS",
+      "file_type": "code",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L19"
+    },
+    {
+      "id": "embeddings_index_embeddingsenabled",
+      "label": "embeddingsEnabled",
+      "file_type": "code",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L21"
+    },
+    {
+      "id": "embeddings_index_getclient",
+      "label": "getClient()",
+      "file_type": "code",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L23"
+    },
+    {
+      "id": "embeddings_index_embedtext",
+      "label": "embedText()",
+      "file_type": "code",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L32"
+    },
+    {
+      "id": "embeddings_index_embedbatch",
+      "label": "embedBatch()",
+      "file_type": "code",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L48"
+    },
+    {
+      "id": "src_lib_inngest_client_ts",
+      "label": "client.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\client.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "inngest_client_inngest",
+      "label": "inngest",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\client.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_lib_inngest_functions_ts",
+      "label": "functions.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "inngest_functions_normaliseentityname",
+      "label": "normaliseEntityName()",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L21"
+    },
+    {
+      "id": "inngest_functions_getopenrouter",
+      "label": "getOpenRouter()",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L33"
+    },
+    {
+      "id": "inngest_functions_rel_column_map",
+      "label": "REL_COLUMN_MAP",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L42"
+    },
+    {
+      "id": "inngest_functions_name_synonyms",
+      "label": "NAME_SYNONYMS",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L72"
+    },
+    {
+      "id": "inngest_functions_graphtriple",
+      "label": "GraphTriple",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L74"
+    },
+    {
+      "id": "inngest_functions_parsecsvtograph",
+      "label": "parseCsvToGraph()",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L87"
+    },
+    {
+      "id": "inngest_functions_parsejsontograph",
+      "label": "parseJsonToGraph()",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L133"
+    },
+    {
+      "id": "inngest_functions_parsexlsxtograph",
+      "label": "parseXlsxToGraph()",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L188"
+    },
+    {
+      "id": "inngest_functions_valid_entity_types",
+      "label": "VALID_ENTITY_TYPES",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L202"
+    },
+    {
+      "id": "inngest_functions_processdocument",
+      "label": "processDocument",
+      "file_type": "code",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L265"
+    },
+    {
+      "id": "src_lib_neo4j_neo4j_ts",
+      "label": "neo4j.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\neo4j\\neo4j.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "neo4j_neo4j_driver",
+      "label": "driver",
+      "file_type": "code",
+      "source_file": "src\\lib\\neo4j\\neo4j.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "neo4j_neo4j_initschema",
+      "label": "initSchema()",
+      "file_type": "code",
+      "source_file": "src\\lib\\neo4j\\neo4j.ts",
+      "source_location": "L37"
+    },
+    {
+      "id": "src_lib_supabase_browser_client_ts",
+      "label": "browser-client.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\supabase\\browser-client.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "supabase_browser_client_createclient",
+      "label": "createClient()",
+      "file_type": "code",
+      "source_file": "src\\lib\\supabase\\browser-client.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "src_lib_supabase_server_ts",
+      "label": "server.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\supabase\\server.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "supabase_server_createclient",
+      "label": "createClient()",
+      "file_type": "code",
+      "source_file": "src\\lib\\supabase\\server.ts",
+      "source_location": "L4"
+    },
+    {
+      "id": "src_lib_supabase_service_ts",
+      "label": "service.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\supabase\\service.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "supabase_service_supabaseadmin",
+      "label": "supabaseAdmin",
+      "file_type": "code",
+      "source_file": "src\\lib\\supabase\\service.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "src_lib_supabase_supabase_ts",
+      "label": "supabase.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\supabase\\supabase.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "supabase_supabase_supabase",
+      "label": "supabase",
+      "file_type": "code",
+      "source_file": "src\\lib\\supabase\\supabase.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "src_lib_utils_retry_ts",
+      "label": "retry.ts",
+      "file_type": "code",
+      "source_file": "src\\lib\\utils\\retry.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "utils_retry_withretry",
+      "label": "withRetry()",
+      "file_type": "code",
+      "source_file": "src\\lib\\utils\\retry.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "agents_nextjs_agent_rules",
+      "label": "Next.js Agent Rules",
+      "file_type": "document",
+      "source_file": "web/AGENTS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_setup",
+      "label": "Claude Setup Configuration",
+      "file_type": "document",
+      "source_file": "web/CLAUDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_graphwarp_readme",
+      "label": "GraphWarp Project README",
+      "file_type": "document",
+      "source_file": "web/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "page_home_component",
+      "label": "Home Component",
+      "file_type": "code",
+      "source_file": "web/src/app/page.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "page_feature_card",
+      "label": "FeatureCard Component",
+      "file_type": "code",
+      "source_file": "web/src/app/page.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "page_graphwarp_concept",
+      "label": "GraphWarp Premium Knowledge Engine Concept",
+      "file_type": "rationale",
+      "source_file": "web/src/app/page.tsx",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "route_chat_post",
+      "label": "Chat API POST Handler",
+      "file_type": "code",
+      "source_file": "web/src/app/api/chat/route.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "route_rag_pipeline",
+      "label": "3-Phase RAG Ingestion & Traversal Pipeline",
+      "file_type": "rationale",
+      "source_file": "web/src/app/api/chat/route.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "route_upload_post",
+      "label": "Upload API POST Handler",
+      "file_type": "code",
+      "source_file": "web/src/app/api/upload/route.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "functions_process_document",
+      "label": "processDocument Inngest Handler",
+      "file_type": "code",
+      "source_file": "web/src/lib/inngest/functions.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "functions_deterministic_parser",
+      "label": "Deterministic CSV/Excel Parser",
+      "file_type": "code",
+      "source_file": "web/src/lib/inngest/functions.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "functions_normalise_entity_name",
+      "label": "Entity Normalization",
+      "file_type": "code",
+      "source_file": "web/src/lib/inngest/functions.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "neo4j_driver_config",
+      "label": "Neo4j Driver Setup",
+      "file_type": "code",
+      "source_file": "web/src/lib/neo4j/neo4j.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "neo4j_init_schema",
+      "label": "initSchema Function",
+      "file_type": "code",
+      "source_file": "web/src/lib/neo4j/neo4j.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "supabase_client",
+      "label": "Supabase Client Creator",
+      "file_type": "code",
+      "source_file": "web/src/lib/supabase/supabase.ts",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "eslint_config_mjs",
+      "target": "config",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.mjs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "eslint_config_mjs",
+      "target": "core_web_vitals",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.mjs",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "eslint_config_mjs",
+      "target": "typescript",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.mjs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "eslint_config_mjs",
+      "target": "web_eslint_config_eslintconfig",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "eslint.config.mjs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "next_config_ts",
+      "target": "next",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "next.config.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "next_config_ts",
+      "target": "web_next_config_nextconfig",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "next.config.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "package_json",
+      "target": "web_package_name",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "package_json",
+      "target": "web_package_version",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "package_json",
+      "target": "web_package_private",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "package_json",
+      "target": "web_package_scripts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_scripts",
+      "target": "web_package_scripts_dev",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_scripts",
+      "target": "web_package_scripts_build",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_scripts",
+      "target": "web_package_scripts_start",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_scripts",
+      "target": "web_package_scripts_lint",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "package_json",
+      "target": "web_package_dependencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_google_generative_ai",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_google_generative_ai",
+      "target": "google_generative_ai",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L12",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_supabase_ssr",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_supabase_ssr",
+      "target": "supabase_ssr",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_supabase_supabase_js",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_supabase_supabase_js",
+      "target": "supabase_supabase_js",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L14",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_framer_motion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_framer_motion",
+      "target": "framer_motion",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L15",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_inngest",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_inngest",
+      "target": "inngest",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L16",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_lucide_react",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_lucide_react",
+      "target": "lucide_react",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_mammoth",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_mammoth",
+      "target": "mammoth",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L18",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_neo4j_driver",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_neo4j_driver",
+      "target": "neo4j_driver",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L19",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_next",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_next",
+      "target": "next",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L20",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_openai",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_openai",
+      "target": "openai",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_papaparse",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_papaparse",
+      "target": "papaparse",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L22",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_pdf_parse",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_pdf_parse",
+      "target": "pdf_parse",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L23",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_react",
+      "target": "react",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L24",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react_dom",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_react_dom",
+      "target": "react_dom",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react_force_graph_2d",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_react_force_graph_2d",
+      "target": "react_force_graph_2d",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L26",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_react_markdown",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_react_markdown",
+      "target": "react_markdown",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L27",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_remark_gfm",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_remark_gfm",
+      "target": "remark_gfm",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L28",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_dependencies",
+      "target": "web_package_dependencies_xlsx",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_dependencies_xlsx",
+      "target": "xlsx",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L29",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "package_json",
+      "target": "web_package_devdependencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_tailwindcss_postcss",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_tailwindcss_postcss",
+      "target": "tailwindcss_postcss",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L32",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_types_node",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_types_node",
+      "target": "types_node",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L33",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_types_papaparse",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_types_papaparse",
+      "target": "types_papaparse",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L34",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_types_pdf_parse",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_types_pdf_parse",
+      "target": "types_pdf_parse",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_types_react",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_types_react",
+      "target": "types_react",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L36",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_types_react_dom",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_types_react_dom",
+      "target": "types_react_dom",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L37",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_dotenv",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_dotenv",
+      "target": "dotenv",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L38",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_eslint",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_eslint",
+      "target": "eslint",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L39",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_eslint_config_next",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_eslint_config_next",
+      "target": "eslint_config_next",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L40",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_tailwindcss",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_tailwindcss",
+      "target": "tailwindcss",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L41",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_ts_node",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_ts_node",
+      "target": "ts_node",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L42",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_package_devdependencies",
+      "target": "web_package_devdependencies_typescript",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "web_package_devdependencies_typescript",
+      "target": "typescript",
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L43",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "postcss_config_mjs",
+      "target": "web_postcss_config_config",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "postcss.config.mjs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "tsconfig_json",
+      "target": "web_tsconfig_compileroptions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_target",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_lib",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions_lib",
+      "target": "ref_dom",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_tsconfig_compileroptions_lib",
+      "target": "ref_dom_iterable",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_tsconfig_compileroptions_lib",
+      "target": "ref_esnext",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_allowjs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_skiplibcheck",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_strict",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_noemit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_esmoduleinterop",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_module",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_moduleresolution",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_resolvejsonmodule",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_isolatedmodules",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_jsx",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_incremental",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_plugins",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions",
+      "target": "web_tsconfig_compileroptions_paths",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_compileroptions_paths",
+      "target": "web_tsconfig_paths",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_paths",
+      "target": "ref_src",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L22",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "tsconfig_json",
+      "target": "web_tsconfig_include",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_include",
+      "target": "ref_next_env_d_ts",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_tsconfig_include",
+      "target": "ref_ts",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_tsconfig_include",
+      "target": "ref_tsx",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_tsconfig_include",
+      "target": "ref_next_types_ts",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_tsconfig_include",
+      "target": "ref_next_dev_types_ts",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "web_tsconfig_include",
+      "target": "ref_mts",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "tsconfig_json",
+      "target": "web_tsconfig_exclude",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "web_tsconfig_exclude",
+      "target": "ref_node_modules",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "tsconfig.json",
+      "source_location": "L33",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "scripts_init_neo4j_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts\\init_neo4j.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_init_neo4j_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts\\init_neo4j.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_init_neo4j_ts",
+      "target": "dotenv",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts\\init_neo4j.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "scripts_init_neo4j_ts",
+      "target": "scripts_init_neo4j_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts\\init_neo4j.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_middleware_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\middleware.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_middleware_ts",
+      "target": "ssr",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\middleware.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_middleware_ts",
+      "target": "src_middleware_middleware",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\middleware.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_middleware_ts",
+      "target": "src_middleware_config",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\middleware.ts",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "next",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "google",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "d_graph_web_src_app_globals_css",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "src_components_globaldropzone_tsx",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "components_globaldropzone_globaldropzone",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "app_layout_geistsans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "app_layout_geistmono",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "app_layout_jetbrainsmono",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "app_layout_metadata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_layout_tsx",
+      "target": "app_layout_rootlayout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\layout.tsx",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_tsx",
+      "target": "src_components_landinggraph_tsx",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_tsx",
+      "target": "app_page_home",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_page_tsx",
+      "target": "app_page_featurecard",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\page.tsx",
+      "source_location": "L119",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_forgot_password_page_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_forgot_password_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_forgot_password_page_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_forgot_password_page_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_forgot_password_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_forgot_password_page_tsx",
+      "target": "forgot_password_page_forgotpasswordpage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_login_page_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_login_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_login_page_tsx",
+      "target": "navigation",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_login_page_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_login_page_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_login_page_tsx",
+      "target": "login_page_loginpage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\login\\page.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_reset_password_page_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_reset_password_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_reset_password_page_tsx",
+      "target": "navigation",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_reset_password_page_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_reset_password_page_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_reset_password_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_reset_password_page_tsx",
+      "target": "reset_password_page_resetpasswordpage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\reset-password\\page.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_signup_page_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_signup_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_signup_page_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_signup_page_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_signup_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_signup_page_tsx",
+      "target": "signup_page_signuppage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_layout_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_layout_tsx",
+      "target": "navigation",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_layout_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_layout_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_layout_tsx",
+      "target": "dashboard_layout_dashboardlayout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "navigation",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "src_components_forcegraph_tsx",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "components_forcegraph_forcegraph",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "components_forcegraph_graphdata",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "components_forcegraph_graphnode",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "components_forcegraph_graphlayout",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "components_forcegraph_thinkingphase",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "components_forcegraph_type_colors",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "components_forcegraph_all_types",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "react_markdown",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "remark_gfm",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_message",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_conversation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_graphstats",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_nodedetail",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_empty_graph",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_type_dot_color",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_starterquestions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_fmtdate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_chat_page_tsx",
+      "target": "chat_page_chatpage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "chat_page_chatpage",
+      "target": "chat_page_starterquestions",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L626",
+      "weight": 1.0
+    },
+    {
+      "source": "chat_page_chatpage",
+      "target": "chat_page_type_dot_color",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\chat\\page.tsx",
+      "source_location": "L1148",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "navigation",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "documents_page_doc",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "documents_page_processing_steps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "documents_page_statusbadge",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_documents_page_tsx",
+      "target": "documents_page_documentspage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\documents\\page.tsx",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "navigation",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "src_components_uploaddropzone_tsx",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "framer_motion",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "upload_page_processing_steps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "upload_page_uploadphase",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "upload_page_uploaditem",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "upload_page_processingstepper",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "upload_page_uploaditemrow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_dashboard_upload_page_tsx",
+      "target": "upload_page_uploadpage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\upload\\page.tsx",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "openai",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "src_lib_utils_retry_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "utils_retry_withretry",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "src_lib_config_models_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "config_models_models",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "src_lib_embeddings_index_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "embeddings_index_embedtext",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "embeddings_index_embeddingsenabled",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "chat_route_getopenrouter",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_chat_route_ts",
+      "target": "chat_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\chat\\route.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_route_ts",
+      "target": "conversations_route_get",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_route_ts",
+      "target": "conversations_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\route.ts",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_route_ts",
+      "target": "id_route_get",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_route_ts",
+      "target": "id_route_patch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_route_ts",
+      "target": "id_route_delete",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\route.ts",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_messages_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\messages\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_messages_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\messages\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_messages_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\messages\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_conversations_id_messages_route_ts",
+      "target": "messages_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\conversations\\[id]\\messages\\route.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "src_lib_supabase_service_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "supabase_service_supabaseadmin",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "documents_route_get",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_route_ts",
+      "target": "documents_route_delete",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\route.ts",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_reprocess_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_reprocess_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_reprocess_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_reprocess_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_reprocess_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_reprocess_route_ts",
+      "target": "src_lib_inngest_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_reprocess_route_ts",
+      "target": "inngest_client_inngest",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_reprocess_route_ts",
+      "target": "reprocess_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\reprocess\\route.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_summary_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_summary_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_summary_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_summary_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_summary_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_summary_route_ts",
+      "target": "generative_ai",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_summary_route_ts",
+      "target": "summary_route_genai",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_documents_summary_route_ts",
+      "target": "summary_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\documents\\summary\\route.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_backfill_types_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_backfill_types_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_backfill_types_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_backfill_types_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_backfill_types_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_backfill_types_route_ts",
+      "target": "generative_ai",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_backfill_types_route_ts",
+      "target": "backfill_types_route_genai",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_backfill_types_route_ts",
+      "target": "backfill_types_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\backfill-types\\route.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_dedup_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\dedup\\route.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_dedup_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\dedup\\route.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_dedup_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\dedup\\route.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_dedup_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\dedup\\route.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_dedup_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\dedup\\route.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_dedup_route_ts",
+      "target": "dedup_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\dedup\\route.ts",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_expand_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\expand\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_expand_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\expand\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_expand_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\expand\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_expand_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\expand\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_expand_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\expand\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_expand_route_ts",
+      "target": "expand_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\expand\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_full_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\full\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_full_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\full\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_full_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\full\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_full_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\full\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_full_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\full\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_full_route_ts",
+      "target": "full_route_get",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\full\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_node_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\node\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_node_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\node\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_node_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\node\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_node_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\node\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_node_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\node\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_node_route_ts",
+      "target": "node_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\node\\route.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_path_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\path\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_path_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\path\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_path_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\path\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_path_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\path\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_path_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\path\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_path_route_ts",
+      "target": "path_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\path\\route.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_search_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\search\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_search_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\search\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_search_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\search\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_search_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\search\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_search_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\search\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_search_route_ts",
+      "target": "search_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\search\\route.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_stats_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\stats\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_stats_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\stats\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_stats_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\stats\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_stats_route_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\stats\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_stats_route_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\stats\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_graph_stats_route_ts",
+      "target": "stats_route_get",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\graph\\stats\\route.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_inngest_route_ts",
+      "target": "next",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\inngest\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_inngest_route_ts",
+      "target": "src_lib_inngest_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\inngest\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_inngest_route_ts",
+      "target": "inngest_client_inngest",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\inngest\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_inngest_route_ts",
+      "target": "src_lib_inngest_functions_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\inngest\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_inngest_route_ts",
+      "target": "inngest_functions_processdocument",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\inngest\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_inngest_route_ts",
+      "target": "inngest_route_get_post_put",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\inngest\\route.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_upload_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_upload_route_ts",
+      "target": "src_lib_supabase_server_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_upload_route_ts",
+      "target": "supabase_server_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_upload_route_ts",
+      "target": "src_lib_supabase_service_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_upload_route_ts",
+      "target": "supabase_service_supabaseadmin",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_upload_route_ts",
+      "target": "src_lib_inngest_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_upload_route_ts",
+      "target": "inngest_client_inngest",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_api_upload_route_ts",
+      "target": "upload_route_post",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\api\\upload\\route.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_callback_route_ts",
+      "target": "server",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\auth\\callback\\route.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_callback_route_ts",
+      "target": "ssr",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\auth\\callback\\route.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_callback_route_ts",
+      "target": "headers",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\auth\\callback\\route.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_auth_callback_route_ts",
+      "target": "callback_route_get",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\auth\\callback\\route.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_privacy_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\privacy\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_privacy_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\privacy\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_privacy_page_tsx",
+      "target": "privacy_page_privacypage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\privacy\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_terms_page_tsx",
+      "target": "link",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\terms\\page.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_terms_page_tsx",
+      "target": "lucide_react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\terms\\page.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_app_terms_page_tsx",
+      "target": "terms_page_termspage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\terms\\page.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "dynamic",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_thinkingphase",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_graphlayout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_graphnode",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_graphlink",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_graphdata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_forcegraph2d",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_type_colors",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_all_types",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_noderadius",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_props",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_forcegraph_tsx",
+      "target": "components_forcegraph_forcegraph",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\ForceGraph.tsx",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_globaldropzone_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\GlobalDropzone.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_globaldropzone_tsx",
+      "target": "src_lib_supabase_browser_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\GlobalDropzone.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_globaldropzone_tsx",
+      "target": "supabase_browser_client_createclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\GlobalDropzone.tsx",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_globaldropzone_tsx",
+      "target": "components_globaldropzone_globaldropzone",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\GlobalDropzone.tsx",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landinggraph_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\LandingGraph.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landinggraph_tsx",
+      "target": "components_landinggraph_node",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\LandingGraph.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_landinggraph_tsx",
+      "target": "components_landinggraph_landinggraph",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\LandingGraph.tsx",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_uploaddropzone_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\UploadDropzone.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_uploaddropzone_tsx",
+      "target": "components_uploaddropzone_uploaddropzoneprops",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\UploadDropzone.tsx",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_uploaddropzone_tsx",
+      "target": "components_uploaddropzone_accepted_types",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\UploadDropzone.tsx",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "src_components_uploaddropzone_tsx",
+      "target": "components_uploaddropzone_uploaddropzone",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\UploadDropzone.tsx",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_config_models_ts",
+      "target": "config_models_models",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\config\\models.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_embeddings_index_ts",
+      "target": "openai",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_embeddings_index_ts",
+      "target": "embeddings_index_dimensions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_embeddings_index_ts",
+      "target": "embeddings_index_embeddingsenabled",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_embeddings_index_ts",
+      "target": "embeddings_index_getclient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_embeddings_index_ts",
+      "target": "embeddings_index_embedtext",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_embeddings_index_ts",
+      "target": "embeddings_index_embedbatch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "embeddings_index_embedtext",
+      "target": "embeddings_index_getclient",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "embeddings_index_embedbatch",
+      "target": "embeddings_index_getclient",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\embeddings\\index.ts",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_client_ts",
+      "target": "inngest",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\client.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_client_ts",
+      "target": "inngest_client_inngest",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\client.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "src_lib_inngest_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_client_inngest",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "src_lib_supabase_service_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "supabase_service_supabaseadmin",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "openai",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "src_lib_neo4j_neo4j_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "src_lib_utils_retry_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "utils_retry_withretry",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "src_lib_config_models_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "config_models_models",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "src_lib_embeddings_index_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "embeddings_index_embedbatch",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "embeddings_index_embeddingsenabled",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "embeddings_index_dimensions",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "mammoth",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "papaparse",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "xlsx",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_normaliseentityname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_getopenrouter",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_rel_column_map",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_name_synonyms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_graphtriple",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_parsecsvtograph",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_parsejsontograph",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_parsexlsxtograph",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L188",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_valid_entity_types",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_inngest_functions_ts",
+      "target": "inngest_functions_processdocument",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "inngest_functions_parsexlsxtograph",
+      "target": "inngest_functions_parsecsvtograph",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\inngest\\functions.ts",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_neo4j_neo4j_ts",
+      "target": "neo4j_driver",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\neo4j\\neo4j.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_neo4j_neo4j_ts",
+      "target": "neo4j_neo4j_driver",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\neo4j\\neo4j.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_neo4j_neo4j_ts",
+      "target": "neo4j_neo4j_initschema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\neo4j\\neo4j.ts",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_browser_client_ts",
+      "target": "ssr",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\browser-client.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_browser_client_ts",
+      "target": "supabase_browser_client_createclient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\browser-client.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_server_ts",
+      "target": "ssr",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\server.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_server_ts",
+      "target": "headers",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\server.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_server_ts",
+      "target": "supabase_server_createclient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\server.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_service_ts",
+      "target": "supabase_js",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\service.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_service_ts",
+      "target": "supabase_service_supabaseadmin",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\service.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_supabase_ts",
+      "target": "supabase_js",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\supabase.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_supabase_supabase_ts",
+      "target": "supabase_supabase_supabase",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\supabase\\supabase.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "src_lib_utils_retry_ts",
+      "target": "utils_retry_withretry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\lib\\utils\\retry.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "forgot_password_page_handlesubmit",
+      "target": "supabase_browser_client_createclient",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\forgot-password\\page.tsx",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "signup_page_handlesubmit",
+      "target": "supabase_browser_client_createclient",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(auth)\\signup\\page.tsx",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "dashboard_layout_handlelogout",
+      "target": "supabase_browser_client_createclient",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\app\\(dashboard)\\layout.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "components_globaldropzone_handlefiles",
+      "target": "supabase_browser_client_createclient",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src\\components\\GlobalDropzone.tsx",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_setup",
+      "target": "agents_nextjs_agent_rules",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/CLAUDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "page_home_component",
+      "target": "page_feature_card",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/page.tsx",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "page_home_component",
+      "target": "page_graphwarp_concept",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/page.tsx",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "route_chat_post",
+      "target": "route_rag_pipeline",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/api/chat/route.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "route_chat_post",
+      "target": "neo4j_driver_config",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/api/chat/route.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "route_chat_post",
+      "target": "supabase_client",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/api/chat/route.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "route_upload_post",
+      "target": "supabase_client",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/api/upload/route.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "route_upload_post",
+      "target": "functions_process_document",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/api/upload/route.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "functions_process_document",
+      "target": "functions_deterministic_parser",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/lib/inngest/functions.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "functions_process_document",
+      "target": "functions_normalise_entity_name",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/lib/inngest/functions.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "functions_process_document",
+      "target": "neo4j_driver_config",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/lib/inngest/functions.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "neo4j_init_schema",
+      "target": "neo4j_driver_config",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/lib/neo4j/neo4j.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "functions_process_document",
+      "target": "neo4j_init_schema",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "web/src/lib/inngest/functions.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "route_chat_post",
+      "target": "neo4j_init_schema",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "web/src/app/api/chat/route.ts",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "route_chat_post",
+      "target": "functions_process_document",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "web/src/app/api/chat/route.ts",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "graphwarp_architecture",
+      "label": "GraphWarp Architecture",
+      "nodes": [
+        "page_home_component",
+        "route_chat_post",
+        "route_upload_post",
+        "functions_process_document",
+        "neo4j_driver_config"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "web/src/app/page.tsx"
+    },
+    {
+      "id": "ingestion_flow",
+      "label": "Document Ingestion Flow",
+      "nodes": [
+        "route_upload_post",
+        "functions_process_document",
+        "functions_deterministic_parser"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/api/upload/route.ts"
+    },
+    {
+      "id": "query_resolution_flow",
+      "label": "Query Resolution Flow",
+      "nodes": [
+        "route_chat_post",
+        "route_rag_pipeline",
+        "neo4j_driver_config"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "web/src/app/api/chat/route.ts"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
