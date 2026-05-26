@@ -18,42 +18,13 @@ body {
 }
 
 body {
-  background:              var(--color-bg-base);
+  background:              var(--color-paper);
   color:                   var(--color-ink);
   font-family:             var(--font-body);
   font-size:               var(--text-base);
   line-height:             1.62;
   -webkit-font-smoothing:  antialiased;
   -moz-osx-font-smoothing: grayscale;
-  position:                relative;
-  min-height:              100vh;
-}
-
-/* iOS 26 Luminous Glass Backdrops */
-body::before {
-  content: "";
-  position: fixed;
-  top: -10%;
-  left: -10%;
-  width: 60vw;
-  height: 60vw;
-  background: radial-gradient(circle, rgba(79, 70, 229, 0.18) 0%, rgba(79, 70, 229, 0) 70%);
-  filter: blur(100px);
-  z-index: -2;
-  pointer-events: none;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  bottom: -10%;
-  right: -10%;
-  width: 65vw;
-  height: 65vw;
-  background: radial-gradient(circle, rgba(8, 145, 178, 0.15) 0%, rgba(8, 145, 178, 0) 70%);
-  filter: blur(120px);
-  z-index: -2;
-  pointer-events: none;
 }
 
 :focus-visible {
@@ -935,168 +906,10 @@ body::after {
 .graph-label {
   font-family:  var(--font-mono);
   font-size:    var(--text-xs);
-  color:        oklch(70% 0.01 240);
+  color:        oklch(40% 0.006 260);
   letter-spacing: 0.06em;
 }
 
 @media (max-width: 60rem) {
   .chat-panel { height: 100%; }
-}
-
-/* ═══════════════════════════════════════════════════════════
-   iOS 26 GLASSMORPHIC DARK SYSTEM OVERRIDES
-   ═══════════════════════════════════════════════════════════ */
-
-/* Convert all brutalist flat boxes to rounded glass cards */
-.rounded-none {
-  border-radius: var(--radius-md) !important;
-}
-
-/* Thinner, elegant translucent glass borders */
-.border-\[2px\],
-.border-2 {
-  border-width: 1px !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-.border-dashed {
-  border-style: dashed !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
-}
-
-/* Page base overrides */
-.page {
-  background: var(--color-bg-base) !important;
-}
-
-/* Header floating glass */
-.dash-topbar {
-  background: rgba(16, 18, 30, 0.72) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-/* Dashboard shell */
-.dash-shell {
-  background: transparent !important;
-}
-
-.dash-content {
-  background: transparent !important;
-}
-
-/* Left Chat Sidebar Glass */
-.chat-sidebar {
-  background: rgba(16, 18, 30, 0.5) !important;
-  backdrop-filter: blur(20px) saturate(170%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(170%) !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-/* Frosted glass containers (cards, registries, lists) */
-.glass-card,
-.chat-panel,
-table {
-  background: rgba(16, 18, 30, 0.45) !important;
-  backdrop-filter: blur(22px) saturate(170%) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(170%) !important;
-  border-radius: var(--radius-md) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
-}
-
-/* Overriding brutalist tables for soft glass */
-.bg-\[var\(--color-paper-2\)\],
-thead {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-.hover\:bg-\[var\(--color-paper-2\)\]:hover,
-tbody tr:hover {
-  background: rgba(255, 255, 255, 0.03) !important;
-}
-
-/* Floating bottom chat input pill */
-.chat-input-pill,
-.focus-within\:border-black:focus-within {
-  border-color: rgba(255, 255, 255, 0.16) !important;
-  border-radius: 9999px !important;
-  background: rgba(24, 28, 48, 0.72) !important;
-  backdrop-filter: blur(16px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-}
-
-/* Invert all flat-black brutalist buttons to luminous glass capsules */
-button,
-.bg-black,
-.bg-\[var\(--color-ink\)\],
-.nav-pill__cta {
-  border-radius: 9999px !important; /* Smooth capsules */
-}
-
-/* Glass buttons */
-.nav-pill__cta,
-.bg-black,
-.bg-\[var\(--color-ink\)\] {
-  background: linear-gradient(135deg, oklch(65% 0.22 280) 0%, oklch(60% 0.20 280) 100%) !important;
-  color: #ffffff !important;
-  border: none !important;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3) !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.02em !important;
-}
-
-/* Sidebar conversations list active state */
-.bg-\[var\(--color-paper-3\)\],
-.active-conv {
-  background: rgba(79, 70, 229, 0.25) !important;
-  border: 1px solid rgba(79, 70, 229, 0.4) !important;
-  border-radius: var(--radius-sm) !important;
-}
-
-/* Mobile floating command rail */
-.fixed.bottom-4.left-4.right-4 {
-  border-radius: 9999px !important;
-  background: rgba(16, 18, 30, 0.8) !important;
-  backdrop-filter: blur(20px) saturate(175%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(175%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
-  overflow: hidden;
-}
-
-/* Mobile floating rail active button Inversion */
-.bg-\[var\(--color-ink\)\] {
-  background: linear-gradient(135deg, oklch(65% 0.22 280) 0%, oklch(60% 0.20 280) 100%) !important;
-  border-radius: 0px !important;
-}
-
-/* ForceGraph legend custom translucent dark panels */
-div[style*="position: absolute"][style*="bottom: 1.5rem"][style*="left: 1.5rem"],
-div[style*="position: absolute"][style*="top: 1rem"][style*="left: 50%"] {
-  background: rgba(16, 18, 30, 0.75) !important;
-  backdrop-filter: blur(18px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
-  border-radius: var(--radius-md) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25) !important;
-}
-
-/* Scrollbars styling for dark mode */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
 }
