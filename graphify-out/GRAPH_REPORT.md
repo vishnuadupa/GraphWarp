@@ -1,16 +1,16 @@
-# Graph Report - Graph  (2026-05-26)
+# Graph Report - Graph  (2026-05-29)
 
 ## Corpus Check
-- 411 files · ~634,137 words
+- 423 files · ~639,006 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1892 nodes · 2066 edges · 224 communities (160 shown, 64 thin omitted)
+- 1936 nodes · 2115 edges · 236 communities (169 shown, 67 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 3 edges (avg confidence: 0.88)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `05fb4f61`
+- Built from commit: `e3a78316`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -229,10 +229,19 @@
 - [[_COMMUNITY_Community 211|Community 211]]
 - [[_COMMUNITY_Community 212|Community 212]]
 - [[_COMMUNITY_Community 223|Community 223]]
+- [[_COMMUNITY_Community 224|Community 224]]
+- [[_COMMUNITY_Community 225|Community 225]]
+- [[_COMMUNITY_Community 226|Community 226]]
+- [[_COMMUNITY_Community 227|Community 227]]
+- [[_COMMUNITY_Community 228|Community 228]]
+- [[_COMMUNITY_Community 229|Community 229]]
+- [[_COMMUNITY_Community 230|Community 230]]
+- [[_COMMUNITY_Community 231|Community 231]]
+- [[_COMMUNITY_Community 232|Community 232]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `createClient()` - 34 edges
-2. `driver` - 31 edges
+2. `driver` - 32 edges
 3. `createClient()` - 20 edges
 4. `Major (looks AI-generated)` - 19 edges
 5. `Slop test — 60 gates + pre-emit self-critique` - 19 edges
@@ -243,39 +252,39 @@
 10. `Responsive` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `discoverSchema()` --calls--> `withRetry()`  [EXTRACTED]
+  web/src/lib/inngest/functions.ts → web/src/lib/utils/retry.ts
+- `extractChunk()` --calls--> `withRetry()`  [EXTRACTED]
+  web/src/lib/inngest/functions.ts → web/src/lib/utils/retry.ts
 - `Chat API POST Handler` --calls--> `Supabase Client Creator`  [EXTRACTED]
   web/src/app/api/chat/route.ts → web/src/lib/supabase/supabase.ts
 - `Chat API POST Handler` --conceptually_related_to--> `initSchema Function`  [INFERRED]
   web/src/app/api/chat/route.ts → web/src/lib/neo4j/neo4j.ts
 - `Chat API POST Handler` --shares_data_with--> `processDocument Inngest Handler`  [INFERRED]
   web/src/app/api/chat/route.ts → web/src/lib/inngest/functions.ts
-- `Upload API POST Handler` --shares_data_with--> `processDocument Inngest Handler`  [EXTRACTED]
-  web/src/app/api/upload/route.ts → web/src/lib/inngest/functions.ts
-- `processDocument Inngest Handler` --conceptually_related_to--> `initSchema Function`  [INFERRED]
-  web/src/lib/inngest/functions.ts → web/src/lib/neo4j/neo4j.ts
 
 ## Hyperedges (group relationships)
 - **GraphWarp Architecture** — page_home_component, route_chat_post, route_upload_post, functions_process_document, neo4j_driver_config [INFERRED 0.85]
 - **Document Ingestion Flow** — route_upload_post, functions_process_document, functions_deterministic_parser [EXTRACTED 1.00]
 - **Query Resolution Flow** — route_chat_post, route_rag_pipeline, neo4j_driver_config [EXTRACTED 1.00]
 
-## Communities (224 total, 64 thin omitted)
+## Communities (236 total, 67 thin omitted)
 
 ### Community 0 - "Database & Graph Routes"
-Cohesion: 0.06
-Nodes (48): genAI, POST(), getOpenRouter(), POST(), MODELS, GET(), POST(), POST() (+40 more)
+Cohesion: 0.05
+Nodes (53): genAI, POST(), getOpenRouter(), POST(), MODELS, GET(), POST(), POST() (+45 more)
 
 ### Community 1 - "AI Orchestration & Ingestion Workers"
 Cohesion: 0.07
 Nodes (56): applyTheme(), ARCHETYPES, attachCopyButtons(), banner, cached, closeThemeDropdown(), COPY, copyFromSource() (+48 more)
 
 ### Community 2 - "Client Authentication & Dashboard Layouts"
-Cohesion: 0.08
-Nodes (25): geistMono, geistSans, jetbrainsMono, metadata, RootLayout(), GlobalDropzone(), ACCEPTED_TYPES, UploadDropzone() (+17 more)
+Cohesion: 0.23
+Nodes (5): ForgotPasswordPage(), LoginPage(), ResetPasswordPage(), SignupPage(), createClient()
 
 ### Community 3 - "Build Dependencies & Task Scripts"
 Cohesion: 0.05
-Nodes (40): dependencies, framer-motion, @google/generative-ai, inngest, lucide-react, mammoth, neo4j-driver, next (+32 more)
+Nodes (44): dependencies, framer-motion, @google/generative-ai, inngest, lucide-react, mammoth, neo4j-driver, next (+36 more)
 
 ### Community 4 - "Interactive Chat & Force-Graph Visualization"
 Cohesion: 0.21
@@ -298,8 +307,8 @@ Cohesion: 0.33
 Nodes (9): Deterministic CSV/Excel Parser, Entity Normalization, processDocument Inngest Handler, Neo4j Driver Setup, initSchema Function, Chat API POST Handler, 3-Phase RAG Ingestion & Traversal Pipeline, Upload API POST Handler (+1 more)
 
 ### Community 9 - "Landing Page Components & Layouts"
-Cohesion: 0.36
-Nodes (4): FeatureCard(), Home(), LandingGraph(), Node
+Cohesion: 0.24
+Nodes (6): FeatureCard(), Home(), LandingGraph(), Node, ThemeToggle(), DashboardLayout()
 
 ### Community 11 - "Premium UI Showcase Concepts"
 Cohesion: 0.67
@@ -861,25 +870,49 @@ Nodes (4): Avoid, Canon, Photography, The rules
 Cohesion: 0.50
 Nodes (4): Avoid, Canon, Lottie / Rive (Tier F — last resort), The rules
 
+### Community 224 - "Community 224"
+Cohesion: 0.23
+Nodes (10): ACCEPTED_TYPES, ToastError, UploadDropzone(), UploadDropzoneProps, PROCESSING_STEPS, ProcessingStepper(), UploadItem, UploadItemRow() (+2 more)
+
+### Community 225 - "Community 225"
+Cohesion: 0.29
+Nodes (7): geistMono, geistSans, jetbrainsMono, metadata, RootLayout(), GlobalDropzone(), ThemeProvider()
+
+### Community 226 - "Community 226"
+Cohesion: 0.60
+Nodes (5): extractHost(), GET(), maskPassword(), maskUri(), resolveDns()
+
+### Community 227 - "Community 227"
+Cohesion: 0.53
+Nodes (4): Doc, DocumentsPage(), PROCESSING_STEPS, StatusBadge()
+
+### Community 228 - "Community 228"
+Cohesion: 0.33
+Nodes (4): content, files, fs, path
+
+### Community 229 - "Community 229"
+Cohesion: 0.50
+Nodes (3): computePageRank(), LinkWithSourceTarget, NodeWithPR
+
 ## Knowledge Gaps
-- **990 isolated node(s):** `type`, `url`, `version`, `source`, `sourceType` (+985 more)
+- **1007 isolated node(s):** `type`, `url`, `version`, `source`, `sourceType` (+1002 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **64 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **67 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Anti-patterns — the named tells` connect `Community 90` to `Community 73`, `Community 35`, `Community 55`, `Community 39`?**
+- **Why does `Assets — sourcing canon for icons, logos, illustrations, photography, video` connect `Community 122` to `Community 161`, `Community 162`, `Community 163`, `Community 164`, `Community 85`, `Community 86`, `Community 87`, `Community 88`, `Community 89`?**
   _High betweenness centrality (0.001) - this node is a cross-community bridge._
 - **What connects `type`, `url`, `version` to the rest of the system?**
-  _992 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1009 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Database & Graph Routes` be split into smaller, more focused modules?**
-  _Cohesion score 0.05603960396039604 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05088265835929388 - nodes in this community are weakly interconnected._
 - **Should `AI Orchestration & Ingestion Workers` be split into smaller, more focused modules?**
   _Cohesion score 0.06957047791893527 - nodes in this community are weakly interconnected._
-- **Should `Client Authentication & Dashboard Layouts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08140610545790934 - nodes in this community are weakly interconnected._
 - **Should `Build Dependencies & Task Scripts` be split into smaller, more focused modules?**
-  _Cohesion score 0.053426248548199766 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.04830917874396135 - nodes in this community are weakly interconnected._
 - **Should `TypeScript Compiler Configurations` be split into smaller, more focused modules?**
   _Cohesion score 0.10476190476190476 - nodes in this community are weakly interconnected._
+- **Should `Package Dependencies & Library Manifests` be split into smaller, more focused modules?**
+  _Cohesion score 0.041666666666666664 - nodes in this community are weakly interconnected._

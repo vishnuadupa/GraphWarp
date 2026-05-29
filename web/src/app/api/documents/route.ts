@@ -36,11 +36,14 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
+    if (typeof body !== 'object' || body === null) {
+      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+    }
+    
     const documentId = body.documentId;
-
-    if (!documentId) {
-      return NextResponse.json({ error: 'Document ID is required' }, { status: 400 });
+    if (typeof documentId !== 'string' || !documentId) {
+      return NextResponse.json({ error: 'Document ID must be a valid string' }, { status: 400 });
     }
 
     // 1. Fetch the document to get the filename and storage_path
@@ -55,14 +58,15 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Document not found' }, { status: 404 });
     }
 
+    // Prevent IDOR: Ensure the storage path actually belongs to the user
+    if (doc.storage_path && !doc.storage_path.startsWith(`${user.id}/`)) {
+      return NextResponse.json({ error: 'Invalid storage path' }, { status: 403 });
+    }
+
     // 2. Delete the edges from Neo4j associated with this source_file
     const session = driver.session();
     try {
       await session.executeWrite(async (tx: any) => {
-        // Delete relationships created by this file.
-        // Handles both formats:
-        //   - Old edges: source_file (string) written before the MERGE-key fix
-        //   - New edges: source_files (array) written after the fix
         await tx.run(
           `MATCH ()-[r:RELATION {user_id: $userId}]->()
            WHERE r.source_file = $filename
@@ -71,7 +75,6 @@ export async function DELETE(req: NextRequest) {
           { filename: doc.filename, userId: user.id }
         );
 
-        // Delete any nodes that now have zero relationships (orphaned)
         await tx.run(
           `MATCH (n:Entity {user_id: $userId})
            WHERE NOT (n)--()
@@ -81,14 +84,14 @@ export async function DELETE(req: NextRequest) {
       });
     } catch (graphError) {
       console.error('Neo4j Deletion Error:', graphError);
-      return NextResponse.json({ error: 'Failed to clean graph data' }, { status: 500 });
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     } finally {
       await session.close();
     }
 
-    // 3. Delete from Supabase Storage
+    // 3. Delete from Supabase Storage using authenticated client (enforces Storage RLS)
     if (doc.storage_path) {
-      const { error: storageError } = await supabaseAdmin.storage
+      const { error: storageError } = await supabase.storage
         .from('documents')
         .remove([doc.storage_path]);
       if (storageError) {
@@ -103,7 +106,10 @@ export async function DELETE(req: NextRequest) {
       .eq('id', documentId)
       .eq('user_id', user.id);
 
-    if (deleteError) throw deleteError;
+    if (deleteError) {
+      console.error('Document DB deletion error:', deleteError);
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
 
     return NextResponse.json({ success: true });
 

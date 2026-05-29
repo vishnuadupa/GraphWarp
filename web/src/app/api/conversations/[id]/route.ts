@@ -54,7 +54,7 @@ export async function PATCH(
     .eq('id', id)
     .eq('user_id', user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   return NextResponse.json({ success: true });
 }
 
@@ -74,6 +74,6 @@ export async function DELETE(
     .eq('id', id)
     .eq('user_id', user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   return NextResponse.json({ success: true });
 }

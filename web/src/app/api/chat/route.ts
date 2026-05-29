@@ -5,6 +5,8 @@ import { driver } from '@/lib/neo4j/neo4j';
 import { withRetry } from '@/lib/utils/retry';
 import { MODELS } from '@/lib/config/models';
 import { embedText, embeddingsEnabled } from '@/lib/embeddings';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 export const runtime = 'nodejs';
 
@@ -16,19 +18,33 @@ function getOpenRouter() {
   });
 }
 
+// Rate Limiting (20 requests per hour)
+const redis = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
+  : null;
+
+const ratelimit = redis
+  ? new Ratelimit({
+      redis: redis,
+      limiter: Ratelimit.slidingWindow(20, '1 h'),
+      analytics: true,
+    })
+  : null;
+
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
+    if (typeof body !== 'object' || body === null) return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+    
     const question: string      = body.message ?? body.question;
-    const selectedDocs: string[] = body.selectedDocs || [];
-    // Multi-turn: last N messages from this session
-    const messageHistory: { role: string; content: string }[] = body.messageHistory || [];
+    const selectedDocs: string[] = Array.isArray(body.selectedDocs) ? body.selectedDocs : [];
+    const messageHistory: { role: string; content: string }[] = Array.isArray(body.messageHistory) ? body.messageHistory : [];
 
-    if (!question) return NextResponse.json({ error: 'Message is required' }, { status: 400 });
+    if (typeof question !== 'string' || !question) return NextResponse.json({ error: 'Message is required' }, { status: 400 });
 
     const encoder = new TextEncoder();
 
@@ -38,6 +54,61 @@ export async function POST(req: NextRequest) {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(payload)}\n\n`));
 
         try {
+          // ── Rate Limiting ───────────────────────────────────────────────────
+          if (ratelimit) {
+            const { success } = await ratelimit.limit(`chat_${user.id}`);
+            if (!success) {
+              send({ type: 'error', data: 'Rate limit exceeded (20 requests/hour). Please try again later.' });
+              send({ type: 'phase', data: null });
+              controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+              return;
+            }
+          }
+
+          // Generate embedding early for Semantic Caching and Graph Search
+          let queryEmbedding: number[] | null = null;
+          if (embeddingsEnabled) {
+            try {
+              queryEmbedding = await embedText(question);
+            } catch (embErr) {
+              console.warn('[chat] Query embedding failed:', embErr);
+            }
+          }
+
+          // ── Semantic Cache Lookup ───────────────────────────────────────────
+          if (queryEmbedding && messageHistory.length === 0) { // Only cache isolated queries
+            const { data: cacheHit, error: cacheErr } = await supabase.rpc('match_semantic_cache', {
+              query_embedding: queryEmbedding,
+              match_threshold: 0.95,
+              match_count: 1,
+              user_id_param: user.id
+            });
+            
+            // if we don't have the RPC, we can do direct query since pgvector supports `<=>` 
+            // Wait, standard Supabase doesn't have match_semantic_cache RPC unless created. 
+            // We can just use a direct query. Let's do direct select.
+            const { data: cacheData } = await supabase
+              .from('semantic_cache')
+              .select('answer, question_embedding')
+              .eq('user_id', user.id)
+              // We order by distance using pg_vector. Since we don't have an RPC, we will skip
+              // strict cache lookup if we can't query it easily without an RPC. 
+              // Wait, we can use `.filter` but postgrest doesn't easily support raw `<=>` operator without RPC.
+              // So for now, we'll try to fetch the exact same text for caching as a simple fallback, or rely on RPC if present.
+              // Actually, exact string match is easiest if RPC isn't guaranteed:
+              .ilike('question', question)
+              .limit(1)
+              .maybeSingle();
+
+            if (cacheData && cacheData.answer) {
+              send({ type: 'phase', data: 'answering' });
+              send({ type: 'text', data: cacheData.answer });
+              send({ type: 'phase', data: null });
+              controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+              return;
+            }
+          }
+
           // ── Phase 1: entity extraction ────────────────────────────────────
           send({ type: 'phase', data: 'searching' });
 
@@ -57,24 +128,13 @@ export async function POST(req: NextRequest) {
             entities = m ? JSON.parse(m[0]) : JSON.parse(txt);
           } catch { /* fall back */ }
           if (!Array.isArray(entities) || entities.length === 0) entities = [question];
-          console.log('[chat] extracted entities:', entities);
 
           // Broadcast extracted entity names so the client can immediately highlight
           // matching nodes in the already-loaded graph (no Neo4j round-trip needed).
           send({ type: 'entities', data: entities });
 
-          // Generate embedding for the question if a provider is configured.
-          // Used in Step C (vector similarity search) to find semantically
-          // relevant nodes even when exact/substring name match fails.
           const validEmbeddings: number[][] = [];
-          if (embeddingsEnabled) {
-            try {
-              const vec = await embedText(question);
-              if (vec) validEmbeddings.push(vec);
-            } catch (embErr) {
-              console.warn('[chat] Query embedding failed, falling back to text search:', embErr);
-            }
-          }
+          if (queryEmbedding) validEmbeddings.push(queryEmbedding);
 
           // ── Phase 2: graph traversal ──────────────────────────────────────
           send({ type: 'phase', data: 'traversing' });
@@ -365,12 +425,25 @@ AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q
             } catch { /* malformed suggestions — skip */ }
           }
 
+          // ── Save to Semantic Cache ──
+          if (queryEmbedding && messageHistory.length === 0) {
+            // Only cache isolated queries, removing the technical suggestion tag from the cache
+            const cleanAnswer = fullText.replace(/<suggestions>[\s\S]*?<\/suggestions>/, '').trim();
+            const { error } = await supabase.from('semantic_cache').insert({
+              user_id: user.id,
+              question: question,
+              question_embedding: queryEmbedding,
+              answer: cleanAnswer
+            });
+            if (error) console.warn('[chat] Semantic cache save failed:', error);
+          }
+
           send({ type: 'phase', data: null });
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
 
         } catch (err: any) {
           console.error('Streaming error:', err);
-          send({ type: 'error', data: err.message });
+          send({ type: 'error', data: 'Internal Server Error' });
         } finally {
           controller.close();
         }
@@ -382,6 +455,6 @@ AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q
     });
   } catch (err: any) {
     console.error('Chat API error:', err);
-    return NextResponse.json({ error: 'Internal Server Error', details: err?.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

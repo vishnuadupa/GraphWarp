@@ -76,6 +76,6 @@ export async function GET() {
     }
   } catch (err: any) {
     console.error('Graph stats error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

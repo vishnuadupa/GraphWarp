@@ -90,6 +90,6 @@ export async function GET(req: Request) {
     }
   } catch (err: any) {
     console.error('Full graph error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

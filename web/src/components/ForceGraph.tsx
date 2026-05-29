@@ -2,6 +2,8 @@
 
 import dynamic from "next/dynamic";
 import { useRef, useEffect, useState, useCallback, useMemo } from "react";
+import { useTheme } from "next-themes";
+import { computePageRank } from "@/lib/pagerank";
 
 export type ThinkingPhase = "searching" | "traversing" | "answering" | null;
 export type GraphLayout = "force" | "circular" | "radial" | "hierarchical" | "grid";
@@ -11,6 +13,7 @@ export interface GraphNode {
   name: string;
   type?: string;
   degree?: number;
+  pagerank?: number;
   x?: number;
   y?: number;
 }
@@ -41,7 +44,10 @@ export const TYPE_COLORS: Record<string, string> = {
 export const ALL_TYPES = Object.keys(TYPE_COLORS);
 const DEFAULT_COLOR = "#4b5563";
 
-function nodeRadius(degree?: number): number {
+function nodeRadius(degree?: number, pagerank?: number): number {
+  if (pagerank !== undefined) {
+    return Math.max(5, Math.min(22, 5 + Math.log(pagerank + 1) * 4));
+  }
   return Math.max(5, Math.min(15, 5 + Math.log((degree ?? 1) + 1) * 2.8));
 }
 
@@ -72,6 +78,9 @@ export function ForceGraph({
   onNodeClick,
   onNodeHover,
 }: Props) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
   const containerRef = useRef<HTMLDivElement>(null);
   const fgRef = useRef<any>(null);
   const [dims, setDims] = useState({ width: 0, height: 0 });
@@ -96,15 +105,23 @@ export function ForceGraph({
 
   // Filter graph based on hiddenTypes (hoisted above effects that depend on filteredData)
   const filteredData = useMemo(() => {
-    if (!hiddenTypes || hiddenTypes.size === 0) return data;
-    const visibleNodes = data.nodes.filter((n) => !hiddenTypes.has(n.type ?? "Entity"));
-    const visibleIds = new Set(visibleNodes.map((n) => n.id));
-    const visibleLinks = data.links.filter((l) => {
-      const sId = typeof l.source === "object" ? (l.source as GraphNode).id : l.source;
-      const tId = typeof l.target === "object" ? (l.target as GraphNode).id : l.target;
-      return visibleIds.has(sId) && visibleIds.has(tId);
-    });
-    return { nodes: visibleNodes, links: visibleLinks };
+    let nodesToUse = data.nodes;
+    let linksToUse = data.links;
+
+    if (hiddenTypes && hiddenTypes.size > 0) {
+      nodesToUse = data.nodes.filter((n) => !hiddenTypes.has(n.type ?? "Entity"));
+      const visibleIds = new Set(nodesToUse.map((n) => n.id));
+      linksToUse = data.links.filter((l) => {
+        const sId = typeof l.source === "object" ? (l.source as GraphNode).id : l.source;
+        const tId = typeof l.target === "object" ? (l.target as GraphNode).id : l.target;
+        return visibleIds.has(sId) && visibleIds.has(tId);
+      });
+    }
+
+    // Compute PageRank on the visible subgraph to properly size nodes by network importance
+    computePageRank(nodesToUse, linksToUse);
+
+    return { nodes: nodesToUse, links: linksToUse };
   }, [data, hiddenTypes]);
 
   // Track which nodes are newly added — triggers entrance ripple animation
@@ -277,7 +294,7 @@ export function ForceGraph({
     (node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
       const n = node as GraphNode;
       const x = node.x ?? 0; const y = node.y ?? 0;
-      const r = nodeRadius(n.degree);
+      const r = nodeRadius(n.degree, n.pagerank);
       const color = TYPE_COLORS[n.type ?? ""] ?? DEFAULT_COLOR;
       const phase = phaseRef.current;
       const isMatched   = matchedRef.current.has(n.id);  // direct entity hit
@@ -389,13 +406,13 @@ export function ForceGraph({
 
       // Border (thick solid black ink borders for a brutalist feel)
       ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.strokeStyle = isOnPath ? "rgba(13,148,136,0.95)" : isHighlight ? "rgba(217,119,6,0.95)" : isActive && phase ? "rgba(0,0,0,0.95)" : "rgba(0,0,0,0.85)";
+      ctx.strokeStyle = isOnPath ? "rgba(13,148,136,0.95)" : isHighlight ? "rgba(217,119,6,0.95)" : isActive && phase ? (isDark ? "rgba(255,255,255,0.95)" : "rgba(0,0,0,0.95)") : (isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)");
       ctx.lineWidth = (isOnPath || isHighlight || (isActive && phase) ? 2 : 1) / globalScale; ctx.stroke();
 
       // Label (JetBrains Mono text styling)
       const fontSize = Math.max(9 / globalScale, 2.5);
       ctx.font = `${isOnPath ? "bold " : ""}500 ${fontSize}px "JetBrains Mono", var(--font-mono), monospace`;
-      ctx.fillStyle = isOnPath ? "rgba(13,148,136,1)" : isHighlight ? "rgba(217,119,6,1)" : isActive && phase ? "rgba(0,0,0,1)" : isDimmed ? "rgba(0,0,0,0.04)" : "rgba(26,26,26,0.85)";
+      ctx.fillStyle = isOnPath ? "rgba(13,148,136,1)" : isHighlight ? "rgba(217,119,6,1)" : isActive && phase ? (isDark ? "rgba(255,255,255,1)" : "rgba(0,0,0,1)") : isDimmed ? (isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)") : (isDark ? "rgba(255,255,255,0.85)" : "rgba(26,26,26,0.85)");
       ctx.textAlign = "center"; ctx.textBaseline = "top";
       ctx.fillText(n.name ?? "", x, y + r + 3 / globalScale);
       ctx.globalAlpha = 1;
@@ -440,7 +457,7 @@ export function ForceGraph({
           <span style={{ fontSize: 10, color: "var(--color-neutral)", fontWeight: "bold", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.2rem", fontFamily: "var(--font-mono), monospace" }}>Types</span>
           {typesInGraph.map((type) => (
             <div key={type} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <div style={{ width: 8, height: 8, borderRadius: "0px", border: "1px solid rgba(0,0,0,0.85)", background: TYPE_COLORS[type] ?? DEFAULT_COLOR, flexShrink: 0, opacity: hiddenTypes?.has(type) ? 0.25 : 1 }} />
+              <div style={{ width: 8, height: 8, borderRadius: "0px", border: `1px solid ${isDark ? "rgba(255,255,255,0.85)" : "rgba(0,0,0,0.85)"}`, background: TYPE_COLORS[type] ?? DEFAULT_COLOR, flexShrink: 0, opacity: hiddenTypes?.has(type) ? 0.25 : 1 }} />
               <span style={{ fontSize: 10, fontWeight: "bold", color: hiddenTypes?.has(type) ? "var(--color-neutral)" : "var(--color-ink)", fontFamily: "var(--font-mono), monospace" }}>{type}</span>
             </div>
           ))}
@@ -482,7 +499,7 @@ export function ForceGraph({
           width={dims.width}
           height={dims.height}
           graphData={filteredData}
-          backgroundColor="#ffffff"
+          backgroundColor={isDark ? "#121212" : "#ffffff"}
           nodeLabel="name"
           nodeRelSize={6}
           nodeCanvasObjectMode={() => "replace"}
@@ -495,7 +512,7 @@ export function ForceGraph({
             if (pathLinkRef.current.size > 0) {
               const lid = link.__pathId ?? `${sId}-${tId}`;
               if (pathLinkRef.current.has(sId) && pathLinkRef.current.has(tId)) return "rgba(13,148,136,0.9)";
-              return "rgba(0,0,0,0.02)";
+              return isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)";
             }
             if (phase && activeRef.current.has(sId) && activeRef.current.has(tId)) {
               return phase === "answering" ? "rgba(5,150,105,0.65)" : "rgba(37,99,235,0.65)";
@@ -503,8 +520,8 @@ export function ForceGraph({
             if (highlightRef.current.size > 0 && highlightRef.current.has(sId) && highlightRef.current.has(tId)) {
               return "rgba(217,119,6,0.65)";
             }
-            if (highlightRef.current.size > 0) return "rgba(0,0,0,0.02)";
-            return "rgba(0,0,0,0.12)";
+            if (highlightRef.current.size > 0) return isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.02)";
+            return isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)";
           }}
           linkWidth={(link: any) => {
             const sId = typeof link.source === "object" ? link.source.id : link.source;

@@ -74,3 +74,21 @@
   --z-modal:   40;
   --z-toast:   50;
 }
+
+.dark {
+  /* ── Colour — Dark Mode Monochrome ── */
+  --color-paper:     oklch(12% 0 0);
+  --color-paper-2:   oklch(16% 0 0);
+  --color-paper-3:   oklch(20% 0 0);
+  --color-rule:      oklch(28% 0 0);
+  --color-neutral:   oklch(70% 0 0);
+  --color-muted:     oklch(80% 0 0);
+  --color-ink:       oklch(96% 0 0);
+  --color-accent:    oklch(90% 0 0);
+  --color-focus:     oklch(75% 0 0);
+
+  /* Reverse surfaces */
+  --color-surface-dark:   oklch(100% 0 0);
+  --color-surface-dark-2: oklch(96% 0 0);
+  --color-rule-dark:      oklch(88% 0 0);
+}

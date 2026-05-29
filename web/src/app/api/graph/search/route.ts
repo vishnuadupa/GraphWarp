@@ -15,8 +15,12 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { query } = await req.json();
-    if (!query || query.trim().length < 1) {
+    const body = await req.json().catch(() => ({}));
+    if (typeof body !== 'object' || body === null) {
+      return NextResponse.json({ nodes: [] });
+    }
+    const { query } = body;
+    if (typeof query !== 'string' || query.trim().length < 1) {
       return NextResponse.json({ nodes: [] });
     }
 
@@ -46,6 +50,6 @@ export async function POST(req: NextRequest) {
     }
   } catch (err: any) {
     console.error('Graph search error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

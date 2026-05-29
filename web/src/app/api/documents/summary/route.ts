@@ -85,6 +85,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ summary, entityCount, topEntities, relationCount: pathStrings.length });
   } catch (err: any) {
     console.error('Summary error:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

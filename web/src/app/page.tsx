@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import LandingGraph from "@/components/LandingGraph";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
@@ -10,7 +11,8 @@ export default function Home() {
         <Link href="/" className="font-mono text-sm tracking-[0.15em] font-bold text-[var(--color-ink)] uppercase">
           GraphWarp
         </Link>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-6">
+          <ThemeToggle />
           <Link href="/login" className="text-sm font-medium text-[var(--color-neutral)] hover:text-[var(--color-ink)] transition-colors hidden sm:block">
             Log in
           </Link>

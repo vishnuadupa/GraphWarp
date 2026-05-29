@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser-client";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -45,7 +46,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
         </div>
         
-        <div className="dash-topbar-right">
+        <div className="dash-topbar-right flex items-center gap-4">
+          <ThemeToggle />
           <button onClick={handleLogout} className="dash-topbar-link">
             Sign out
           </button>

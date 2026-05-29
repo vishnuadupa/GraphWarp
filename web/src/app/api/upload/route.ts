@@ -14,11 +14,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    const body = await request.json().catch(() => ({}));
+    if (typeof body !== 'object' || body === null) {
+      return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+    }
     const { filePath, filename } = body;
 
-    if (!filePath || !filename) {
-      return NextResponse.json({ error: 'Missing filePath or filename' }, { status: 400 });
+    if (typeof filePath !== 'string' || typeof filename !== 'string' || !filePath || !filename) {
+      return NextResponse.json({ error: 'Missing or invalid filePath/filename' }, { status: 400 });
     }
 
     if (!filePath.startsWith(`${user.id}/`)) {
@@ -89,7 +92,7 @@ export async function POST(request: Request) {
         .update({ status: 'Failed', processing_step: null })
         .eq('id', document.id);
       return NextResponse.json(
-        { error: `Processing queue error: ${inngestErr?.message ?? 'inngest.send failed'}` },
+        { error: 'Internal Server Error' },
         { status: 502 }
       );
     }

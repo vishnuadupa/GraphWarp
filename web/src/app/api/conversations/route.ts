@@ -16,7 +16,7 @@ export async function GET() {
     .order('updated_at', { ascending: false })
     .limit(50);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   return NextResponse.json({ conversations: data });
 }
 
@@ -35,6 +35,6 @@ export async function POST(req: NextRequest) {
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   return NextResponse.json({ conversation: data });
 }
