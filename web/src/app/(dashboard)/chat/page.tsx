@@ -19,6 +19,7 @@ import {
   Send, Filter, Network, ChevronDown, Search, X,
   BarChart2, Download, ExternalLink, ArrowRight,
   MessageSquare, Plus, PanelLeft, GitMerge, Loader2, Sliders,
+  Pencil, FileUp,
 } from "lucide-react";
 
 interface Message {
@@ -128,6 +129,8 @@ export default function ChatPage() {
   const [convSearch, setConvSearch] = useState("");
   const [graphDocFilter, setGraphDocFilter] = useState<string | null>(null);
   const [graphLayout, setGraphLayout] = useState<GraphLayout>("force");
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
 
   const messagesEndRef          = useRef<HTMLDivElement>(null);
   const textareaRef             = useRef<HTMLTextAreaElement>(null);
@@ -181,18 +184,39 @@ export default function ChatPage() {
     return () => document.removeEventListener("mousedown", handler);
   }, [rightPanel]);
 
-  // ESC key closes any open panel / dropdown
+  // ESC closes panels; "/" focuses chat input when no other input is active
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      if (rightPanel) { setRightPanel(null); return; }
-      if (filterOpen)  { setFilterOpen(false); return; }
-      if (viewOpen)    { setViewOpen(false); return; }
-      if (sidebarOpen) { setSidebarOpen(false); return; }
+      if (e.key === "Escape") {
+        if (renamingId)  { setRenamingId(null); return; }
+        if (rightPanel)  { setRightPanel(null); return; }
+        if (filterOpen)  { setFilterOpen(false); return; }
+        if (viewOpen)    { setViewOpen(false); return; }
+        if (sidebarOpen) { setSidebarOpen(false); return; }
+        return;
+      }
+      if (e.key === "/" && !e.metaKey && !e.ctrlKey) {
+        const tag = (e.target as HTMLElement)?.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA") return;
+        e.preventDefault();
+        textareaRef.current?.focus();
+      }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, [rightPanel, filterOpen, viewOpen, sidebarOpen]);
+  }, [rightPanel, filterOpen, viewOpen, sidebarOpen, renamingId]);
+
+  const handleRename = async (convId: string) => {
+    const title = renameValue.trim();
+    if (!title) { setRenamingId(null); return; }
+    setConversations((prev) => prev.map((c) => c.id === convId ? { ...c, title } : c));
+    setRenamingId(null);
+    await fetch(`/api/conversations/${convId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title }),
+    });
+  };
 
   // Auto-sync graph panel with the selected doc
   // When exactly 1 doc is checked, show only that doc's subgraph.
@@ -719,20 +743,52 @@ export default function ChatPage() {
                 conversations
                   .filter((c) => !convSearch || (c.title ?? "New conversation").toLowerCase().includes(convSearch.toLowerCase()))
                   .map((conv) => (
-                    <button
+                    <div
                       key={conv.id}
-                      onClick={() => handleSelectConversation(conv)}
-                      className={`w-full text-left px-4 py-3 transition-colors group relative border-b-[1px] border-[var(--color-rule)] cursor-pointer ${
+                      className={`group relative border-b-[1px] border-[var(--color-rule)] transition-colors ${
                         conv.id === currentConvId
                           ? "bg-[var(--color-paper)] border-r-[3px] border-[var(--color-ink)]"
                           : "hover:bg-[var(--color-paper-3)]"
                       }`}
                     >
-                      <p className={`text-xs truncate font-mono font-bold leading-snug ${conv.id === currentConvId ? "text-[var(--color-ink)]" : "text-[var(--color-neutral)]"}`}>
-                        {conv.title || "New conversation"}
-                      </p>
-                      <p className="text-[10px] font-mono text-[var(--color-neutral)] mt-0.5">{fmtDate(conv.updated_at)}</p>
-                    </button>
+                      {renamingId === conv.id ? (
+                        <div className="px-3 py-2">
+                          <input
+                            autoFocus
+                            value={renameValue}
+                            onChange={(e) => setRenameValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleRename(conv.id);
+                              if (e.key === "Escape") setRenamingId(null);
+                            }}
+                            onBlur={() => handleRename(conv.id)}
+                            className="w-full text-xs font-mono font-bold bg-[var(--color-paper)] border-[1px] border-[var(--color-ink)] px-2 py-1 outline-none text-[var(--color-ink)]"
+                          />
+                          <p className="text-[9px] font-mono text-[var(--color-neutral)] mt-1">Enter to save · Esc to cancel</p>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleSelectConversation(conv)}
+                          onDoubleClick={() => { setRenamingId(conv.id); setRenameValue(conv.title || ""); }}
+                          className="w-full text-left px-4 py-3 cursor-pointer pr-8"
+                        >
+                          <p className={`text-xs truncate font-mono font-bold leading-snug ${conv.id === currentConvId ? "text-[var(--color-ink)]" : "text-[var(--color-neutral)]"}`}>
+                            {conv.title || "New conversation"}
+                          </p>
+                          <p className="text-[10px] font-mono text-[var(--color-neutral)] mt-0.5">{fmtDate(conv.updated_at)}</p>
+                        </button>
+                      )}
+                      {/* Rename icon — visible on hover */}
+                      {renamingId !== conv.id && (
+                        <button
+                          onClick={() => { setRenamingId(conv.id); setRenameValue(conv.title || ""); }}
+                          title="Rename"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-neutral)] hover:text-[var(--color-ink)] p-1"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
                   ))
               )}
             </div>
@@ -824,26 +880,45 @@ export default function ChatPage() {
             </div>
           ) : messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center gap-8 max-w-lg mx-auto">
-              <div className="border-[2px] border-[var(--color-rule)] border-solid bg-[var(--color-paper-2)] p-6 text-center rounded-none shadow-sm w-full">
-                <div className="w-12 h-12 rounded-none border-[1px] border-[var(--color-rule)] border-solid bg-[var(--color-paper)] flex items-center justify-center mx-auto mb-4 text-[var(--color-ink)]">
-                  <Network className="w-6 h-6" />
+              {availableDocs.filter((d: any) => d.status === "Completed").length === 0 ? (
+                /* No documents yet — nudge to upload */
+                <div className="border-[2px] border-dashed border-[var(--color-rule)] bg-[var(--color-paper-2)] p-10 text-center rounded-none w-full flex flex-col items-center gap-4">
+                  <div className="w-14 h-14 rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper)] flex items-center justify-center text-[var(--color-neutral)]">
+                    <FileUp className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-wider font-mono text-[var(--color-ink)]">No documents ingested yet</p>
+                    <p className="text-xs text-[var(--color-neutral)] mt-1 leading-relaxed">Upload a file to build your knowledge graph, then come back here to ask questions.</p>
+                  </div>
+                  <a href="/upload" className="flex items-center gap-2 px-6 py-3 bg-[var(--color-ink)] text-[var(--color-paper)] hover:opacity-85 font-mono uppercase font-bold text-xs transition-opacity">
+                    <ArrowRight className="w-4 h-4" /> Go to Upload
+                  </a>
                 </div>
-                <p className="text-xs uppercase tracking-widest font-bold font-mono text-[var(--color-ink)] leading-relaxed">Verifiable<br />Graph Context RAG</p>
-                <p className="text-xs text-[var(--color-neutral)] font-body mt-2 leading-relaxed">
-                  Query the knowledge graph with verifiable grounding. Entities and facts are extracted automatically from private workspace ingestion.
-                </p>
-              </div>
-              {starterQs.length > 0 && (
-                <div className="w-full space-y-2">
-                  <p className="text-[10px] text-[var(--color-neutral)] text-center uppercase tracking-widest font-mono font-bold mb-3">Try asking the graph</p>
-                  {starterQs.map((q, i) => (
-                    <button key={i} onClick={() => handleSend(q)}
-                      className="w-full text-left px-4 py-3 rounded-none bg-[var(--color-paper)] hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] border-[2px] border-[var(--color-rule)] border-solid text-xs font-mono font-bold uppercase tracking-wider transition-all flex items-center justify-between group shadow-sm cursor-pointer">
-                      <span className="truncate pr-4">{q}</span>
-                      <ArrowRight className="w-4 h-4 shrink-0 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                    </button>
-                  ))}
-                </div>
+              ) : (
+                /* Documents exist — show ready state + starter questions */
+                <>
+                  <div className="border-[2px] border-[var(--color-rule)] border-solid bg-[var(--color-paper-2)] p-6 text-center rounded-none shadow-sm w-full">
+                    <div className="w-12 h-12 rounded-none border-[1px] border-[var(--color-rule)] border-solid bg-[var(--color-paper)] flex items-center justify-center mx-auto mb-4 text-[var(--color-ink)]">
+                      <Network className="w-6 h-6" />
+                    </div>
+                    <p className="text-xs uppercase tracking-widest font-bold font-mono text-[var(--color-ink)] leading-relaxed">Graph ready — ask anything</p>
+                    <p className="text-xs text-[var(--color-neutral)] font-body mt-2 leading-relaxed">
+                      Press <kbd className="px-1.5 py-0.5 border border-[var(--color-rule)] font-mono bg-[var(--color-paper)] rounded-sm text-[10px]">/</kbd> to focus the input from anywhere.
+                    </p>
+                  </div>
+                  {starterQs.length > 0 && (
+                    <div className="w-full space-y-2">
+                      <p className="text-[10px] text-[var(--color-neutral)] text-center uppercase tracking-widest font-mono font-bold mb-3">Try asking the graph</p>
+                      {starterQs.map((q, i) => (
+                        <button key={i} onClick={() => handleSend(q)}
+                          className="w-full text-left px-4 py-3 rounded-none bg-[var(--color-paper)] hover:bg-[var(--color-ink)] hover:text-[var(--color-paper)] border-[2px] border-[var(--color-rule)] border-solid text-xs font-mono font-bold uppercase tracking-wider transition-all flex items-center justify-between group shadow-sm cursor-pointer">
+                          <span className="truncate pr-4">{q}</span>
+                          <ArrowRight className="w-4 h-4 shrink-0 opacity-40 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           ) : (

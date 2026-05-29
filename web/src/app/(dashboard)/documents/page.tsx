@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/browser-client";
 import { motion } from "framer-motion";
 import {
   FileText, Loader2, Trash2, Upload, Plus,
-  RefreshCw, AlertCircle, CheckCircle2, Clock, Layers,
+  RefreshCw, AlertCircle, CheckCircle2, Clock, Layers, X,
 } from "lucide-react";
 
 interface Doc {
@@ -101,6 +101,8 @@ export default function DocumentsPage() {
   const [deduping, setDeduping] = useState(false);
   const [dedupResult, setDedupResult] = useState<{ merged: number; deleted: number } | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ msg: string; ok: boolean } | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -158,8 +160,13 @@ export default function DocumentsPage() {
     }
   };
 
+  const showToast = (msg: string, ok = false) => {
+    setToast({ msg, ok });
+    setTimeout(() => setToast(null), 4000);
+  };
+
   const handleDelete = async (doc: Doc) => {
-    if (!confirm(`Remove "${doc.filename}" and its graph data?`)) return;
+    setConfirmDeleteId(null);
     setDeleting((prev) => new Set(prev).add(doc.id));
     try {
       const res = await fetch("/api/documents", {
@@ -168,9 +175,9 @@ export default function DocumentsPage() {
         body: JSON.stringify({ documentId: doc.id }),
       });
       if (res.ok) setDocuments((prev) => prev.filter((d) => d.id !== doc.id));
-      else alert("Failed to delete document.");
-    } catch (err) {
-      console.error(err);
+      else showToast("Failed to delete document. Try again.");
+    } catch {
+      showToast("Network error — could not delete document.");
     } finally {
       setDeleting((prev) => { const s = new Set(prev); s.delete(doc.id); return s; });
     }
@@ -189,7 +196,7 @@ export default function DocumentsPage() {
           prev.map((d) => (d.id === doc.id ? { ...d, status: "Processing" } : d))
         );
       } else {
-        alert("Failed to start reprocessing.");
+        showToast("Failed to start reprocessing. Try again.");
       }
     } catch (err) {
       console.error(err);
@@ -233,7 +240,7 @@ export default function DocumentsPage() {
         const data = await res.json();
         setDedupResult({ merged: data.merged ?? 0, deleted: data.deleted ?? 0 });
       } else {
-        alert("Deduplication failed.");
+        showToast("Deduplication failed. Try again.");
       }
     } catch (err) {
       console.error(err);
@@ -245,7 +252,14 @@ export default function DocumentsPage() {
   if (!ready) return null;
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-[var(--color-paper)] text-[var(--color-ink)] min-h-full">
+    <div className="flex-1 overflow-y-auto p-8 lg:p-12 bg-[var(--color-paper)] text-[var(--color-ink)] min-h-full relative">
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 border-[2px] shadow-lg text-sm font-mono font-bold transition-all ${toast.ok ? "bg-green-50 border-green-300 text-green-800" : "bg-red-50 border-red-300 text-red-800"}`}>
+          {toast.msg}
+          <button onClick={() => setToast(null)} className="hover:opacity-70"><X className="w-3.5 h-3.5" /></button>
+        </div>
+      )}
       <div className="max-w-5xl mx-auto space-y-8">
 
         {/* Header */}
@@ -361,17 +375,35 @@ export default function DocumentsPage() {
                         >
                           <RefreshCw className={`w-3.5 h-3.5 ${reprocessing.has(doc.id) ? "animate-spin" : ""}`} />
                         </button>
-                        {/* Delete */}
-                        <button
-                          onClick={() => handleDelete(doc)}
-                          disabled={deleting.has(doc.id)}
-                          title="Delete document"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none text-xs font-mono font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                        >
-                          {deleting.has(doc.id)
-                            ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Deleting...</>
-                            : <><Trash2 className="w-3.5 h-3.5" /> Delete</>}
-                        </button>
+                        {/* Delete — two-step inline confirmation */}
+                        {confirmDeleteId === doc.id ? (
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] font-mono text-red-700 font-bold uppercase">Sure?</span>
+                            <button
+                              onClick={() => handleDelete(doc)}
+                              className="inline-flex items-center gap-1 px-2 py-1.5 rounded-none text-xs font-mono font-bold text-red-700 bg-red-100 hover:bg-red-200 border border-red-300 transition-colors"
+                            >
+                              <Trash2 className="w-3 h-3" /> Yes
+                            </button>
+                            <button
+                              onClick={() => setConfirmDeleteId(null)}
+                              className="inline-flex items-center px-2 py-1.5 rounded-none text-xs font-mono font-bold text-[var(--color-neutral)] hover:text-[var(--color-ink)] border border-[var(--color-rule)] transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setConfirmDeleteId(doc.id)}
+                            disabled={deleting.has(doc.id)}
+                            title="Delete document"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-none text-xs font-mono font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          >
+                            {deleting.has(doc.id)
+                              ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Deleting...</>
+                              : <><Trash2 className="w-3.5 h-3.5" /> Delete</>}
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

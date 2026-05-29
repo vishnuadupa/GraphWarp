@@ -1,31 +1,41 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { AlertCircle, X } from "lucide-react";
 
 interface UploadDropzoneProps {
-  /** Called with the selected files — wire up to your API route when ready */
   onFilesSelected?: (files: File[]) => void;
 }
 
 const ACCEPTED_TYPES = [".docx", ".txt", ".csv", ".xlsx", ".xls", ".pdf"];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
+interface ToastError { id: number; msg: string }
+let errorSeq = 0;
+
 export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [queued, setQueued] = useState<File[]>([]);
+  const [errors, setErrors] = useState<ToastError[]>([]);
+
+  const pushError = (msg: string) => {
+    const id = ++errorSeq;
+    setErrors((prev) => [...prev, { id, msg }]);
+    setTimeout(() => setErrors((prev) => prev.filter((e) => e.id !== id)), 5000);
+  };
 
   const handleFiles = useCallback(
     (files: FileList | null) => {
       if (!files) return;
       const arr = Array.from(files);
-      const validFiles = arr.filter(f => {
+      const validFiles = arr.filter((f) => {
         const ext = "." + f.name.split(".").pop()?.toLowerCase();
         if (!ACCEPTED_TYPES.includes(ext)) {
-          alert(`File ${f.name} has an unsupported format. Accepted formats: ${ACCEPTED_TYPES.join(", ")}`);
+          pushError(`"${f.name}" — unsupported format. Accepted: ${ACCEPTED_TYPES.join(", ")}`);
           return false;
         }
         if (f.size > MAX_FILE_SIZE) {
-          alert(`File ${f.name} exceeds the 10MB limit.`);
+          pushError(`"${f.name}" exceeds the 10 MB limit (${(f.size / 1024 / 1024).toFixed(1)} MB).`);
           return false;
         }
         return true;
@@ -34,29 +44,14 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
       setQueued((prev) => [...prev, ...validFiles]);
       onFilesSelected?.(validFiles);
     },
-    [onFilesSelected]
+    [onFilesSelected],
   );
 
-  const onDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
+  const onDragOver  = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(true); };
   const onDragLeave = () => setIsDragging(false);
-
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    handleFiles(e.dataTransfer.files);
-  };
-
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFiles(e.target.files);
-    e.target.value = "";
-  };
-
-  const removeFile = (index: number) =>
-    setQueued((prev) => prev.filter((_, i) => i !== index));
+  const onDrop      = (e: React.DragEvent) => { e.preventDefault(); setIsDragging(false); handleFiles(e.dataTransfer.files); };
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => { handleFiles(e.target.files); e.target.value = ""; };
+  const removeFile = (index: number) => setQueued((prev) => prev.filter((_, i) => i !== index));
 
   return (
     <div className="w-full max-w-2xl mx-auto space-y-4">
@@ -73,34 +68,13 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
         `}
         style={{ minHeight: 220 }}
       >
-        <input
-          id="file-upload"
-          type="file"
-          multiple
-          accept={ACCEPTED_TYPES.join(",")}
-          className="sr-only"
-          onChange={onInputChange}
-        />
+        <input id="file-upload" type="file" multiple accept={ACCEPTED_TYPES.join(",")} className="sr-only" onChange={onInputChange} />
 
-        {/* Icon */}
         <div
           className="w-16 h-16 rounded-none flex items-center justify-center transition-transform duration-300 border-[2px]"
-          style={{
-            background: "var(--color-paper-2)",
-            borderColor: "var(--color-rule)",
-            transform: isDragging ? "scale(1.1)" : "scale(1)",
-          }}
+          style={{ background: "var(--color-paper-2)", borderColor: "var(--color-rule)", transform: isDragging ? "scale(1.1)" : "scale(1)" }}
         >
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="var(--color-ink)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
@@ -113,12 +87,10 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
           </p>
           <p className="text-sm text-[var(--color-neutral)] font-medium">
             or{" "}
-            <span className="text-[var(--color-ink)] font-bold hover:opacity-85 underline underline-offset-2">
-              browse files
-            </span>
+            <span className="text-[var(--color-ink)] font-bold hover:opacity-85 underline underline-offset-2">browse files</span>
           </p>
           <p className="text-xs text-[var(--color-neutral)] font-mono uppercase tracking-widest pt-1">
-            {ACCEPTED_TYPES.join("  ·  ")} (Max 10MB)
+            {ACCEPTED_TYPES.join("  ·  ")} (Max 10 MB)
           </p>
           <p className="text-xs text-[var(--color-neutral)] font-mono pt-1">
             PDF must be text-based — scanned / image-only PDFs are not supported
@@ -126,33 +98,32 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
         </div>
       </label>
 
+      {/* Inline error toasts */}
+      {errors.map((e) => (
+        <div key={e.id} className="flex items-start gap-3 px-4 py-3 border-[2px] border-red-300 bg-red-50 text-red-800 text-xs font-mono">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span className="flex-1">{e.msg}</span>
+          <button onClick={() => setErrors((prev) => prev.filter((x) => x.id !== e.id))} className="shrink-0 hover:opacity-70">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      ))}
+
       {/* Queue */}
       {queued.length > 0 && (
         <ul className="space-y-2">
           {queued.map((file, i) => (
-            <li
-              key={`${file.name}-${i}`}
-              className="rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper)] flex items-center justify-between gap-3 px-4 py-3 text-sm"
-            >
+            <li key={`${file.name}-${i}`} className="rounded-none border-[2px] border-[var(--color-rule)] bg-[var(--color-paper)] flex items-center justify-between gap-3 px-4 py-3 text-sm">
               <div className="flex items-center gap-3 min-w-0">
-                <span
-                  className="shrink-0 w-7 h-7 rounded-none border-[1px] border-[var(--color-rule)] bg-[var(--color-paper-2)] flex items-center justify-center text-xs font-mono font-bold text-[var(--color-neutral)]"
-                >
+                <span className="shrink-0 w-7 h-7 rounded-none border-[1px] border-[var(--color-rule)] bg-[var(--color-paper-2)] flex items-center justify-center text-xs font-mono font-bold text-[var(--color-neutral)]">
                   {file.name.split(".").pop()?.toUpperCase().slice(0, 3)}
                 </span>
                 <span className="truncate text-[var(--color-ink)] font-bold">{file.name}</span>
-                <span className="shrink-0 text-[var(--color-neutral)] font-mono text-xs">
-                  {(file.size / 1024).toFixed(0)} KB
-                </span>
+                <span className="shrink-0 text-[var(--color-neutral)] font-mono text-xs">{(file.size / 1024).toFixed(0)} KB</span>
               </div>
-              <button
-                onClick={() => removeFile(i)}
-                className="shrink-0 text-[var(--color-neutral)] hover:text-red-600 transition-colors"
-                aria-label="Remove file"
-              >
+              <button onClick={() => removeFile(i)} className="shrink-0 text-[var(--color-neutral)] hover:text-red-600 transition-colors" aria-label="Remove file">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
               </button>
             </li>
