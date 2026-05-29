@@ -7,7 +7,7 @@ interface UploadDropzoneProps {
   onFilesSelected?: (files: File[]) => void;
 }
 
-const ACCEPTED_TYPES = [".docx", ".txt", ".csv", ".xlsx", ".xls"];
+const ACCEPTED_TYPES = [".docx", ".txt", ".csv", ".xlsx", ".xls", ".pdf"];
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps) {

@@ -484,7 +484,7 @@ export const processDocument = inngest.createFunction(
         const ext = fileData.ext;
 
         // ── Route by accepted file type ───────────────────────────────────────
-        const SUPPORTED = new Set(['csv', 'xlsx', 'xls', 'docx', 'txt']);
+        const SUPPORTED = new Set(['csv', 'xlsx', 'xls', 'docx', 'txt', 'pdf']);
         if (!SUPPORTED.has(ext)) {
           throw new Error(
             `Unsupported file type ".${ext}". Accepted formats: .docx, .txt, .csv, .xlsx, .xls`,
@@ -507,6 +507,13 @@ export const processDocument = inngest.createFunction(
           const extracted = await mammoth.extractRawText({ buffer: rawBuffer });
           rawText = extracted.value;
           console.log(`[ingest] DOCX — extracted ${rawText.length} chars`);
+        } else if (ext === 'pdf') {
+          // Dynamic import avoids build-time crashes (pdf-parse uses fs at module level)
+          const pdfMod = await import('pdf-parse');
+          const pdfParse = (pdfMod as any).default ?? pdfMod;
+          const pdfData = await pdfParse(rawBuffer);
+          rawText = pdfData.text;
+          console.log(`[ingest] PDF — ${pdfData.numpages} pages, ${rawText.length} chars`);
         } else {
           rawText = rawBuffer.toString('utf8');
           console.log(`[ingest] Text (${ext}) — ${rawText.length} chars`);

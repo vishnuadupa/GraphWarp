@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     }
 
     // Server-side file type guard — only allow the supported formats
-    const ALLOWED_EXTENSIONS = new Set(['.docx', '.txt', '.csv', '.xlsx', '.xls']);
+    const ALLOWED_EXTENSIONS = new Set(['.docx', '.txt', '.csv', '.xlsx', '.xls', '.pdf']);
     const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
     const ext = '.' + (filename.split('.').pop()?.toLowerCase() ?? '');
     if (!ALLOWED_EXTENSIONS.has(ext)) {
