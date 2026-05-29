@@ -387,20 +387,12 @@ export const processDocument = inngest.createFunction(
           await session.executeWrite(async (tx: any) => {
             await tx.run(
               `UNWIND $batch AS item
-               OPTIONAL MATCH (existing_s:Entity {user_id: $userId})
-               WHERE toLower(existing_s.name) = toLower(item.source)
-               WITH item, collect(existing_s.name)[0] AS canonS
-               MERGE (s:Entity {name: coalesce(canonS, item.source), user_id: $userId})
+               MERGE (s:Entity {name: item.source, user_id: $userId})
                ON CREATE SET s.type = item.sourceType, s.created_at = datetime()
                ON MATCH  SET s.type = CASE WHEN s.type = 'Entity' THEN item.sourceType ELSE s.type END
-               WITH s, item
-               OPTIONAL MATCH (existing_t:Entity {user_id: $userId})
-               WHERE toLower(existing_t.name) = toLower(item.target)
-               WITH s, item, collect(existing_t.name)[0] AS canonT
-               MERGE (t:Entity {name: coalesce(canonT, item.target), user_id: $userId})
+               MERGE (t:Entity {name: item.target, user_id: $userId})
                ON CREATE SET t.type = item.targetType, t.created_at = datetime()
                ON MATCH  SET t.type = CASE WHEN t.type = 'Entity' THEN item.targetType ELSE t.type END
-               WITH s, t, item
                MERGE (s)-[r:RELATION {type: item.relation, user_id: $userId}]->(t)
                ON CREATE SET r.weight = 1, r.created_at = datetime(), r.source_files = [$filename]
                ON MATCH  SET r.weight = r.weight + 1,

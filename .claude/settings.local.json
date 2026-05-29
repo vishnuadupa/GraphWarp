@@ -66,7 +66,8 @@
       "Bash(cmd.exe /c \"cd D:\\\\Graph\\\\web && npx tsc --noEmit --skipLibCheck 2>&1\")",
       "Bash(cmd.exe /c \"cd /d D:\\\\Graph\\\\web && npx tsc --noEmit --skipLibCheck 2>&1\")",
       "PowerShell(cd D:\\\\Graph\\\\web; npx tsc --noEmit --skipLibCheck 2>&1 | Where-Object { $_ -notmatch 'ForceGraph' })",
-      "Bash(npm view *)"
+      "Bash(npm view *)",
+      "PowerShell(Set-Location D:\\\\Graph\\\\web; $url = \"https://graphwarp-vishnu-adupa-s-projects.vercel.app/api/debug-neo4j\"; try { $r = Invoke-RestMethod -Uri $url -Method GET -TimeoutSec 15; $r | ConvertTo-Json -Depth 5 } catch { $_.Exception.Message })"
     ]
   }
 }
