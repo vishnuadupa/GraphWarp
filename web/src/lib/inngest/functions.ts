@@ -199,20 +199,209 @@ function parseXlsxToGraph(buffer: Buffer): GraphTriple[] {
   }
 }
 
-const VALID_ENTITY_TYPES = new Set([
-  'Person', 'Organization', 'Location', 'Event', 'Concept', 'Technology', 'Entity',
-]);
+// Universal fallback entity types used when schema discovery fails or returns nothing.
+const DEFAULT_ENTITY_TYPES = [
+  'Person', 'Organization', 'Location', 'Event', 'Date',
+  'Concept', 'Technology', 'Product', 'Role', 'Document',
+];
 
-const EXTRACT_PROMPT =
-  `Analyze the following document and extract all key entities and their relationships.
-Output a JSON array of objects. Each object MUST have exactly these string properties:
-  - "source": entity name, 2–100 characters, no leading/trailing spaces, capitalized (e.g. "Alice Smith", "Apple Inc")
-  - "source_type": MUST be one of exactly: Person, Organization, Location, Event, Concept, Technology, Entity
-  - "relation": relationship phrase, 2–50 characters, lowercase (e.g. "works at", "founded", "located in", "parent of", "child of", "married to", "sibling of")
-  - "target": entity name, same rules as source
-  - "target_type": MUST be one of exactly: Person, Organization, Location, Event, Concept, Technology, Entity
-Rules: source and target must be different. No empty strings, no pure numbers, no punctuation-only names.
-Extract as many meaningful relationships as possible.`;
+/** Split text into overlapping chunks so context bleeds across boundaries. */
+function chunkText(text: string, size = 4_000, overlap = 400): string[] {
+  if (text.length <= size) return [text];
+  const chunks: string[] = [];
+  let start = 0;
+  while (start < text.length) {
+    const end = Math.min(start + size, text.length);
+    chunks.push(text.slice(start, end));
+    if (end === text.length) break;
+    start += size - overlap;
+  }
+  return chunks;
+}
+
+interface ChunkSchema {
+  entityTypes: string[];
+  relationVerbs: string[];
+}
+
+/**
+ * Stage 1 — reads the first ~2 KB of the document and asks the LLM to infer
+ * a mini-ontology (entity types + UPPER_CASE relationship verbs) that fits the
+ * domain.  Runs once per document; result is passed into every chunk call.
+ */
+async function discoverSchema(text: string): Promise<ChunkSchema> {
+  const sample = text.slice(0, 2_000);
+  try {
+    const res = await withRetry(() =>
+      getOpenRouter().chat.completions.create({
+        model: MODELS.DISCOVERY,
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a knowledge-graph schema expert. ' +
+              'Read the document sample and output ONLY a JSON object (no markdown) with two keys:\n' +
+              '  "entityTypes": 6–14 PascalCase type names suited to this domain\n' +
+              '  "relationVerbs": 12–20 UPPER_CASE relationship verbs (e.g. WORKS_FOR, PART_OF, FOUNDED_BY)\n' +
+              'Think broadly — include every kind of thing and link that naturally appears in this domain.',
+          },
+          { role: 'user', content: `Document sample:\n\n${sample}` },
+        ],
+        max_tokens: 400,
+      }),
+    );
+    const raw = res.choices[0]?.message?.content ?? '{}';
+    const cleaned = raw.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(cleaned);
+    const entityTypes: string[] = Array.isArray(parsed.entityTypes) && parsed.entityTypes.length
+      ? parsed.entityTypes.map(String)
+      : DEFAULT_ENTITY_TYPES;
+    const relationVerbs: string[] = Array.isArray(parsed.relationVerbs)
+      ? parsed.relationVerbs.map(String)
+      : [];
+    return { entityTypes, relationVerbs };
+  } catch {
+    return { entityTypes: DEFAULT_ENTITY_TYPES, relationVerbs: [] };
+  }
+}
+
+/**
+ * Stage 2+3 — extract entities AND relationships from one chunk.
+ * The entity registry (all entities found so far across previous chunks) is
+ * passed in so the model can resolve coreferences (e.g. "Armstrong" → "Neil Armstrong").
+ */
+async function extractChunk(
+  chunk: string,
+  schema: ChunkSchema,
+  registry: Array<{ name: string; type: string }>,
+): Promise<{ entities: Array<{ name: string; type: string }>; triples: GraphTriple[] }> {
+  // Format registry compactly to keep prompt size down; cap at 200 entries.
+  const regSlice = registry.slice(-200);
+  const registryLine = regSlice.length
+    ? `\nKNOWN ENTITIES — use these exact canonical names, never create an alias:\n${
+        regSlice.map((e) => `${e.name} (${e.type})`).join(', ')
+      }\n`
+    : '';
+
+  const verbList = schema.relationVerbs.length
+    ? `Preferred relationship verbs (UPPER_CASE): ${schema.relationVerbs.join(', ')}. You may coin new UPPER_CASE verbs for relationships not covered by this list.`
+    : 'Use concise UPPER_CASE verbs for all relationships (e.g. WORKS_FOR, PART_OF, BORN_IN).';
+
+  const systemPrompt =
+    `You extract a maximum-coverage knowledge graph from document text.\n\n` +
+    `ENTITY TYPES for this document: ${schema.entityTypes.join(', ')}\n` +
+    `${verbList}\n` +
+    `${registryLine}\n` +
+    `Output ONLY a JSON object (no markdown) with exactly two keys:\n` +
+    `1. "entities": array of { "name": string, "type": string }\n` +
+    `   - Include EVERY distinct entity mentioned — be exhaustive, not selective\n` +
+    `   - Always use the most complete canonical form (full name, not pronoun or abbreviation)\n` +
+    `   - If an entity matches a KNOWN ENTITY above (e.g. "Armstrong" = "Neil Armstrong"), use the canonical name\n` +
+    `   - Choose the best-fitting type from the list above\n` +
+    `2. "relations": array of { "source": string, "source_type": string, "relation": string, "target": string, "target_type": string }\n` +
+    `   - Extract EVERY relationship — explicit and implied\n` +
+    `   - source and target must be different entities from the "entities" array or KNOWN ENTITIES\n` +
+    `   - "relation" must be UPPER_CASE (e.g. PARTICIPATED_IN, LAUNCHED_BY, BORN_IN)\n` +
+    `   - Include direction: the grammatical subject is "source", object is "target"`;
+
+  const res = await withRetry(() =>
+    getOpenRouter().chat.completions.create({
+      model: MODELS.EXTRACTION,
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user',   content: chunk },
+      ],
+    }),
+  );
+
+  const raw = res.choices[0]?.message?.content ?? '{}';
+  const cleaned = raw.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+
+  let parsed: any = {};
+  try {
+    parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(cleaned);
+  } catch {
+    return { entities: [], triples: [] };
+  }
+
+  // Entities
+  const entities: Array<{ name: string; type: string }> = (Array.isArray(parsed.entities) ? parsed.entities : [])
+    .map((e: any) => ({
+      name: normaliseEntityName(String(e?.name ?? '')),
+      type: String(e?.type ?? 'Entity').trim() || 'Entity',
+    }))
+    .filter((e: { name: string; type: string }) => e.name.length >= 2 && !/^\d+$/.test(e.name));
+
+  // Merge registry + chunk entities into a lookup for type resolution
+  const entityTypeLookup = new Map<string, string>();
+  for (const e of [...regSlice, ...entities]) {
+    entityTypeLookup.set(e.name.toLowerCase(), e.type);
+  }
+
+  // Relations
+  const triples: GraphTriple[] = (Array.isArray(parsed.relations) ? parsed.relations : [])
+    .map((r: any) => ({
+      source:      normaliseEntityName(String(r?.source      ?? '')),
+      source_type: String(r?.source_type ?? '').trim() || entityTypeLookup.get(normaliseEntityName(String(r?.source ?? '')).toLowerCase()) || 'Entity',
+      relation:    normaliseEntityName(String(r?.relation    ?? '')).toUpperCase().replace(/\s+/g, '_'),
+      target:      normaliseEntityName(String(r?.target      ?? '')),
+      target_type: String(r?.target_type ?? '').trim() || entityTypeLookup.get(normaliseEntityName(String(r?.target ?? '')).toLowerCase()) || 'Entity',
+    }))
+    .filter((t: GraphTriple) =>
+      t.source.length   >= 2 &&
+      t.target.length   >= 2 &&
+      t.relation.length >= 2 &&
+      t.source          !== t.target &&
+      !/^\d+$/.test(t.source) &&
+      !/^\d+$/.test(t.target),
+    );
+
+  return { entities, triples };
+}
+
+/**
+ * Pre-write alias normalisation.
+ * If all tokens of a shorter name appear in a longer name, the shorter name
+ * is an alias and gets replaced everywhere with the canonical longer form.
+ * Example: "Armstrong" → "Neil Armstrong" (["armstrong"] ⊆ ["neil","armstrong"])
+ */
+function resolveAliases(triples: GraphTriple[]): GraphTriple[] {
+  const allNames = [...new Set(triples.flatMap((t) => [t.source, t.target]))];
+
+  const aliasMap = new Map<string, string>();
+  for (const candidate of allNames) {
+    if (aliasMap.has(candidate)) continue; // already resolved
+    const cTokens = candidate.toLowerCase().split(/\s+/).filter(Boolean);
+    let bestLen = 0;
+    let bestName = '';
+    for (const full of allNames) {
+      if (full === candidate) continue;
+      const fTokens = full.toLowerCase().split(/\s+/).filter(Boolean);
+      if (fTokens.length <= cTokens.length) continue;
+      if (cTokens.every((t) => fTokens.includes(t)) && fTokens.length > bestLen) {
+        bestLen = fTokens.length;
+        bestName = full;
+      }
+    }
+    if (bestName) aliasMap.set(candidate, bestName);
+  }
+
+  if (aliasMap.size === 0) return triples;
+
+  const seen = new Set<string>();
+  const result: GraphTriple[] = [];
+  for (const t of triples) {
+    const src = aliasMap.get(t.source) ?? t.source;
+    const tgt = aliasMap.get(t.target) ?? t.target;
+    if (src === tgt) continue;
+    const key = `${src}|${t.relation}|${tgt}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push({ ...t, source: src, target: tgt });
+  }
+  return result;
+}
 
 // Applied only for image inputs. Teaches the model to recognise the visual
 // grammar of any diagram type rather than guessing one fixed structure.
@@ -312,64 +501,63 @@ export const processDocument = inngest.createFunction(
           return parseXlsxToGraph(rawBuffer);
         }
 
-        // Unstructured text files: extract text then run LLM
-        let promptInput: string;
+        // Unstructured text files: 3-stage LLM pipeline
+        let rawText: string;
         if (ext === 'docx') {
-          const result = await mammoth.extractRawText({ buffer: rawBuffer });
-          promptInput = result.value;
-          console.log(`[ingest] DOCX — extracted ${result.value.length} chars`);
+          const extracted = await mammoth.extractRawText({ buffer: rawBuffer });
+          rawText = extracted.value;
+          console.log(`[ingest] DOCX — extracted ${rawText.length} chars`);
         } else {
-          // txt and any other accepted text format
-          promptInput = rawBuffer.toString('utf8');
-          console.log(`[ingest] Text (${ext}) — ${promptInput.length} chars`);
+          rawText = rawBuffer.toString('utf8');
+          console.log(`[ingest] Text (${ext}) — ${rawText.length} chars`);
         }
 
-        const extractionNote = '\n\nOutput ONLY a raw JSON array, no markdown, no code blocks.';
-
-        const result = await withRetry(() =>
-          getOpenRouter().chat.completions.create({
-            model: MODELS.EXTRACTION,
-            messages: [
-              { role: 'system', content: EXTRACT_PROMPT + extractionNote },
-              { role: 'user',   content: promptInput },
-            ],
-          }),
-        );
-
-        const responseText = result.choices[0]?.message?.content ?? '[]';
-        // Strip markdown code blocks if the model wraps output anyway
-        const cleaned = responseText.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
-        const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
-
-        let parsed: unknown;
-        try {
-          parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(cleaned);
-        } catch {
-          throw new Error(`Qwen returned non-JSON response: ${cleaned.slice(0, 200)}`);
+        // Cap to prevent timeouts on very large files (~10 chunks max)
+        const MAX_CHARS = 40_000;
+        const text = rawText.slice(0, MAX_CHARS);
+        if (rawText.length > MAX_CHARS) {
+          console.warn(`[ingest] Document truncated from ${rawText.length} to ${MAX_CHARS} chars`);
         }
 
-        if (!Array.isArray(parsed)) return [];
+        // ── Stage 1: Discover domain schema (one fast call on first 2 KB) ──
+        const schema = await discoverSchema(text);
+        console.log(`[ingest] Schema — types: ${schema.entityTypes.join(', ')}`);
+        console.log(`[ingest] Schema — verbs: ${schema.relationVerbs.join(', ')}`);
 
-        return (parsed as Record<string, unknown>[])
-          .map((item) => ({
-            source:      normaliseEntityName(String(item.source      ?? '')),
-            source_type: VALID_ENTITY_TYPES.has(String(item.source_type ?? '').trim())
-              ? String(item.source_type).trim()
-              : 'Entity',
-            relation:    normaliseEntityName(String(item.relation    ?? '')).toLowerCase(),
-            target:      normaliseEntityName(String(item.target      ?? '')),
-            target_type: VALID_ENTITY_TYPES.has(String(item.target_type ?? '').trim())
-              ? String(item.target_type).trim()
-              : 'Entity',
-          }))
-          .filter((item) =>
-            item.source.length   >= 2 &&
-            item.target.length   >= 2 &&
-            item.relation.length >= 2 &&
-            item.source !== item.target &&
-            !/^\d+$/.test(item.source) &&
-            !/^\d+$/.test(item.target),
-          ) as GraphTriple[];
+        // ── Stage 2+3: Chunk → extract entities + relations per chunk ──────
+        const chunks = chunkText(text);
+        console.log(`[ingest] Processing ${chunks.length} chunk(s)`);
+
+        const entityRegistry: Array<{ name: string; type: string }> = [];
+        const allTriples: GraphTriple[] = [];
+
+        for (let i = 0; i < chunks.length; i++) {
+          try {
+            const { entities, triples } = await extractChunk(chunks[i], schema, entityRegistry);
+
+            // Merge new entities into registry (case-insensitive dedup)
+            for (const entity of entities) {
+              if (entity.name.length >= 2 && !entityRegistry.some(
+                (e) => e.name.toLowerCase() === entity.name.toLowerCase(),
+              )) {
+                entityRegistry.push(entity);
+              }
+            }
+
+            allTriples.push(...triples);
+            console.log(`[ingest] Chunk ${i + 1}/${chunks.length} → ${entities.length} entities, ${triples.length} relations`);
+          } catch (err: any) {
+            console.warn(`[ingest] Chunk ${i + 1} failed, skipping: ${err?.message}`);
+          }
+        }
+
+        // ── Pre-write alias resolution ────────────────────────────────────
+        // Collapse short-form aliases to canonical names before Neo4j write.
+        // e.g. "Armstrong" → "Neil Armstrong" when both appear in the batch.
+        const resolved = resolveAliases(allTriples);
+        console.log(`[ingest] After alias resolution: ${resolved.length} triples (was ${allTriples.length})`);
+
+        return resolved;
       });
 
       console.log(`[ingest] Extracted ${extractedData.length} triples from "${filename}"`);
