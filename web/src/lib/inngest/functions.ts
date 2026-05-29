@@ -385,45 +385,40 @@ export const processDocument = inngest.createFunction(
         const session = driver.session();
         try {
           await session.executeWrite(async (tx: any) => {
-            const queries = extractedData.map((item: GraphTriple) =>
-              tx.run(
-                // Case-insensitive lookup: if a node already exists with the
-                // same name modulo casing, reuse its canonical name rather than
-                // creating a second node.  COLLECT()[0] collapses multi-match
-                // safely (should be at most 1 due to prior runs of this same
-                // logic, but protects against pre-existing duplicates).
-                `OPTIONAL MATCH (existing_s:Entity {user_id: $userId})
-                 WHERE toLower(existing_s.name) = toLower($source)
-                 WITH collect(existing_s.name)[0] AS canonS
-                 MERGE (s:Entity {name: coalesce(canonS, $source), user_id: $userId})
-                 ON CREATE SET s.type = $sourceType, s.created_at = datetime()
-                 ON MATCH  SET s.type = CASE WHEN s.type = 'Entity' THEN $sourceType ELSE s.type END
-                 WITH s
-                 OPTIONAL MATCH (existing_t:Entity {user_id: $userId})
-                 WHERE toLower(existing_t.name) = toLower($target)
-                 WITH s, collect(existing_t.name)[0] AS canonT
-                 MERGE (t:Entity {name: coalesce(canonT, $target), user_id: $userId})
-                 ON CREATE SET t.type = $targetType, t.created_at = datetime()
-                 ON MATCH  SET t.type = CASE WHEN t.type = 'Entity' THEN $targetType ELSE t.type END
-                 WITH s, t
-                 MERGE (s)-[r:RELATION {type: $relation, user_id: $userId}]->(t)
-                 ON CREATE SET r.weight = 1, r.created_at = datetime(), r.source_files = [$filename]
-                 ON MATCH  SET r.weight = r.weight + 1,
-                              r.source_files = CASE WHEN $filename IN coalesce(r.source_files, [])
-                                               THEN coalesce(r.source_files, [])
-                                               ELSE coalesce(r.source_files, []) + [$filename] END`,
-                {
+            await tx.run(
+              `UNWIND $batch AS item
+               OPTIONAL MATCH (existing_s:Entity {user_id: $userId})
+               WHERE toLower(existing_s.name) = toLower(item.source)
+               WITH item, collect(existing_s.name)[0] AS canonS
+               MERGE (s:Entity {name: coalesce(canonS, item.source), user_id: $userId})
+               ON CREATE SET s.type = item.sourceType, s.created_at = datetime()
+               ON MATCH  SET s.type = CASE WHEN s.type = 'Entity' THEN item.sourceType ELSE s.type END
+               WITH s, item
+               OPTIONAL MATCH (existing_t:Entity {user_id: $userId})
+               WHERE toLower(existing_t.name) = toLower(item.target)
+               WITH s, item, collect(existing_t.name)[0] AS canonT
+               MERGE (t:Entity {name: coalesce(canonT, item.target), user_id: $userId})
+               ON CREATE SET t.type = item.targetType, t.created_at = datetime()
+               ON MATCH  SET t.type = CASE WHEN t.type = 'Entity' THEN item.targetType ELSE t.type END
+               WITH s, t, item
+               MERGE (s)-[r:RELATION {type: item.relation, user_id: $userId}]->(t)
+               ON CREATE SET r.weight = 1, r.created_at = datetime(), r.source_files = [$filename]
+               ON MATCH  SET r.weight = r.weight + 1,
+                            r.source_files = CASE WHEN $filename IN coalesce(r.source_files, [])
+                                             THEN coalesce(r.source_files, [])
+                                             ELSE coalesce(r.source_files, []) + [$filename] END`,
+              {
+                batch: extractedData.map((item: GraphTriple) => ({
                   source:     item.source,
                   sourceType: item.source_type,
                   target:     item.target,
                   targetType: item.target_type,
                   relation:   item.relation,
-                  userId,
-                  filename:   filename || 'Unknown Source',
-                },
-              ),
+                })),
+                userId,
+                filename: filename || 'Unknown Source',
+              },
             );
-            await Promise.all(queries);
           });
         } finally {
           await session.close();
