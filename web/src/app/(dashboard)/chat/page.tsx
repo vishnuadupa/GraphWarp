@@ -134,6 +134,8 @@ export default function ChatPage() {
   const searchDebounce          = useRef<ReturnType<typeof setTimeout> | null>(null);
   const prevSelectedDocsLength  = useRef<number>(0);
   const viewPopoverRef          = useRef<HTMLDivElement>(null);
+  const filterRef               = useRef<HTMLDivElement>(null);
+  const rightPanelRef           = useRef<HTMLElement>(null);
   // Always-current graph ref so stream callbacks don't read stale state
   const graphRef                = useRef<GraphData>(EMPTY_GRAPH);
 
@@ -154,6 +156,43 @@ export default function ChatPage() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [viewOpen]);
+
+  // Close doc-filter dropdown on outside click
+  useEffect(() => {
+    if (!filterOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (filterRef.current && !filterRef.current.contains(e.target as Node)) {
+        setFilterOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [filterOpen]);
+
+  // Close right panel on outside click (click on graph area)
+  useEffect(() => {
+    if (!rightPanel) return;
+    const handler = (e: MouseEvent) => {
+      if (rightPanelRef.current && !rightPanelRef.current.contains(e.target as Node)) {
+        setRightPanel(null);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [rightPanel]);
+
+  // ESC key closes any open panel / dropdown
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (rightPanel) { setRightPanel(null); return; }
+      if (filterOpen)  { setFilterOpen(false); return; }
+      if (viewOpen)    { setViewOpen(false); return; }
+      if (sidebarOpen) { setSidebarOpen(false); return; }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, [rightPanel, filterOpen, viewOpen, sidebarOpen]);
 
   // Auto-sync graph panel with the selected doc
   // When exactly 1 doc is checked, show only that doc's subgraph.
@@ -723,7 +762,7 @@ export default function ChatPage() {
           </div>
 
           {availableDocs.length > 0 && (
-            <div className="relative">
+            <div className="relative" ref={filterRef}>
               <button onClick={() => setFilterOpen(!filterOpen)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-none bg-[var(--color-paper)] border-[2px] border-[var(--color-rule)] hover:bg-[var(--color-paper-3)] text-xs text-[var(--color-ink)] font-mono font-bold uppercase transition-colors shadow-sm cursor-pointer border-solid">
                 <Filter className="w-3 h-3" />
@@ -1101,7 +1140,8 @@ export default function ChatPage() {
             <motion.aside
               initial={{ x: "100%", opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: "100%", opacity: 0 }}
               transition={{ type: "spring", stiffness: 320, damping: 32 }}
-              className="absolute right-0 top-14 bottom-0 w-80 bg-[var(--color-paper)] border-l-[2px] border-[var(--color-rule)] border-solid z-30 flex flex-col shadow-lg"
+              ref={rightPanelRef}
+            className="absolute right-0 top-14 bottom-0 w-80 bg-[var(--color-paper)] border-l-[2px] border-[var(--color-rule)] border-solid z-30 flex flex-col shadow-lg"
             >
               {/* Tab bar */}
               <div className="flex items-center shrink-0 border-b-[2px] border-[var(--color-rule)] border-solid bg-[var(--color-paper-2)]">

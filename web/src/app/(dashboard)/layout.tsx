@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="dash-shell">
       <header className="dash-topbar">
         <div className="flex items-center gap-8">
-          <Link href="/" className="dash-wordmark uppercase hover:opacity-80 transition-opacity">
+          <Link href="/chat" className="dash-wordmark uppercase hover:opacity-80 transition-opacity">
             GRAPHWARP
           </Link>
           <nav className="hidden md:flex items-center gap-6">

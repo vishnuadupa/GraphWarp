@@ -40,9 +40,11 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const isApiRoute = request.nextUrl.pathname.startsWith('/api/') && !request.nextUrl.pathname.startsWith('/api/inngest');
-  const isProtectedUI = request.nextUrl.pathname === '/chat' || 
-                        request.nextUrl.pathname === '/upload' || 
+  const isProtectedUI = request.nextUrl.pathname === '/chat' ||
+                        request.nextUrl.pathname === '/upload' ||
                         request.nextUrl.pathname === '/documents';
+  const isAuthPage = request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup';
+  const isLanding  = request.nextUrl.pathname === '/';
 
   if (!user) {
     if (isApiRoute) {
@@ -51,6 +53,13 @@ export async function middleware(request: NextRequest) {
     if (isProtectedUI) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
+      return NextResponse.redirect(url);
+    }
+  } else {
+    // Logged-in users have no reason to see landing or auth pages — send to chat
+    if (isLanding || isAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/chat';
       return NextResponse.redirect(url);
     }
   }
