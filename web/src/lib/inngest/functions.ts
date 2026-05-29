@@ -3,6 +3,7 @@ import { supabaseAdmin } from '../supabase/service';
 import OpenAI from 'openai';
 import { driver } from '../neo4j/neo4j';
 import { withRetry } from '../utils/retry';
+import { VALID_CLASSES, getTemplate, type ExtractionTemplate } from './templates';
 import { MODELS } from '../config/models';
 import { embedBatch, embeddingsEnabled, DIMENSIONS } from '../embeddings';
 import * as mammoth from 'mammoth';
@@ -199,12 +200,6 @@ function parseXlsxToGraph(buffer: Buffer): GraphTriple[] {
   }
 }
 
-// Universal fallback entity types used when schema discovery fails or returns nothing.
-const DEFAULT_ENTITY_TYPES = [
-  'Person', 'Organization', 'Location', 'Event', 'Date',
-  'Concept', 'Technology', 'Product', 'Role', 'Document',
-];
-
 /** Split text into overlapping chunks so context bleeds across boundaries. */
 function chunkText(text: string, size = 4_000, overlap = 400): string[] {
   if (text.length <= size) return [text];
@@ -219,18 +214,17 @@ function chunkText(text: string, size = 4_000, overlap = 400): string[] {
   return chunks;
 }
 
-interface ChunkSchema {
-  entityTypes: string[];
-  relationVerbs: string[];
-}
-
 /**
- * Stage 1 — reads the first ~2 KB of the document and asks the LLM to infer
- * a mini-ontology (entity types + UPPER_CASE relationship verbs) that fits the
- * domain.  Runs once per document; result is passed into every chunk call.
+ * Phase 1 — CLASSIFY.
+ *
+ * Injection-safety guarantee: the LLM can only output one token from our
+ * closed enum (VALID_CLASSES). Any injection attempt in the document just
+ * produces a wrong or unrecognised classification, which falls back to
+ * "general". The document NEVER touches a template — templates are static
+ * code selected in pure TypeScript after this call returns.
  */
-async function discoverSchema(text: string): Promise<ChunkSchema> {
-  const sample = text.slice(0, 2_000);
+async function classifyDocument(sample: string): Promise<string> {
+  const classList = [...VALID_CLASSES].join(', ');
   try {
     const res = await withRetry(() =>
       getOpenRouter().chat.completions.create({
@@ -239,70 +233,61 @@ async function discoverSchema(text: string): Promise<ChunkSchema> {
           {
             role: 'system',
             content:
-              'You are a knowledge-graph schema expert. ' +
-              'Read the document sample and output ONLY a JSON object (no markdown) with two keys:\n' +
-              '  "entityTypes": 6–14 PascalCase type names suited to this domain\n' +
-              '  "relationVerbs": 12–20 UPPER_CASE relationship verbs (e.g. WORKS_FOR, PART_OF, FOUNDED_BY)\n' +
-              'Think broadly — include every kind of thing and link that naturally appears in this domain.',
+              `Classify the document into exactly one of the following categories and output ONLY that word — nothing else:\n${classList}`,
           },
-          { role: 'user', content: `Document sample:\n\n${sample}` },
+          { role: 'user', content: `Document sample (first 500 chars):\n\n${sample.slice(0, 500)}` },
         ],
-        max_tokens: 400,
+        max_tokens: 10,
       }),
     );
-    const raw = res.choices[0]?.message?.content ?? '{}';
-    const cleaned = raw.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
-    const parsed = JSON.parse(cleaned);
-    const entityTypes: string[] = Array.isArray(parsed.entityTypes) && parsed.entityTypes.length
-      ? parsed.entityTypes.map(String)
-      : DEFAULT_ENTITY_TYPES;
-    const relationVerbs: string[] = Array.isArray(parsed.relationVerbs)
-      ? parsed.relationVerbs.map(String)
-      : [];
-    return { entityTypes, relationVerbs };
+    const raw = (res.choices[0]?.message?.content ?? '').trim().toLowerCase().replace(/\W/g, '_');
+    // Validate against our enum — any unexpected output → 'general'
+    return VALID_CLASSES.has(raw) ? raw : 'general';
   } catch {
-    return { entityTypes: DEFAULT_ENTITY_TYPES, relationVerbs: [] };
+    return 'general';
   }
 }
 
 /**
- * Stage 2+3 — extract entities AND relationships from one chunk.
- * The entity registry (all entities found so far across previous chunks) is
- * passed in so the model can resolve coreferences (e.g. "Armstrong" → "Neil Armstrong").
+ * Phase 2+3 — EXTRACT (per chunk).
+ *
+ * The system prompt is built entirely from our static template (selected by
+ * classifyDocument). The document chunk is ONLY in the user message.
+ * Template content is never influenced by the document.
  */
 async function extractChunk(
   chunk: string,
-  schema: ChunkSchema,
+  template: ExtractionTemplate,
   registry: Array<{ name: string; type: string }>,
 ): Promise<{ entities: Array<{ name: string; type: string }>; triples: GraphTriple[] }> {
-  // Format registry compactly to keep prompt size down; cap at 200 entries.
+  // Format registry compactly; cap at 200 entries to control prompt size
   const regSlice = registry.slice(-200);
   const registryLine = regSlice.length
-    ? `\nKNOWN ENTITIES — use these exact canonical names, never create an alias:\n${
+    ? `\nKNOWN ENTITIES — always use these exact canonical names, never create an alias:\n${
         regSlice.map((e) => `${e.name} (${e.type})`).join(', ')
       }\n`
     : '';
 
-  const verbList = schema.relationVerbs.length
-    ? `Preferred relationship verbs (UPPER_CASE): ${schema.relationVerbs.join(', ')}. You may coin new UPPER_CASE verbs for relationships not covered by this list.`
-    : 'Use concise UPPER_CASE verbs for all relationships (e.g. WORKS_FOR, PART_OF, BORN_IN).';
-
+  // System prompt is 100% our code — template is static, never LLM-generated
   const systemPrompt =
-    `You extract a maximum-coverage knowledge graph from document text.\n\n` +
-    `ENTITY TYPES for this document: ${schema.entityTypes.join(', ')}\n` +
-    `${verbList}\n` +
-    `${registryLine}\n` +
+    `You extract a comprehensive knowledge graph from a ${template.label} document.\n\n` +
+    `ENTITY TYPES: ${template.entityTypes.join(', ')}\n\n` +
+    `RELATIONSHIP VERBS: ${template.relationVerbs.join(', ')}\n` +
+    `(You may coin new UPPER_CASE verbs for relationships not on this list, but prefer the list above.)\n\n` +
+    `EXTRACTION RULES — follow every rule precisely:\n` +
+    template.extractionRules.map((r, i) => `${i + 1}. ${r}`).join('\n') +
+    `\n${registryLine}\n` +
     `Output ONLY a JSON object (no markdown) with exactly two keys:\n` +
     `1. "entities": array of { "name": string, "type": string }\n` +
     `   - Include EVERY distinct entity mentioned — be exhaustive, not selective\n` +
     `   - Always use the most complete canonical form (full name, not pronoun or abbreviation)\n` +
-    `   - If an entity matches a KNOWN ENTITY above (e.g. "Armstrong" = "Neil Armstrong"), use the canonical name\n` +
-    `   - Choose the best-fitting type from the list above\n` +
+    `   - If an entity matches a KNOWN ENTITY above, use that exact canonical name\n` +
+    `   - Choose the best-fitting type from the ENTITY TYPES list\n` +
     `2. "relations": array of { "source": string, "source_type": string, "relation": string, "target": string, "target_type": string }\n` +
     `   - Extract EVERY relationship — explicit and implied\n` +
-    `   - source and target must be different entities from the "entities" array or KNOWN ENTITIES\n` +
-    `   - "relation" must be UPPER_CASE (e.g. PARTICIPATED_IN, LAUNCHED_BY, BORN_IN)\n` +
-    `   - Include direction: the grammatical subject is "source", object is "target"`;
+    `   - source and target must be different entities from "entities" or KNOWN ENTITIES\n` +
+    `   - "relation" must be UPPER_CASE\n` +
+    `   - Direction: grammatical subject → "source", object → "target"`;
 
   const res = await withRetry(() =>
     getOpenRouter().chat.completions.create({
@@ -541,21 +526,23 @@ export const processDocument = inngest.createFunction(
           console.warn(`[ingest] Document truncated from ${rawText.length} to ${MAX_CHARS} chars`);
         }
 
-        // ── Stage 1: Discover domain schema (one fast call on first 2 KB) ──
-        const schema = await discoverSchema(text);
-        console.log(`[ingest] Schema — types: ${schema.entityTypes.join(', ')}`);
-        console.log(`[ingest] Schema — verbs: ${schema.relationVerbs.join(', ')}`);
+        // ── Phase 1: Classify document (one tiny call, closed enum output) ──
+        // Injection-safe: LLM outputs ONE word from our enum. Document content
+        // never writes or modifies a template — templates are static code below.
+        const docClass = await classifyDocument(text);
+        const template  = getTemplate(docClass);
+        console.log(`[ingest] Classified as "${docClass}" → template: ${template.label}`);
 
-        // ── Stage 2+3: Chunk → extract entities + relations per chunk ──────
+        // ── Phase 2+3: Chunk → extract using static domain template ──────────
         const chunks = chunkText(text);
-        console.log(`[ingest] Processing ${chunks.length} chunk(s)`);
+        console.log(`[ingest] Processing ${chunks.length} chunk(s) with ${template.entityTypes.length} entity types, ${template.extractionRules.length} extraction rules`);
 
         const entityRegistry: Array<{ name: string; type: string }> = [];
         const allTriples: GraphTriple[] = [];
 
         for (let i = 0; i < chunks.length; i++) {
           try {
-            const { entities, triples } = await extractChunk(chunks[i], schema, entityRegistry);
+            const { entities, triples } = await extractChunk(chunks[i], template, entityRegistry);
 
             // Merge new entities into registry (case-insensitive dedup)
             for (const entity of entities) {
