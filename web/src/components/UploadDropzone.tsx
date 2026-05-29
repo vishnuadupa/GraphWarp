@@ -120,6 +120,9 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
           <p className="text-xs text-[var(--color-neutral)] font-mono uppercase tracking-widest pt-1">
             {ACCEPTED_TYPES.join("  ·  ")} (Max 10MB)
           </p>
+          <p className="text-xs text-[var(--color-neutral)] font-mono pt-1">
+            PDF must be text-based — scanned / image-only PDFs are not supported
+          </p>
         </div>
       </label>
 
