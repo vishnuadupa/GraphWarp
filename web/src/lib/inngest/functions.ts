@@ -530,8 +530,8 @@ export const processDocument = inngest.createFunction(
           console.log(`[ingest] Text (${ext}) — ${rawText.length} chars`);
         }
 
-        // Cap to prevent timeouts on very large files (~10 chunks max)
-        const MAX_CHARS = 40_000;
+        // Cap at 20 000 chars (~13 chunks) — controls token spend per document
+        const MAX_CHARS = 20_000;
         const text = rawText.slice(0, MAX_CHARS);
         if (rawText.length > MAX_CHARS) {
           console.warn(`[ingest] Document truncated from ${rawText.length} to ${MAX_CHARS} chars`);
