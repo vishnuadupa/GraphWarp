@@ -8,7 +8,7 @@ interface UploadDropzoneProps {
 }
 
 const ACCEPTED_TYPES = [".docx", ".txt", ".csv", ".xlsx", ".xls", ".pdf"];
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
 interface ToastError { id: number; msg: string }
 let errorSeq = 0;
@@ -35,7 +35,7 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
           return false;
         }
         if (f.size > MAX_FILE_SIZE) {
-          pushError(`"${f.name}" exceeds the 10 MB limit (${(f.size / 1024 / 1024).toFixed(1)} MB).`);
+          pushError(`"${f.name}" exceeds the 2 MB limit (${(f.size / 1024 / 1024).toFixed(1)} MB).`);
           return false;
         }
         return true;
@@ -90,7 +90,7 @@ export default function UploadDropzone({ onFilesSelected }: UploadDropzoneProps)
             <span className="text-[var(--color-ink)] font-bold hover:opacity-85 underline underline-offset-2">browse files</span>
           </p>
           <p className="text-xs text-[var(--color-neutral)] font-mono uppercase tracking-widest pt-1">
-            {ACCEPTED_TYPES.join("  ·  ")} (Max 10 MB)
+            {ACCEPTED_TYPES.join("  ·  ")} (Max 2 MB)
           </p>
           <p className="text-xs text-[var(--color-neutral)] font-mono pt-1">
             PDF must be text-based — scanned / image-only PDFs are not supported

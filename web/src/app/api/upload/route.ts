@@ -30,7 +30,7 @@ export async function POST(request: Request) {
 
     // Server-side file type guard — only allow the supported formats
     const ALLOWED_EXTENSIONS = new Set(['.docx', '.txt', '.csv', '.xlsx', '.xls', '.pdf']);
-    const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
+    const MAX_FILE_BYTES = 2 * 1024 * 1024; // 2 MB
     const ext = '.' + (filename.split('.').pop()?.toLowerCase() ?? '');
     if (!ALLOWED_EXTENSIONS.has(ext)) {
       return NextResponse.json(
@@ -46,11 +46,19 @@ export async function POST(request: Request) {
         search: filePath.split('/').pop(),
       });
     const fileSize = fileMeta?.[0]?.metadata?.size ?? 0;
+    if (fileSize === 0) {
+      // Remove the zero-byte file from storage
+      await supabaseAdmin.storage.from('documents').remove([filePath]);
+      return NextResponse.json(
+        { error: 'Uploaded file is empty (0 bytes). Please upload a valid document.' },
+        { status: 422 },
+      );
+    }
     if (fileSize > MAX_FILE_BYTES) {
       // Remove the oversized file from storage
       await supabaseAdmin.storage.from('documents').remove([filePath]);
       return NextResponse.json(
-        { error: `File exceeds the 10 MB size limit (${(fileSize / 1024 / 1024).toFixed(1)} MB).` },
+        { error: `File exceeds the 2 MB size limit (${(fileSize / 1024 / 1024).toFixed(1)} MB uploaded). Please compress or split the file.` },
         { status: 413 },
       );
     }
