@@ -139,6 +139,7 @@ export default function ChatPage() {
   const viewPopoverRef          = useRef<HTMLDivElement>(null);
   const filterRef               = useRef<HTMLDivElement>(null);
   const rightPanelRef           = useRef<HTMLElement>(null);
+  const cancelRenameRef         = useRef<boolean>(false);
   // Always-current graph ref so stream callbacks don't read stale state
   const graphRef                = useRef<GraphData>(EMPTY_GRAPH);
 
@@ -758,10 +759,10 @@ export default function ChatPage() {
                             value={renameValue}
                             onChange={(e) => setRenameValue(e.target.value)}
                             onKeyDown={(e) => {
-                              if (e.key === "Enter") handleRename(conv.id);
-                              if (e.key === "Escape") setRenamingId(null);
+                              if (e.key === "Enter") { handleRename(conv.id); }
+                              if (e.key === "Escape") { cancelRenameRef.current = true; setRenamingId(null); }
                             }}
-                            onBlur={() => handleRename(conv.id)}
+                            onBlur={() => { if (!cancelRenameRef.current) handleRename(conv.id); cancelRenameRef.current = false; }}
                             className="w-full text-xs font-mono font-bold bg-[var(--color-paper)] border-[1px] border-[var(--color-ink)] px-2 py-1 outline-none text-[var(--color-ink)]"
                           />
                           <p className="text-[9px] font-mono text-[var(--color-neutral)] mt-1">Enter to save · Esc to cancel</p>

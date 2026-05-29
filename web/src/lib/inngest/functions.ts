@@ -1,6 +1,7 @@
 import { inngest } from './client';
 import { supabaseAdmin } from '../supabase/service';
 import OpenAI from 'openai';
+import { NonRetriableError } from 'inngest';
 import { driver } from '../neo4j/neo4j';
 import { withRetry } from '../utils/retry';
 import { VALID_CLASSES, getTemplate, type ExtractionTemplate } from './templates';
@@ -195,13 +196,23 @@ function parseXlsxToGraph(buffer: Buffer): GraphTriple[] {
     const csv = XLSX.utils.sheet_to_csv(sheet);
     return parseCsvToGraph(Buffer.from(csv, 'utf8'));
   } catch (err: any) {
-    console.warn('[ingest] XLSX parse failed:', err?.message);
-    return [];
+    // Throw a non-retriable error so the user gets a clear failure signal,
+    // not a silent 'Completed' document with 0 entities.
+    throw new NonRetriableError(
+      `Could not parse Excel file: ${err?.message ?? 'unknown error'}. The file may be corrupt or in an unsupported format.`
+    );
   }
 }
 
-/** Split text into overlapping chunks so context bleeds across boundaries. */
-function chunkText(text: string, size = 4_000, overlap = 400): string[] {
+/** Split text into overlapping chunks so context bleeds across boundaries.
+ *
+ * Size is intentionally conservative (1 500 chars ≈ 375 tokens of input).
+ * Dense structured files (numbered lists, member directories, data tables)
+ * can generate 10 000+ tokens of JSON output from a single 4 000-char chunk,
+ * which silently truncates on models with ≤ 4 096 output tokens.
+ * Smaller input chunks → manageable output → no silent parse failures.
+ */
+function chunkText(text: string, size = 1_500, overlap = 200): string[] {
   if (text.length <= size) return [text];
   const chunks: string[] = [];
   let start = 0;
@@ -500,16 +511,16 @@ export const processDocument = inngest.createFunction(
             const pdfParse = (pdfMod as any).default ?? pdfMod;
             pdfData = await pdfParse(rawBuffer);
           } catch (pdfErr: any) {
-            throw new Error(
+            throw new NonRetriableError(
               `Could not parse PDF: ${pdfErr?.message ?? 'unknown error'}. ` +
               'The file may be corrupt, password-protected, or in an unsupported format.',
             );
           }
           rawText = pdfData.text ?? '';
           console.log(`[ingest] PDF — ${pdfData.numpages} pages, ${rawText.length} chars`);
-          // Scanned / image-only PDFs produce near-zero text — catch early
+          // Scanned / image-only PDFs produce near-zero text — fail fast, don't retry
           if (rawText.trim().length < 100) {
-            throw new Error(
+            throw new NonRetriableError(
               `This PDF appears to be scanned or image-only (only ${rawText.trim().length} characters extracted). ` +
               'Please upload a text-based PDF exported from a document editor.',
             );
@@ -591,21 +602,24 @@ export const processDocument = inngest.createFunction(
 
       console.log(`[ingest] Extracted ${extractedData.length} triples from "${filename}"`);
 
+      // ── Early abort if extraction produced 0 triples ───────────────────────
+      // This prevents Step 4 (update-status) from overwriting a 'Failed' status
+      // with 'Completed', which was the root cause of the 'Completed with 0 entities' bug.
+      if (!extractedData.length) {
+        await step.run('mark-failed-empty', async () => {
+          await supabaseAdmin
+            .from('documents')
+            .update({ status: 'Failed', processing_step: null })
+            .eq('id', documentId);
+        });
+        return { success: false, reason: 'no triples extracted' };
+      }
+
       // ── Step 3: Save to Neo4j ──────────────────────────────────────────────
       // Schema init (index + constraint) is handled once in neo4j.ts on cold
       // start — not repeated here on every file.
       await step.run('save-to-neo4j', async () => {
         await supabaseAdmin.from('documents').update({ processing_step: 'saving' }).eq('id', documentId);
-
-        if (!extractedData.length) {
-          // Mark the document as Failed so the user sees a clear signal rather
-          // than a "Completed" document with 0 nodes in the graph.
-          await supabaseAdmin
-            .from('documents')
-            .update({ status: 'Failed', processing_step: null })
-            .eq('id', documentId);
-          return { inserted: 0, reason: 'no triples extracted' };
-        }
 
         const session = driver.session();
         try {
