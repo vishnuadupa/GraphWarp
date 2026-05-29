@@ -509,11 +509,26 @@ export const processDocument = inngest.createFunction(
           console.log(`[ingest] DOCX — extracted ${rawText.length} chars`);
         } else if (ext === 'pdf') {
           // Dynamic import avoids build-time crashes (pdf-parse uses fs at module level)
-          const pdfMod = await import('pdf-parse');
-          const pdfParse = (pdfMod as any).default ?? pdfMod;
-          const pdfData = await pdfParse(rawBuffer);
-          rawText = pdfData.text;
+          let pdfData: any;
+          try {
+            const pdfMod = await import('pdf-parse');
+            const pdfParse = (pdfMod as any).default ?? pdfMod;
+            pdfData = await pdfParse(rawBuffer);
+          } catch (pdfErr: any) {
+            throw new Error(
+              `Could not parse PDF: ${pdfErr?.message ?? 'unknown error'}. ` +
+              'The file may be corrupt, password-protected, or in an unsupported format.',
+            );
+          }
+          rawText = pdfData.text ?? '';
           console.log(`[ingest] PDF — ${pdfData.numpages} pages, ${rawText.length} chars`);
+          // Scanned / image-only PDFs produce near-zero text — catch early
+          if (rawText.trim().length < 100) {
+            throw new Error(
+              `This PDF appears to be scanned or image-only (only ${rawText.trim().length} characters extracted). ` +
+              'Please upload a text-based PDF exported from a document editor.',
+            );
+          }
         } else {
           rawText = rawBuffer.toString('utf8');
           console.log(`[ingest] Text (${ext}) — ${rawText.length} chars`);
@@ -559,10 +574,30 @@ export const processDocument = inngest.createFunction(
         }
 
         // ── Pre-write alias resolution ────────────────────────────────────
-        // Collapse short-form aliases to canonical names before Neo4j write.
-        // e.g. "Armstrong" → "Neil Armstrong" when both appear in the batch.
-        const resolved = resolveAliases(allTriples);
-        console.log(`[ingest] After alias resolution: ${resolved.length} triples (was ${allTriples.length})`);
+        // 1. Collapse short-form aliases ("Armstrong" → "Neil Armstrong")
+        const aliasResolved = resolveAliases(allTriples);
+
+        // 2. Case-fold: if the same name appears with different casing across
+        //    chunks (e.g. "Neil Armstrong" vs "neil armstrong"), unify to the
+        //    first-seen casing so the MERGE hits one node instead of two.
+        const caseMap = new Map<string, string>();
+        for (const t of aliasResolved) {
+          if (!caseMap.has(t.source.toLowerCase())) caseMap.set(t.source.toLowerCase(), t.source);
+          if (!caseMap.has(t.target.toLowerCase())) caseMap.set(t.target.toLowerCase(), t.target);
+        }
+        const resolved = aliasResolved
+          .map((t) => ({
+            ...t,
+            source: caseMap.get(t.source.toLowerCase()) ?? t.source,
+            target: caseMap.get(t.target.toLowerCase()) ?? t.target,
+          }))
+          .filter((t) => t.source !== t.target);
+
+        console.log(`[ingest] After alias + case resolution: ${resolved.length} triples (was ${allTriples.length})`);
+
+        if (resolved.length === 0) {
+          console.warn('[ingest] Extraction produced 0 triples — document will be marked Completed with 0 entities');
+        }
 
         return resolved;
       });
@@ -575,7 +610,15 @@ export const processDocument = inngest.createFunction(
       await step.run('save-to-neo4j', async () => {
         await supabaseAdmin.from('documents').update({ processing_step: 'saving' }).eq('id', documentId);
 
-        if (!extractedData.length) return { inserted: 0 };
+        if (!extractedData.length) {
+          // Mark the document as Failed so the user sees a clear signal rather
+          // than a "Completed" document with 0 nodes in the graph.
+          await supabaseAdmin
+            .from('documents')
+            .update({ status: 'Failed', processing_step: null })
+            .eq('id', documentId);
+          return { inserted: 0, reason: 'no triples extracted' };
+        }
 
         const session = driver.session();
         try {
