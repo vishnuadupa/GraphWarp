@@ -20,7 +20,7 @@ function getInstance() {
       neo4j.auth.basic(user, password),
       {
         // Keep a modest pool — AuraDB free tier limits concurrent connections
-        maxConnectionPoolSize: 1,
+        maxConnectionPoolSize: 5,
         // Wait patiently for connections during Vercel cold starts
         connectionAcquisitionTimeout: 30_000,
         // Retry managed transactions for up to 15 s on transient errors
