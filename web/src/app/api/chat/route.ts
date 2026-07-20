@@ -356,7 +356,7 @@ export async function POST(req: NextRequest) {
             ? `\nConversation history (most recent last):\n${
                 messageHistory
                   .slice(-12)
-                  .map((m) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content.slice(0, 400)}`)
+                  .map((m: { role: string; content: string }) => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content.slice(0, 400)}`)
                   .join('\n')
               }\n`
             : '';
