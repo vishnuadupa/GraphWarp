@@ -39,8 +39,9 @@ CREATE POLICY "Users can delete their own semantic cache"
     USING ((select auth.uid()) = user_id);
 
 -- Cosine-similarity nearest-neighbour lookup, scoped to the caller's own rows.
--- SECURITY INVOKER (default) + RLS means this can only ever return the
--- calling user's cache entries even if user_id_param is spoofed.
+-- search_path includes extensions (where pgvector's <=> operator lives after
+-- the DB-hardening migration moved it out of public) and public, never a
+-- caller-writable schema — SECURITY INVOKER + RLS still gates the actual rows.
 CREATE OR REPLACE FUNCTION public.match_semantic_cache(
     query_embedding vector(768),
     match_threshold float,
@@ -50,7 +51,7 @@ CREATE OR REPLACE FUNCTION public.match_semantic_cache(
 RETURNS TABLE (id uuid, answer text, similarity float)
 LANGUAGE sql
 STABLE
-SET search_path = ''
+SET search_path = 'extensions', 'public'
 AS $$
     SELECT
         sc.id,

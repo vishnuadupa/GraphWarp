@@ -352,6 +352,11 @@ export const processDocument = inngest.createFunction(
     // Limit to 3 concurrent jobs per user so Neo4j and OpenRouter aren't
     // hammered when someone uploads many files at once.
     concurrency: { limit: 3, key: 'event.data.userId' },
+    // Without this, a hung OpenRouter call (network stall, not an error) can
+    // leave a document stuck in "Processing" forever with no retry and no
+    // visible failure. 10 minutes covers the largest documents (13 chunks)
+    // with real margin even sequentially; comfortably more with batching.
+    timeouts: { finish: '10m' },
   },
   async ({ event, step }: { event: { data: { documentId: string; filePath: string; userId: string; filename: string } }; step: any }) => {
     const { documentId, filePath, userId, filename } = event.data;
@@ -420,11 +425,33 @@ export const processDocument = inngest.createFunction(
         const entityRegistry: Array<{ name: string; type: string }> = [];
         const allTriples: GraphTriple[] = [];
 
-        for (let i = 0; i < chunks.length; i++) {
-          try {
-            const { entities, triples } = await extractChunk(chunks[i].text, template, entityRegistry);
+        // Chunks within a batch run concurrently (real latency win — one
+        // sequential LLM round-trip per chunk was the biggest lever in this
+        // pipeline); the registry only updates BETWEEN batches, so chunks in
+        // the same batch don't see each other's freshly-extracted entities.
+        // Full parallelism would drop that cross-chunk registry entirely —
+        // resolveAliases() below still reconciles casing/alias drift after
+        // the fact, so this is a deliberate latency/consistency tradeoff,
+        // not a correctness bug.
+        const CHUNK_CONCURRENCY = 4;
+        for (let batchStart = 0; batchStart < chunks.length; batchStart += CHUNK_CONCURRENCY) {
+          const batch = chunks.slice(batchStart, batchStart + CHUNK_CONCURRENCY);
+          const batchResults = await Promise.all(
+            batch.map(async (chunk, offset) => {
+              const i = batchStart + offset;
+              try {
+                const { entities, triples } = await extractChunk(chunk.text, template, entityRegistry);
+                const sourceChunk = `${filename}#${chunk.start}-${chunk.end}`;
+                console.log(`[ingest] Chunk ${i + 1}/${chunks.length} → ${entities.length} entities, ${triples.length} relations`);
+                return { entities, triples: triples.map((t) => ({ ...t, source_chunk: sourceChunk })) };
+              } catch (err: any) {
+                console.warn(`[ingest] Chunk ${i + 1} failed, skipping: ${err?.message}`);
+                return { entities: [] as Array<{ name: string; type: string }>, triples: [] as GraphTriple[] };
+              }
+            }),
+          );
 
-            // Merge new entities into registry (case-insensitive dedup)
+          for (const { entities, triples } of batchResults) {
             for (const entity of entities) {
               if (entity.name.length >= 2 && !entityRegistry.some(
                 (e) => e.name.toLowerCase() === entity.name.toLowerCase(),
@@ -432,14 +459,7 @@ export const processDocument = inngest.createFunction(
                 entityRegistry.push(entity);
               }
             }
-
-            // Tag provenance ourselves — never trust the LLM to report its
-            // own source location.
-            const sourceChunk = `${filename}#${chunks[i].start}-${chunks[i].end}`;
-            allTriples.push(...triples.map((t) => ({ ...t, source_chunk: sourceChunk })));
-            console.log(`[ingest] Chunk ${i + 1}/${chunks.length} → ${entities.length} entities, ${triples.length} relations`);
-          } catch (err: any) {
-            console.warn(`[ingest] Chunk ${i + 1} failed, skipping: ${err?.message}`);
+            allTriples.push(...triples);
           }
         }
 
