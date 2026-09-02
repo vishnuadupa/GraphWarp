@@ -5,6 +5,9 @@ import { driver } from '@/lib/neo4j/neo4j';
 import { withRetry } from '@/lib/utils/retry';
 import { MODELS } from '@/lib/config/models';
 import { embedText, embeddingsEnabled } from '@/lib/embeddings';
+import { logLlmUsage, logRequestLatency } from '@/lib/observability/usage-log';
+import { classifyQuery } from '@/lib/retrieval/router';
+import { checkGroundedness } from '@/lib/retrieval/groundedness';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
@@ -47,6 +50,8 @@ export async function POST(req: NextRequest) {
     if (typeof question !== 'string' || !question) return NextResponse.json({ error: 'Message is required' }, { status: 400 });
 
     const encoder = new TextEncoder();
+
+    const requestStarted = Date.now();
 
     const stream = new ReadableStream({
       async start(controller) {
@@ -112,15 +117,31 @@ export async function POST(req: NextRequest) {
           // ── Phase 1: entity extraction ────────────────────────────────────
           send({ type: 'phase', data: 'searching' });
 
-          const extractResult = await withRetry(() =>
-            getOpenRouter().chat.completions.create({
-              model: MODELS.CHAT,
-              messages: [{
-                role: 'user',
-                content: `Extract the key entities from this question as a JSON array of strings. Keep entity names concise and capitalized. Output ONLY the JSON array, no other text. Question: ${question}`,
-              }],
-            })
-          );
+          const client = getOpenRouter();
+          const extractStarted = Date.now();
+
+          // Entity extraction and query routing are independent cheap calls — run them together.
+          const [extractResult, queryRoute] = await Promise.all([
+            withRetry(() =>
+              client.chat.completions.create({
+                model: MODELS.CHAT,
+                messages: [{
+                  role: 'user',
+                  content: `Extract the key entities from this question as a JSON array of strings. Keep entity names concise and capitalized. Output ONLY the JSON array, no other text. Question: ${question}`,
+                }],
+              })
+            ),
+            classifyQuery(client, question, user.id),
+          ]);
+          logLlmUsage({ route: 'chat', model: MODELS.CHAT, usage: extractResult.usage, latencyMs: Date.now() - extractStarted, userId: user.id });
+
+          // single_hop → 1-hop only, skip vector fallback when literal matching hits.
+          // multi_hop → full 3-tier + 2-hop pipeline (unchanged baseline).
+          // summarization → treated as multi_hop for now; a real global/community-summary
+          // path needs a community-detection layer that doesn't exist yet — future work.
+          const singleHop = queryRoute === 'single_hop';
+          console.log('[chat] query route: %s', queryRoute);
+
           let entities: string[] = [];
           try {
             const txt = extractResult.choices[0]?.message?.content || '[]';
@@ -140,13 +161,15 @@ export async function POST(req: NextRequest) {
           send({ type: 'phase', data: 'traversing' });
 
           let subgraphData = '';
-          const session = driver.session();
           let nodes: any[] = [];
-          let links: any[] = [];
+          const links: any[] = [];
           // matchedNodeIds = direct entity hits (start nodes); activeNodeIds = full subgraph
-          let matchedNodeIds = new Set<string>();
+          const matchedNodeIds = new Set<string>();
+          let graphUnavailable = false;
 
           try {
+            const session = driver.session();
+            try {
             subgraphData = await session.executeRead(async (tx: any) => {
               const nodeMap = new Map<string, any>();
               const linkMap = new Map<string, boolean>();
@@ -167,6 +190,14 @@ export async function POST(req: NextRequest) {
                 ? `AND any(f IN coalesce(r2.source_files, CASE WHEN r2.source_file IS NOT NULL THEN [r2.source_file] ELSE [] END)
                        WHERE f IN $selectedDocs OR any(doc IN $selectedDocs WHERE f CONTAINS doc))`
                 : '';
+
+              // single_hop questions don't need the second-hop expansion — drop the
+              // OPTIONAL MATCH and alias r2/k to null so the RETURN shape is unchanged.
+              const hop2Match = singleHop
+                ? ''
+                : `OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
+                   WHERE k.user_id = $uid AND k <> startNode AND k <> m ${docFilterR2}`;
+              const hop2Vars = singleHop ? 'null AS r2, null AS k' : 'r2, k';
 
               const lowerEntities = entities.map((e) => e.toLowerCase());
 
@@ -248,9 +279,8 @@ export async function POST(req: NextRequest) {
                    WHERE startNode.user_id = $uid AND toLower(startNode.name) IN $lowerEntities
                    MATCH (startNode)-[r1:RELATION]-(m:Entity)
                    WHERE m.user_id = $uid ${docFilterR1}
-                   OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                   WHERE k.user_id = $uid AND k <> startNode AND k <> m ${docFilterR2}
-                   WITH startNode, r1, m, r2, k,
+                   ${hop2Match}
+                   WITH startNode, r1, m, ${hop2Vars},
                         COUNT { (startNode)-[:RELATION]-() } AS sDeg,
                         COUNT { (m)-[:RELATION]-() } AS mDeg
                    RETURN startNode, r1, m, r2, k, sDeg, mDeg
@@ -270,9 +300,8 @@ export async function POST(req: NextRequest) {
                    WHERE startNode.user_id = $uid AND any(entity IN $lowerEntities WHERE toLower(startNode.name) CONTAINS entity OR entity CONTAINS toLower(startNode.name))
                    MATCH (startNode)-[r1:RELATION]-(m:Entity)
                    WHERE m.user_id = $uid ${docFilterR1}
-                   OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                   WHERE k.user_id = $uid AND k <> startNode AND k <> m ${docFilterR2}
-                   WITH startNode, r1, m, r2, k,
+                   ${hop2Match}
+                   WITH startNode, r1, m, ${hop2Vars},
                         COUNT { (startNode)-[:RELATION]-() } AS sDeg,
                         COUNT { (m)-[:RELATION]-() } AS mDeg
                    RETURN startNode, r1, m, r2, k, sDeg, mDeg
@@ -284,8 +313,9 @@ export async function POST(req: NextRequest) {
                 captureMatchedNodes(substringRes.records);
               }
 
-              // Step C: Vector similarity search (for semantic matches, wrapped safely)
-              if (validEmbeddings.length > 0) {
+              // Step C: Vector similarity search (for semantic matches, wrapped safely).
+              // single_hop skips it entirely once literal matching already found nodes.
+              if (validEmbeddings.length > 0 && !(singleHop && nodeMap.size > 0)) {
                 for (const embedding of validEmbeddings) {
                   try {
                     const vectorRes = await tx.run(
@@ -294,9 +324,8 @@ export async function POST(req: NextRequest) {
                        WHERE startNode.user_id = $uid
                        MATCH (startNode)-[r1:RELATION]-(m:Entity)
                        WHERE m.user_id = $uid ${docFilterR1}
-                       OPTIONAL MATCH (m)-[r2:RELATION]-(k:Entity)
-                       WHERE k.user_id = $uid AND k <> startNode AND k <> m ${docFilterR2}
-                       WITH startNode, r1, m, r2, k,
+                       ${hop2Match}
+                       WITH startNode, r1, m, ${hop2Vars},
                             COUNT { (startNode)-[:RELATION]-() } AS sDeg,
                             COUNT { (m)-[:RELATION]-() } AS mDeg
                        RETURN startNode, r1, m, r2, k, sDeg, mDeg
@@ -323,8 +352,22 @@ export async function POST(req: NextRequest) {
               }
               return parts.join('\n\n') + '\n';
             });
-          } finally {
-            await session.close();
+            } finally {
+              await session.close();
+            }
+          } catch (graphErr) {
+            // Neo4j itself is down/unreachable (a missing vector index is already
+            // swallowed per-step above). Fail honestly rather than letting synthesis
+            // run on empty context and answer from parametric knowledge.
+            console.error('[chat] Neo4j graph search failed:', graphErr);
+            graphUnavailable = true;
+          }
+
+          if (graphUnavailable) {
+            send({ type: 'error', data: 'The knowledge graph is temporarily unavailable. Please try again in a moment.' });
+            send({ type: 'phase', data: null });
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+            return;
           }
 
           console.log('[chat] graph results: nodes=%d links=%d subgraph_chars=%d', nodes.length, links.length, subgraphData.length);
@@ -379,11 +422,13 @@ Current question: ${question}
 
 AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q3?"]</suggestions>`;
 
+          const synthStarted = Date.now();
           const synthStream = await withRetry(() =>
-            getOpenRouter().chat.completions.create({
+            client.chat.completions.create({
               model: MODELS.CHAT,
               messages: [{ role: 'user', content: synthPrompt }],
               stream: true,
+              stream_options: { include_usage: true }, // usage arrives on the final chunk
             })
           );
 
@@ -393,7 +438,10 @@ AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q
           let suggestionBuffer = ''; // accumulates once we see <suggestions>
           let inSuggestions = false;
 
+          let synthUsage: { prompt_tokens?: number; completion_tokens?: number } | undefined;
+
           for await (const chunk of synthStream) {
+            if (chunk.usage) synthUsage = chunk.usage;
             const text = chunk.choices[0]?.delta?.content || '';
             if (!text) continue;
             fullText += text;
@@ -415,6 +463,8 @@ AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q
               }
             }
           }
+
+          logLlmUsage({ route: 'chat', model: MODELS.CHAT, usage: synthUsage, latencyMs: Date.now() - synthStarted, userId: user.id });
 
           // Extract and send suggestions after stream completes
           const sugMatch = fullText.match(/<suggestions>([\s\S]*?)<\/suggestions>/);
@@ -438,6 +488,17 @@ AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q
             if (error) console.warn('[chat] Semantic cache save failed:', error);
           }
 
+          // ── Post-generation groundedness check ──
+          // Advisory only: the answer has already streamed. null result → skip the
+          // event (fail open — the 0-node guardrail above already blocks empty context).
+          const verdict = await checkGroundedness(
+            client,
+            fullText.replace(/<suggestions>[\s\S]*?<\/suggestions>/, '').trim(),
+            subgraphData,
+            user.id,
+          );
+          if (verdict) send({ type: 'groundedness', data: verdict });
+
           send({ type: 'phase', data: null });
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
 
@@ -445,6 +506,8 @@ AT THE END output exactly 3 follow-up questions as: <suggestions>["Q1?","Q2?","Q
           console.error('Streaming error:', err);
           send({ type: 'error', data: 'Internal Server Error' });
         } finally {
+          // Covers every exit path above (cache hit, rate limit, guardrail, error)
+          logRequestLatency('chat', Date.now() - requestStarted, user.id);
           controller.close();
         }
       },
