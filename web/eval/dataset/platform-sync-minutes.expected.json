@@ -1,0 +1,48 @@
+{
+  "name": "platform-sync-minutes",
+  "expectedClass": "general",
+  "acceptableClasses": ["general", "technical", "financial_business"],
+  "notes": "Deliberately ambiguous: meeting minutes have no dedicated class. 'general' is the intended bucket, but technical/financial_business are defensible from the first 500 chars, so all three count as correct.",
+  "entities": [
+    { "name": "Priya Raghavan", "type": "Person" },
+    { "name": "Tom Beckett", "type": "Person" },
+    { "name": "Elena Sorokina", "type": "Person" },
+    { "name": "Ravi Menon", "type": "Person" },
+    { "name": "Dana Whitfield", "type": "Person" },
+    { "name": "Platform Sync", "type": "Event" },
+    { "name": "Boston", "type": "Location" },
+    { "name": "Frankfurt", "type": "Location" },
+    { "name": "Atlas Reporting Suite", "type": "Product" },
+    { "name": "Brightpath Consulting", "type": "Organization" },
+    { "name": "Lumen Metrics", "type": "Organization" },
+    { "name": "2025-06-11", "type": "Date" },
+    { "name": "2025-07-01", "type": "Date" },
+    { "name": "2025-06-25", "type": "Date" }
+  ],
+  "relationships": [
+    { "source": "Priya Raghavan", "relation": "LED_BY", "target": "Platform Sync" },
+    { "source": "Elena Sorokina", "relation": "PARTICIPATED_IN", "target": "Platform Sync" },
+    { "source": "Ravi Menon", "relation": "PARTICIPATED_IN", "target": "Platform Sync" },
+    { "source": "Ravi Menon", "relation": "RELATED_TO", "target": "Atlas Reporting Suite" },
+    { "source": "Platform Sync", "relation": "LOCATED_IN", "target": "Boston" },
+    { "source": "Dana Whitfield", "relation": "RELATED_TO", "target": "Brightpath Consulting" },
+    { "source": "Atlas Reporting Suite", "relation": "OCCURRED_ON", "target": "2025-07-01" }
+  ],
+  "qa": [
+    {
+      "question": "Who owns the action item for load testing, and by when?",
+      "expectedAnswer": "Ravi Menon, before the 2025-07-01 launch date.",
+      "answerable": true
+    },
+    {
+      "question": "What caused the ingestion backlog?",
+      "expectedAnswer": "A concurrency limit on the extraction worker during the Lumen Metrics data import.",
+      "answerable": true
+    },
+    {
+      "question": "How much was Elena Sorokina's Q2 bonus?",
+      "expectedAnswer": null,
+      "answerable": false
+    }
+  ]
+}

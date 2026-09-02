@@ -1,0 +1,55 @@
+{
+  "name": "ingestion-architecture",
+  "expectedClass": "technical",
+  "acceptableClasses": ["technical"],
+  "notes": "Software architecture doc; first 500 chars are unambiguously technical.",
+  "entities": [
+    { "name": "Ingestion Service", "type": "Service" },
+    { "name": "Inngest", "type": "Library" },
+    { "name": "Supabase Storage", "type": "Service" },
+    { "name": "Neo4j", "type": "Database" },
+    { "name": "OpenRouter", "type": "Service" },
+    { "name": "neo4j-driver", "type": "Library" },
+    { "name": "Bolt", "type": "Protocol" },
+    { "name": "HTTPS", "type": "Protocol" },
+    { "name": "POST /api/ingest", "type": "Endpoint" },
+    { "name": "document.process", "type": "Event" },
+    { "name": "DocumentClassifier", "type": "Component" },
+    { "name": "ChunkExtractor", "type": "Component" },
+    { "name": "SchemaDiscovery", "type": "Component" },
+    { "name": "ExtractionParseError", "type": "Error" },
+    { "name": "MAX_CHUNK_CHARS", "type": "Configuration" },
+    { "name": "Vercel", "type": "Platform" },
+    { "name": "OPENAI_API_KEY", "type": "Configuration" },
+    { "name": "Elena Sorokina", "type": "Author" }
+  ],
+  "relationships": [
+    { "source": "Ingestion Service", "relation": "DEPENDS_ON", "target": "Neo4j" },
+    { "source": "Ingestion Service", "relation": "DEPENDS_ON", "target": "Supabase Storage" },
+    { "source": "Ingestion Service", "relation": "DEPENDS_ON", "target": "OpenRouter" },
+    { "source": "Ingestion Service", "relation": "EXPOSES", "target": "POST /api/ingest" },
+    { "source": "Ingestion Service", "relation": "EMITS", "target": "document.process" },
+    { "source": "SchemaDiscovery", "relation": "DEPRECATED_BY", "target": "DocumentClassifier" },
+    { "source": "ChunkExtractor", "relation": "THROWS", "target": "ExtractionParseError" },
+    { "source": "Ingestion Service", "relation": "DEPLOYED_ON", "target": "Vercel" },
+    { "source": "Neo4j", "relation": "CONNECTS_TO", "target": "Bolt" },
+    { "source": "Ingestion Service", "relation": "AUTHORED_BY", "target": "Elena Sorokina" }
+  ],
+  "qa": [
+    {
+      "question": "Which component replaces SchemaDiscovery?",
+      "expectedAnswer": "DocumentClassifier; SchemaDiscovery is deprecated and removed in v3.0.0.",
+      "answerable": true
+    },
+    {
+      "question": "What protocol does the worker use to talk to Neo4j?",
+      "expectedAnswer": "The Bolt protocol, via the neo4j-driver library.",
+      "answerable": true
+    },
+    {
+      "question": "What is the p99 latency of POST /api/ingest?",
+      "expectedAnswer": null,
+      "answerable": false
+    }
+  ]
+}

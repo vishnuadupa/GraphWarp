@@ -1,0 +1,46 @@
+{
+  "name": "vendor-services-contract",
+  "expectedClass": "legal",
+  "acceptableClasses": ["legal"],
+  "notes": "Unambiguous contract language in the first 500 chars; classification should be stable.",
+  "entities": [
+    { "name": "Master Services Agreement", "type": "Agreement" },
+    { "name": "Northwind Analytics Inc.", "type": "Party" },
+    { "name": "Brightpath Consulting LLC", "type": "Party" },
+    { "name": "Statement of Work No. 1", "type": "Contract" },
+    { "name": "Delaware", "type": "Jurisdiction" },
+    { "name": "American Arbitration Association", "type": "Court" },
+    { "name": "Wilmington", "type": "Location" },
+    { "name": "Dana Whitfield", "type": "Party" },
+    { "name": "Marcus Ellery", "type": "Party" },
+    { "name": "March 14, 2025", "type": "Date" },
+    { "name": "Confidential Information", "type": "Obligation" }
+  ],
+  "relationships": [
+    { "source": "Master Services Agreement", "relation": "GOVERNED_BY", "target": "Delaware" },
+    { "source": "Brightpath Consulting LLC", "relation": "INDEMNIFIES", "target": "Northwind Analytics Inc." },
+    { "source": "Northwind Analytics Inc.", "relation": "OBLIGATED_TO", "target": "Brightpath Consulting LLC" },
+    { "source": "Master Services Agreement", "relation": "EFFECTIVE_ON", "target": "March 14, 2025" },
+    { "source": "Statement of Work No. 1", "relation": "PART_OF", "target": "Master Services Agreement" },
+    { "source": "Dana Whitfield", "relation": "EXECUTED_BY", "target": "Northwind Analytics Inc." },
+    { "source": "Marcus Ellery", "relation": "EXECUTED_BY", "target": "Brightpath Consulting LLC" },
+    { "source": "Master Services Agreement", "relation": "DISPUTES_RESOLVED_BY", "target": "American Arbitration Association" }
+  ],
+  "qa": [
+    {
+      "question": "Who indemnifies whom under this agreement?",
+      "expectedAnswer": "Brightpath Consulting LLC indemnifies Northwind Analytics Inc. against third-party IP infringement claims.",
+      "answerable": true
+    },
+    {
+      "question": "What is the notice period for termination for convenience?",
+      "expectedAnswer": "Ninety (90) days written notice.",
+      "answerable": true
+    },
+    {
+      "question": "What is Brightpath Consulting's annual employee headcount?",
+      "expectedAnswer": null,
+      "answerable": false
+    }
+  ]
+}

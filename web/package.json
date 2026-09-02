@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "eval:extraction": "ts-node --project eval/tsconfig.json eval/extraction-eval.ts",
+    "eval:injection": "ts-node --project eval/tsconfig.json eval/injection-tests.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
