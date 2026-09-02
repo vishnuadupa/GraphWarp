@@ -1,0 +1,7 @@
+services:
+  markitdown-service:
+    build: ./services/markitdown-service
+    ports:
+      - "8001:8001"
+    environment:
+      - MARKITDOWN_SERVICE_TOKEN=${MARKITDOWN_SERVICE_TOKEN:-}

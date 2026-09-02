@@ -81,33 +81,23 @@ export async function POST(req: NextRequest) {
           }
 
           // ── Semantic Cache Lookup ───────────────────────────────────────────
-          if (queryEmbedding && messageHistory.length === 0) { // Only cache isolated queries
-            const { data: cacheHit, error: cacheErr } = await supabase.rpc('match_semantic_cache', {
+          // Cosine-similarity nearest-neighbour via the match_semantic_cache
+          // RPC (migration 20260902000000) — only cache/hit isolated queries
+          // (no conversation history), since history changes what "the same
+          // question" should mean.
+          if (queryEmbedding && messageHistory.length === 0) {
+            const { data: cacheHits, error: cacheErr } = await supabase.rpc('match_semantic_cache', {
               query_embedding: queryEmbedding,
               match_threshold: 0.95,
               match_count: 1,
-              user_id_param: user.id
+              user_id_param: user.id,
             });
-            
-            // if we don't have the RPC, we can do direct query since pgvector supports `<=>` 
-            // Wait, standard Supabase doesn't have match_semantic_cache RPC unless created. 
-            // We can just use a direct query. Let's do direct select.
-            const { data: cacheData } = await supabase
-              .from('semantic_cache')
-              .select('answer, question_embedding')
-              .eq('user_id', user.id)
-              // We order by distance using pg_vector. Since we don't have an RPC, we will skip
-              // strict cache lookup if we can't query it easily without an RPC. 
-              // Wait, we can use `.filter` but postgrest doesn't easily support raw `<=>` operator without RPC.
-              // So for now, we'll try to fetch the exact same text for caching as a simple fallback, or rely on RPC if present.
-              // Actually, exact string match is easiest if RPC isn't guaranteed:
-              .ilike('question', question)
-              .limit(1)
-              .maybeSingle();
+            if (cacheErr) console.warn('[chat] Semantic cache lookup failed:', cacheErr);
 
-            if (cacheData && cacheData.answer) {
+            const cacheHit = cacheHits?.[0];
+            if (cacheHit?.answer) {
               send({ type: 'phase', data: 'answering' });
-              send({ type: 'text', data: cacheData.answer });
+              send({ type: 'text', data: cacheHit.answer });
               send({ type: 'phase', data: null });
               controller.enqueue(encoder.encode('data: [DONE]\n\n'));
               return;

@@ -43,8 +43,12 @@ export async function GET() {
               { uid: user.id },
             ),
             tx.run(
+              // Docs may be recorded on a relation as legacy r.source_file
+              // (string) or current r.source_files (array) — unwind both
+              // into one set of doc names per relation before counting.
               'MATCH ()-[r:RELATION {user_id: $uid}]->() ' +
-              'RETURN r.source_file AS doc, count(r) AS cnt ORDER BY cnt DESC',
+              'UNWIND coalesce(r.source_files, CASE WHEN r.source_file IS NOT NULL THEN [r.source_file] ELSE [] END) AS doc ' +
+              'RETURN doc, count(r) AS cnt ORDER BY cnt DESC',
               { uid: user.id },
             ),
           ]),

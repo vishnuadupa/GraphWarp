@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
 import neo4j from 'neo4j-driver';
 import dns from 'dns';
+import { createClient } from '@/lib/supabase/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  // Infra diagnostics (masked creds, DNS, connectivity + raw error stacks) —
+  // never expose outside local/dev, and even there require a logged-in user.
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json({ error: 'Not Found' }, { status: 404 });
+  }
+  const supabase = await createClient();
+  const { data: { user: authUser } } = await supabase.auth.getUser();
+  if (!authUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
   const diagnostics: any = {
     env: {
       NEO4J_URI: {

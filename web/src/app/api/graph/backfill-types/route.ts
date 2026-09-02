@@ -2,9 +2,19 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { driver } from '@/lib/neo4j/neo4j';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 export const runtime = 'nodejs';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+const redis = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
+  : null;
+
+const ratelimit = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '1 h'), analytics: true })
+  : null;
 
 /**
  * POST /api/graph/backfill-types
@@ -16,6 +26,13 @@ export async function POST() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    if (ratelimit) {
+      const { success } = await ratelimit.limit(`backfill_types_${user.id}`);
+      if (!success) {
+        return NextResponse.json({ error: 'Rate limit exceeded (10 backfills/hour). Please try again later.' }, { status: 429 });
+      }
+    }
 
     const session = driver.session();
     let updatedCount = 0;

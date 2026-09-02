@@ -7,9 +7,6 @@ import { withRetry } from '../utils/retry';
 import { VALID_CLASSES, getTemplate, type ExtractionTemplate } from './templates';
 import { MODELS } from '../config/models';
 import { embedBatch, embeddingsEnabled, DIMENSIONS } from '../embeddings';
-import * as mammoth from 'mammoth';
-import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
 
 /**
  * Normalises an extracted entity name to prevent trivial duplicates:
@@ -39,169 +36,53 @@ function getOpenRouter(): OpenAI {
   });
 }
 
-// ── Relationship column keyword map ───────────────────────────────────────────
-// Keys are lowercase substrings matched against CSV/JSON column headers.
-const REL_COLUMN_MAP: Record<string, { relation: string; sourceType: string; targetType: string }> = {
-  father:       { relation: 'child of',      sourceType: 'Person',       targetType: 'Person' },
-  mother:       { relation: 'child of',      sourceType: 'Person',       targetType: 'Person' },
-  parent:       { relation: 'child of',      sourceType: 'Person',       targetType: 'Person' },
-  spouse:       { relation: 'married to',    sourceType: 'Person',       targetType: 'Person' },
-  husband:      { relation: 'married to',    sourceType: 'Person',       targetType: 'Person' },
-  wife:         { relation: 'married to',    sourceType: 'Person',       targetType: 'Person' },
-  partner:      { relation: 'partner of',    sourceType: 'Person',       targetType: 'Person' },
-  child:        { relation: 'parent of',     sourceType: 'Person',       targetType: 'Person' },
-  children:     { relation: 'parent of',     sourceType: 'Person',       targetType: 'Person' },
-  son:          { relation: 'parent of',     sourceType: 'Person',       targetType: 'Person' },
-  daughter:     { relation: 'parent of',     sourceType: 'Person',       targetType: 'Person' },
-  sibling:      { relation: 'sibling of',    sourceType: 'Person',       targetType: 'Person' },
-  brother:      { relation: 'sibling of',    sourceType: 'Person',       targetType: 'Person' },
-  sister:       { relation: 'sibling of',    sourceType: 'Person',       targetType: 'Person' },
-  manager:      { relation: 'reports to',    sourceType: 'Person',       targetType: 'Person' },
-  reports_to:   { relation: 'reports to',    sourceType: 'Person',       targetType: 'Person' },
-  supervisor:   { relation: 'supervised by', sourceType: 'Person',       targetType: 'Person' },
-  employer:     { relation: 'works at',      sourceType: 'Person',       targetType: 'Organization' },
-  company:      { relation: 'works at',      sourceType: 'Person',       targetType: 'Organization' },
-  organization: { relation: 'member of',     sourceType: 'Person',       targetType: 'Organization' },
-  owns:         { relation: 'owns',          sourceType: 'Person',       targetType: 'Entity' },
-  owned_by:     { relation: 'owned by',      sourceType: 'Entity',       targetType: 'Person' },
-  founded_by:   { relation: 'founded by',    sourceType: 'Organization', targetType: 'Person' },
-  located_in:   { relation: 'located in',    sourceType: 'Entity',       targetType: 'Location' },
-  location:     { relation: 'located in',    sourceType: 'Entity',       targetType: 'Location' },
-  city:         { relation: 'born in',       sourceType: 'Person',       targetType: 'Location' },
-  country:      { relation: 'from',          sourceType: 'Person',       targetType: 'Location' },
-};
-
-const NAME_SYNONYMS = ['name', 'fullname', 'full_name', 'person', 'entity', 'title', 'label', 'person_name'];
-
-interface GraphTriple {
+export interface GraphTriple {
   source:      string;
   source_type: string;
   relation:    string;
   target:      string;
   target_type: string;
+  // Provenance: "filename#charStart-charEnd" into the converted document
+  // text — set by our own code after extraction, never by the LLM, so an
+  // edge is always traceable back to the exact source excerpt it came from.
+  source_chunk?: string;
 }
 
 /**
- * CSV → graph triples, no LLM.
- * Detects the entity column by name, then maps relationship columns via REL_COLUMN_MAP.
- * Handles multi-value cells separated by ; or |
+ * Converts any supported file to Markdown via the markitdown sidecar
+ * (services/markitdown-service) — one converter for every format instead of
+ * a parser per extension. Markdown output (esp. tables) is more legible to
+ * the extraction LLM than a raw text dump.
  */
-function parseCsvToGraph(buffer: Buffer): GraphTriple[] {
-  const { data, meta } = Papa.parse<Record<string, string>>(buffer.toString('utf8'), {
-    header: true, skipEmptyLines: true, dynamicTyping: false,
-  });
-  if (!data.length || !meta.fields?.length) return [];
+async function convertToMarkdown(buffer: Buffer, filename: string): Promise<string> {
+  const serviceUrl = process.env.MARKITDOWN_SERVICE_URL || 'http://localhost:8001';
+  const serviceToken = process.env.MARKITDOWN_SERVICE_TOKEN;
 
-  const headers = meta.fields;
-  const nameCol =
-    headers.find((h) => NAME_SYNONYMS.includes(h.toLowerCase().replace(/[^a-z_]/g, ''))) ??
-    headers[0];
+  const form = new FormData();
+  form.append('file', new Blob([new Uint8Array(buffer)]), filename);
 
-  const triples: GraphTriple[] = [];
-  for (const row of data) {
-    const source = String(row[nameCol] ?? '').trim();
-    if (!source) continue;
-
-    for (const header of headers) {
-      if (header === nameCol) continue;
-      const colKey = header.toLowerCase().replace(/[^a-z_]/g, '');
-      const relDef = Object.entries(REL_COLUMN_MAP).find(([k]) => colKey.includes(k))?.[1];
-      if (!relDef) continue;
-
-      const rawVal = String(row[header] ?? '').trim();
-      if (!rawVal) continue;
-
-      for (const target of rawVal.split(/[;|]/).map((v) => v.trim()).filter(Boolean)) {
-        if (target !== source) {
-          triples.push({
-            source,
-            source_type: relDef.sourceType,
-            relation:    relDef.relation,
-            target,
-            target_type: relDef.targetType,
-          });
-        }
-      }
-    }
-  }
-  return triples;
-}
-
-/**
- * JSON → graph triples, no LLM.
- * Unwraps common envelope keys (data/items/results/nodes) then treats each
- * object in the array as an entity, mapping keys via REL_COLUMN_MAP.
- */
-function parseJsonToGraph(buffer: Buffer): GraphTriple[] {
-  let parsed: unknown;
-  try { parsed = JSON.parse(buffer.toString('utf8')); } catch { return []; }
-
-  const arr: unknown[] = Array.isArray(parsed)
-    ? parsed
-    : (
-        (parsed as Record<string, unknown>).data ??
-        (parsed as Record<string, unknown>).items ??
-        (parsed as Record<string, unknown>).results ??
-        (parsed as Record<string, unknown>).nodes ??
-        Object.values(parsed as object)[0]
-      ) as unknown[];
-
-  if (!Array.isArray(arr) || !arr.length) return [];
-
-  const keys = Object.keys(arr[0] as object);
-  const nameKey = keys.find((k) => NAME_SYNONYMS.includes(k.toLowerCase())) ?? keys[0];
-
-  const triples: GraphTriple[] = [];
-  for (const item of arr as Record<string, unknown>[]) {
-    const source = String(item[nameKey] ?? '').trim();
-    if (!source) continue;
-
-    for (const key of keys) {
-      if (key === nameKey) continue;
-      const colKey = key.toLowerCase().replace(/[^a-z_]/g, '');
-      const relDef = Object.entries(REL_COLUMN_MAP).find(([k]) => colKey.includes(k))?.[1];
-      if (!relDef) continue;
-
-      const val = item[key];
-      const targets = Array.isArray(val)
-        ? (val as unknown[]).map(String)
-        : String(val ?? '').split(/[;|,]/).map((v) => v.trim()).filter(Boolean);
-
-      for (const target of targets) {
-        if (target && target !== source) {
-          triples.push({
-            source,
-            source_type: relDef.sourceType,
-            relation:    relDef.relation,
-            target,
-            target_type: relDef.targetType,
-          });
-        }
-      }
-    }
-  }
-  return triples;
-}
-
-/**
- * XLSX / XLS → graph triples, no LLM.
- * Reads the first sheet, converts to CSV format, then delegates to parseCsvToGraph.
- */
-function parseXlsxToGraph(buffer: Buffer): GraphTriple[] {
+  let res: Response;
   try {
-    const workbook = XLSX.read(buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0];
-    if (!sheetName) return [];
-    const sheet = workbook.Sheets[sheetName];
-    const csv = XLSX.utils.sheet_to_csv(sheet);
-    return parseCsvToGraph(Buffer.from(csv, 'utf8'));
+    res = await fetch(`${serviceUrl}/convert`, {
+      method: 'POST',
+      headers: serviceToken ? { 'x-service-token': serviceToken } : undefined,
+      body: form,
+    });
   } catch (err: any) {
-    // Throw a non-retriable error so the user gets a clear failure signal,
-    // not a silent 'Completed' document with 0 entities.
-    throw new NonRetriableError(
-      `Could not parse Excel file: ${err?.message ?? 'unknown error'}. The file may be corrupt or in an unsupported format.`
-    );
+    // Network/connection failure — retriable, the sidecar may just be cold-starting.
+    throw new Error(`markitdown-service unreachable: ${err?.message ?? 'unknown error'}`);
   }
+
+  if (res.status === 422) {
+    const body = await res.json().catch(() => ({}));
+    throw new NonRetriableError(body.detail ?? 'markitdown-service could not convert this file.');
+  }
+  if (!res.ok) {
+    throw new Error(`markitdown-service error ${res.status}: ${await res.text().catch(() => '')}`);
+  }
+
+  const { markdown } = await res.json();
+  return markdown ?? '';
 }
 
 /** Split text into overlapping chunks so context bleeds across boundaries.
@@ -212,13 +93,19 @@ function parseXlsxToGraph(buffer: Buffer): GraphTriple[] {
  * which silently truncates on models with ≤ 4 096 output tokens.
  * Smaller input chunks → manageable output → no silent parse failures.
  */
-function chunkText(text: string, size = 1_500, overlap = 200): string[] {
-  if (text.length <= size) return [text];
-  const chunks: string[] = [];
+export interface TextChunk {
+  text:  string;
+  start: number;
+  end:   number;
+}
+
+export function chunkText(text: string, size = 1_500, overlap = 200): TextChunk[] {
+  if (text.length <= size) return [{ text, start: 0, end: text.length }];
+  const chunks: TextChunk[] = [];
   let start = 0;
   while (start < text.length) {
     const end = Math.min(start + size, text.length);
-    chunks.push(text.slice(start, end));
+    chunks.push({ text: text.slice(start, end), start, end });
     if (end === text.length) break;
     start += size - overlap;
   }
@@ -234,7 +121,7 @@ function chunkText(text: string, size = 1_500, overlap = 200): string[] {
  * "general". The document NEVER touches a template — templates are static
  * code selected in pure TypeScript after this call returns.
  */
-async function classifyDocument(sample: string): Promise<string> {
+export async function classifyDocument(sample: string): Promise<string> {
   const classList = [...VALID_CLASSES].join(', ');
   try {
     const res = await withRetry(() =>
@@ -259,6 +146,71 @@ async function classifyDocument(sample: string): Promise<string> {
   }
 }
 
+// Forces the extraction call to return well-formed JSON instead of relying on
+// prompt instructions + regex-stripping markdown fences. Not every OpenRouter
+// provider honours strict json_schema mode, so we try it first and fall back
+// to the much more broadly supported json_object mode (guarantees syntactically
+// valid JSON, just not the exact shape) rather than hard-failing the chunk.
+const EXTRACTION_SCHEMA = {
+  type: 'object',
+  properties: {
+    entities: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: { name: { type: 'string' }, type: { type: 'string' } },
+        required: ['name', 'type'],
+        additionalProperties: false,
+      },
+    },
+    relations: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          source:      { type: 'string' },
+          source_type: { type: 'string' },
+          relation:    { type: 'string' },
+          target:      { type: 'string' },
+          target_type: { type: 'string' },
+        },
+        required: ['source', 'source_type', 'relation', 'target', 'target_type'],
+        additionalProperties: false,
+      },
+    },
+  },
+  required: ['entities', 'relations'],
+  additionalProperties: false,
+};
+
+async function extractionCompletion(systemPrompt: string, chunk: string) {
+  const messages = [
+    { role: 'system' as const, content: systemPrompt },
+    { role: 'user' as const,   content: chunk },
+  ];
+  try {
+    return await withRetry(() =>
+      getOpenRouter().chat.completions.create({
+        model: MODELS.EXTRACTION,
+        messages,
+        response_format: {
+          type: 'json_schema',
+          json_schema: { name: 'graph_extraction', strict: true, schema: EXTRACTION_SCHEMA },
+        } as any,
+      }),
+    );
+  } catch (err: any) {
+    console.warn('[ingest] json_schema response_format rejected, falling back to json_object:', err?.message);
+    return await withRetry(() =>
+      getOpenRouter().chat.completions.create({
+        model: MODELS.EXTRACTION,
+        messages,
+        response_format: { type: 'json_object' },
+      }),
+    );
+  }
+}
+
 /**
  * Phase 2+3 — EXTRACT (per chunk).
  *
@@ -266,7 +218,7 @@ async function classifyDocument(sample: string): Promise<string> {
  * classifyDocument). The document chunk is ONLY in the user message.
  * Template content is never influenced by the document.
  */
-async function extractChunk(
+export async function extractChunk(
   chunk: string,
   template: ExtractionTemplate,
   registry: Array<{ name: string; type: string }>,
@@ -300,15 +252,7 @@ async function extractChunk(
     `   - "relation" must be UPPER_CASE\n` +
     `   - Direction: grammatical subject → "source", object → "target"`;
 
-  const res = await withRetry(() =>
-    getOpenRouter().chat.completions.create({
-      model: MODELS.EXTRACTION,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user',   content: chunk },
-      ],
-    }),
-  );
+  const res = await extractionCompletion(systemPrompt, chunk);
 
   const raw = res.choices[0]?.message?.content ?? '{}';
   const cleaned = raw.replace(/```(?:json)?\s*/gi, '').replace(/```/g, '').trim();
@@ -399,53 +343,6 @@ function resolveAliases(triples: GraphTriple[]): GraphTriple[] {
   return result;
 }
 
-// Applied only for image inputs. Teaches the model to recognise the visual
-// grammar of any diagram type rather than guessing one fixed structure.
-const IMAGE_EXTRACT_ADDENDUM = `
-
-This is an image. Before extracting, silently identify which type(s) of visual content it contains, then apply the matching strategy below. If multiple types appear, apply all relevant strategies.
-
-HIERARCHICAL DIAGRAMS (family trees, org charts, taxonomies, class diagrams):
-  - Every line or branch between two nodes is a relationship — extract it.
-  - Vertical position encodes hierarchy: nodes higher up are ancestors/parents/superiors.
-  - Horizontal bar connecting two nodes at the same level = peer relationship (e.g. spouses, co-founders).
-  - Do NOT collapse the whole diagram into vague "member of" triples — capture each direct connection.
-
-FLOWCHARTS / PROCESS DIAGRAMS / STATE MACHINES:
-  - Arrows represent directed relationships: source "leads to" / "triggers" / "results in" target.
-  - Diamond decision nodes: each output path is a separate "branches to" relationship.
-  - Capture every arrow, including loops and conditional branches.
-
-SCIENTIFIC DIAGRAMS (biology, chemistry, physics, engineering):
-  - Labelled arrows: X "produces" Y, X "inhibits" Y, X "converts to" Y, X "interacts with" Y.
-  - Part-whole: X "contains" Y, X "is part of" Y, X "surrounds" Y.
-  - Chemical structures: atoms connected by bonds are "bonded to"; functional groups are "part of" the molecule.
-  - Circuit diagrams: components are "connected to" / "powers" / "controls".
-  - Physics diagrams: forces, fields, or vectors between objects are "acts on" / "exerts" / "opposes".
-
-MATHEMATICAL CONTENT (equations, geometric figures, graphs/plots):
-  - Named variables or expressions in equations: X "equals" expression, X "represents" quantity.
-  - Geometric elements: A "adjacent to" B, A "inscribed in" B, A "perpendicular to" B.
-  - Graph/plot axes and data series: series "measures" quantity, A "greater than" B at condition.
-  - Proofs or derivations: step A "implies" step B.
-
-DATA VISUALISATIONS (bar charts, pie charts, scatter plots, tables):
-  - Each labelled category is an entity; its value or proportion is a "has value" or "accounts for" relationship.
-  - Comparative relationships: A "exceeds" B, A "correlates with" B.
-  - Time-series: entity at time T1 "precedes" same entity at T2.
-
-MIND MAPS / CONCEPT MAPS:
-  - Central node to each branch: "includes" / "is type of" / "related to".
-  - Labelled edges: use the label text directly as the relation.
-
-TEXT-HEAVY IMAGES (screenshots, slides, whiteboards, handwritten notes):
-  - Extract relationships from the text exactly as you would from a plain-text document.
-  - Bullet lists and numbered steps: treat each item as an entity; sequential items "followed by" the next.
-
-PHOTOGRAPHS OR ABSTRACT IMAGES WITH NO IDENTIFIABLE RELATIONAL CONTENT:
-  - Return an empty JSON array: []
-  - Do not invent relationships that are not visible or inferable from the image.`;
-
 // ── Main Inngest function ──────────────────────────────────────────────────────
 export const processDocument = inngest.createFunction(
   {
@@ -487,47 +384,19 @@ export const processDocument = inngest.createFunction(
           );
         }
 
-        // Structured files: deterministic parse, no LLM cost
-        if (ext === 'csv') {
-          console.log('[ingest] CSV — parsing directly (no LLM)');
-          return parseCsvToGraph(rawBuffer);
-        }
-        if (ext === 'xlsx' || ext === 'xls') {
-          console.log(`[ingest] Excel (${ext}) — parsing directly (no LLM)`);
-          return parseXlsxToGraph(rawBuffer);
-        }
+        // Every format goes through markitdown → Markdown text → 3-stage LLM
+        // pipeline. Structured formats (csv/xlsx) come back as Markdown
+        // tables, which the extraction LLM reads directly.
+        const rawText = await convertToMarkdown(rawBuffer, filename);
+        console.log(`[ingest] ${ext.toUpperCase()} → markdown — ${rawText.length} chars`);
 
-        // Unstructured text files: 3-stage LLM pipeline
-        let rawText: string;
-        if (ext === 'docx') {
-          const extracted = await mammoth.extractRawText({ buffer: rawBuffer });
-          rawText = extracted.value;
-          console.log(`[ingest] DOCX — extracted ${rawText.length} chars`);
-        } else if (ext === 'pdf') {
-          // Dynamic import avoids build-time crashes (pdf-parse uses fs at module level)
-          let pdfData: any;
-          try {
-            const pdfMod = await import('pdf-parse');
-            const pdfParse = (pdfMod as any).default ?? pdfMod;
-            pdfData = await pdfParse(rawBuffer);
-          } catch (pdfErr: any) {
-            throw new NonRetriableError(
-              `Could not parse PDF: ${pdfErr?.message ?? 'unknown error'}. ` +
-              'The file may be corrupt, password-protected, or in an unsupported format.',
-            );
-          }
-          rawText = pdfData.text ?? '';
-          console.log(`[ingest] PDF — ${pdfData.numpages} pages, ${rawText.length} chars`);
-          // Scanned / image-only PDFs produce near-zero text — fail fast, don't retry
-          if (rawText.trim().length < 100) {
-            throw new NonRetriableError(
-              `This PDF appears to be scanned or image-only (only ${rawText.trim().length} characters extracted). ` +
-              'Please upload a text-based PDF exported from a document editor.',
-            );
-          }
-        } else {
-          rawText = rawBuffer.toString('utf8');
-          console.log(`[ingest] Text (${ext}) — ${rawText.length} chars`);
+        // Near-zero output means a scanned/image-only PDF or an empty file —
+        // fail fast, don't retry.
+        if (rawText.trim().length < 100) {
+          throw new NonRetriableError(
+            `Could not extract meaningful content from this file (only ${rawText.trim().length} characters). ` +
+            'It may be scanned/image-only, empty, or corrupt.',
+          );
         }
 
         // Cap at 20 000 chars (~13 chunks) — controls token spend per document
@@ -553,7 +422,7 @@ export const processDocument = inngest.createFunction(
 
         for (let i = 0; i < chunks.length; i++) {
           try {
-            const { entities, triples } = await extractChunk(chunks[i], template, entityRegistry);
+            const { entities, triples } = await extractChunk(chunks[i].text, template, entityRegistry);
 
             // Merge new entities into registry (case-insensitive dedup)
             for (const entity of entities) {
@@ -564,7 +433,10 @@ export const processDocument = inngest.createFunction(
               }
             }
 
-            allTriples.push(...triples);
+            // Tag provenance ourselves — never trust the LLM to report its
+            // own source location.
+            const sourceChunk = `${filename}#${chunks[i].start}-${chunks[i].end}`;
+            allTriples.push(...triples.map((t) => ({ ...t, source_chunk: sourceChunk })));
             console.log(`[ingest] Chunk ${i + 1}/${chunks.length} → ${entities.length} entities, ${triples.length} relations`);
           } catch (err: any) {
             console.warn(`[ingest] Chunk ${i + 1} failed, skipping: ${err?.message}`);
@@ -633,18 +505,24 @@ export const processDocument = inngest.createFunction(
                ON CREATE SET t.type = item.targetType, t.created_at = datetime()
                ON MATCH  SET t.type = CASE WHEN t.type = 'Entity' THEN item.targetType ELSE t.type END
                MERGE (s)-[r:RELATION {type: item.relation, user_id: $userId}]->(t)
-               ON CREATE SET r.weight = 1, r.created_at = datetime(), r.source_files = [$filename]
+               ON CREATE SET r.weight = 1, r.created_at = datetime(),
+                            r.source_files  = [$filename],
+                            r.source_chunks = CASE WHEN item.sourceChunk IS NULL THEN [] ELSE [item.sourceChunk] END
                ON MATCH  SET r.weight = r.weight + 1,
                             r.source_files = CASE WHEN $filename IN coalesce(r.source_files, [])
                                              THEN coalesce(r.source_files, [])
-                                             ELSE coalesce(r.source_files, []) + [$filename] END`,
+                                             ELSE coalesce(r.source_files, []) + [$filename] END,
+                            r.source_chunks = CASE WHEN item.sourceChunk IS NULL OR item.sourceChunk IN coalesce(r.source_chunks, [])
+                                             THEN coalesce(r.source_chunks, [])
+                                             ELSE coalesce(r.source_chunks, []) + [item.sourceChunk] END`,
               {
                 batch: extractedData.map((item: GraphTriple) => ({
-                  source:     item.source,
-                  sourceType: item.source_type,
-                  target:     item.target,
-                  targetType: item.target_type,
-                  relation:   item.relation,
+                  source:      item.source,
+                  sourceType:  item.source_type,
+                  target:      item.target,
+                  targetType:  item.target_type,
+                  relation:    item.relation,
+                  sourceChunk: item.source_chunk ?? null,
                 })),
                 userId,
                 filename: filename || 'Unknown Source',

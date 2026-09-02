@@ -2,9 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { driver } from '@/lib/neo4j/neo4j';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
 export const runtime = 'nodejs';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+
+const redis = (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN)
+  ? new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN })
+  : null;
+
+const ratelimit = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(15, '1 h'), analytics: true })
+  : null;
 
 /**
  * POST /api/documents/summary
@@ -17,6 +27,13 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    if (ratelimit) {
+      const { success } = await ratelimit.limit(`doc_summary_${user.id}`);
+      if (!success) {
+        return NextResponse.json({ error: 'Rate limit exceeded (15 summaries/hour). Please try again later.' }, { status: 429 });
+      }
+    }
+
     const { filename } = await req.json();
     if (!filename) return NextResponse.json({ error: 'filename required' }, { status: 400 });
 
@@ -27,9 +44,17 @@ export async function POST(req: NextRequest) {
     let topEntities: string[] = [];
 
     try {
+      // Doc filter handles both storage formats: legacy r.source_file (string)
+      // and current r.source_files (array) — see graph/full/route.ts for the
+      // same pattern.
+      const docFilter =
+        `(r.source_file = $filename OR r.source_file CONTAINS $filename)
+         OR any(f IN coalesce(r.source_files, []) WHERE f = $filename OR f CONTAINS $filename)`;
+
       const result = await session.executeRead((tx: any) =>
         tx.run(
-          `MATCH (s:Entity {user_id: $uid})-[r:RELATION {source_file: $filename, user_id: $uid}]->(t:Entity {user_id: $uid})
+          `MATCH (s:Entity {user_id: $uid})-[r:RELATION {user_id: $uid}]->(t:Entity {user_id: $uid})
+           WHERE ${docFilter}
            RETURN s.name AS src, r.type AS rel, t.name AS tgt, s.type AS srcType, t.type AS tgtType
            LIMIT 80`,
           { uid: user.id, filename }
@@ -48,7 +73,8 @@ export async function POST(req: NextRequest) {
       // Top entities by degree within this doc
       const topRes = await session.executeRead((tx: any) =>
         tx.run(
-          `MATCH (n:Entity {user_id: $uid})-[r:RELATION {source_file: $filename, user_id: $uid}]-()
+          `MATCH (n:Entity {user_id: $uid})-[r:RELATION {user_id: $uid}]-()
+           WHERE ${docFilter}
            RETURN n.name AS name, count(r) AS cnt ORDER BY cnt DESC LIMIT 5`,
           { uid: user.id, filename }
         )
