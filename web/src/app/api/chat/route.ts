@@ -8,6 +8,7 @@ import { embedText, embeddingsEnabled } from '@/lib/embeddings';
 import { logLlmUsage, logRequestLatency } from '@/lib/observability/usage-log';
 import { classifyQuery } from '@/lib/retrieval/router';
 import { checkGroundedness } from '@/lib/retrieval/groundedness';
+import { runAggregateQuery } from '@/lib/retrieval/aggregate';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
@@ -129,8 +130,37 @@ export async function POST(req: NextRequest) {
           // multi_hop → full 3-tier + 2-hop pipeline (unchanged baseline).
           // summarization → treated as multi_hop for now; a real global/community-summary
           // path needs a community-detection layer that doesn't exist yet — future work.
+          // aggregate → bypasses entity-matching entirely, see below.
           const singleHop = queryRoute === 'single_hop';
           console.log('[chat] query route: %s', queryRoute);
+
+          // ── Aggregate queries ("how many X", "list all Y") ─────────────────
+          // The entity-match-then-traverse pipeline below has no specific named
+          // entity to match on a counting question, so it either refuses or
+          // answers from a partial fragment. Answer these with a real COUNT
+          // instead of asking the synthesis LLM to eyeball a subgraph.
+          if (queryRoute === 'aggregate') {
+            send({ type: 'phase', data: 'traversing' });
+            try {
+              const agg = await runAggregateQuery(driver, client, question, user.id, selectedDocs);
+              if (agg.nodes.length > 0) {
+                send({
+                  type: 'graph',
+                  data: { nodes: agg.nodes, links: [] },
+                  matchedNodeIds: agg.nodes.map((n) => n.id),
+                  activeNodeIds: agg.nodes.map((n) => n.id),
+                });
+              }
+              send({ type: 'phase', data: 'answering' });
+              send({ type: 'text', data: agg.answer });
+            } catch (aggErr) {
+              console.error('[chat] Aggregate query failed:', aggErr);
+              send({ type: 'error', data: 'The knowledge graph is temporarily unavailable. Please try again in a moment.' });
+            }
+            send({ type: 'phase', data: null });
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+            return;
+          }
 
           let entities: string[] = [];
           try {

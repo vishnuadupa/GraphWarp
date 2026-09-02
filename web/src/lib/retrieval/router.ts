@@ -3,9 +3,9 @@ import { MODELS } from '@/lib/config/models';
 import { withRetry } from '@/lib/utils/retry';
 import { logLlmUsage } from '@/lib/observability/usage-log';
 
-export type QueryRoute = 'single_hop' | 'multi_hop' | 'summarization';
+export type QueryRoute = 'single_hop' | 'multi_hop' | 'summarization' | 'aggregate';
 
-const VALID_ROUTES = new Set<QueryRoute>(['single_hop', 'multi_hop', 'summarization']);
+const VALID_ROUTES = new Set<QueryRoute>(['single_hop', 'multi_hop', 'summarization', 'aggregate']);
 
 /**
  * One cheap LLM call, closed enum output, fallback on any failure.
@@ -32,7 +32,9 @@ export async function classifyQuery(
               'Classify the user question into exactly one of these categories and output ONLY that word:\n' +
               'single_hop — answerable from one entity and its direct relationships\n' +
               'multi_hop — needs chaining across several entities or indirect connections\n' +
-              'summarization — asks for a broad overview or summary of a whole topic/corpus',
+              'summarization — asks for a broad overview or summary of a whole topic/corpus\n' +
+              'aggregate — asks for a count, total, or "list all" of entities of some type ' +
+              '(e.g. "how many people are mentioned", "list all locations")',
           },
           { role: 'user', content: question.slice(0, 500) },
         ],
