@@ -1,0 +1,43 @@
+{
+  "name": "hr-remote-work-policy",
+  "expectedClass": "legal",
+  "acceptableClasses": ["legal", "general"],
+  "notes": "Policy documents sit between 'legal' (obligations, eligibility, approval) and 'general'. Both are counted correct; a financial_business or resume_cv label would be a real miss.",
+  "entities": [
+    { "name": "Remote Work Policy", "type": "Regulation" },
+    { "name": "HR-014", "type": "Regulation" },
+    { "name": "Northwind Analytics Inc.", "type": "Party" },
+    { "name": "People Operations", "type": "Party" },
+    { "name": "Sofia Duarte", "type": "Party" },
+    { "name": "Chief People Officer", "type": "Role" },
+    { "name": "Workday", "type": "Tool" },
+    { "name": "January 1, 2025", "type": "Date" },
+    { "name": "Support", "type": "Party" },
+    { "name": "Contractors", "type": "Party" }
+  ],
+  "relationships": [
+    { "source": "Remote Work Policy", "relation": "EFFECTIVE_ON", "target": "January 1, 2025" },
+    { "source": "Remote Work Policy", "relation": "ENFORCED_BY", "target": "People Operations" },
+    { "source": "Sofia Duarte", "relation": "EXECUTED_BY", "target": "Remote Work Policy" },
+    { "source": "Sofia Duarte", "relation": "EMPLOYED_BY", "target": "Northwind Analytics Inc." },
+    { "source": "Remote Work Policy", "relation": "PROHIBITS", "target": "Contractors" },
+    { "source": "People Operations", "relation": "PART_OF", "target": "Northwind Analytics Inc." }
+  ],
+  "qa": [
+    {
+      "question": "How many days per week must a hybrid employee be in the office?",
+      "expectedAnswer": "At least two days per week.",
+      "answerable": true
+    },
+    {
+      "question": "Who approves exceptions to this policy?",
+      "expectedAnswer": "Sofia Duarte, Chief People Officer, in writing.",
+      "answerable": true
+    },
+    {
+      "question": "What is the company's parental leave allowance?",
+      "expectedAnswer": null,
+      "answerable": false
+    }
+  ]
+}

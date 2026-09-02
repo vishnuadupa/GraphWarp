@@ -1,0 +1,50 @@
+{
+  "name": "q3-financial-summary",
+  "expectedClass": "financial_business",
+  "acceptableClasses": ["financial_business"],
+  "notes": "Earnings-report language; should not be confused with news_journalism.",
+  "entities": [
+    { "name": "Northwind Analytics Inc.", "type": "Company" },
+    { "name": "Lumen Metrics Ltd.", "type": "Company" },
+    { "name": "Corvus Data Systems", "type": "Company" },
+    { "name": "Delta Insight Corp.", "type": "Competitor" },
+    { "name": "Harkness & Wolfe LLP", "type": "Company" },
+    { "name": "Securities and Exchange Commission", "type": "Regulator" },
+    { "name": "Priya Raghavan", "type": "Person" },
+    { "name": "Tom Beckett", "type": "Person" },
+    { "name": "Atlas Reporting Suite", "type": "Product" },
+    { "name": "Chief Executive Officer", "type": "Role" },
+    { "name": "Chief Financial Officer", "type": "Role" },
+    { "name": "August 6, 2025", "type": "Date" },
+    { "name": "Platform", "type": "Market" },
+    { "name": "Services", "type": "Market" }
+  ],
+  "relationships": [
+    { "source": "Lumen Metrics Ltd.", "relation": "ACQUIRED_BY", "target": "Northwind Analytics Inc." },
+    { "source": "Lumen Metrics Ltd.", "relation": "SUBSIDIARY_OF", "target": "Northwind Analytics Inc." },
+    { "source": "Northwind Analytics Inc.", "relation": "OWNS_STAKE_IN", "target": "Corvus Data Systems" },
+    { "source": "Northwind Analytics Inc.", "relation": "COMPETED_WITH", "target": "Delta Insight Corp." },
+    { "source": "Northwind Analytics Inc.", "relation": "AUDITED_BY", "target": "Harkness & Wolfe LLP" },
+    { "source": "Northwind Analytics Inc.", "relation": "REGULATED_BY", "target": "Securities and Exchange Commission" },
+    { "source": "Priya Raghavan", "relation": "EMPLOYED_BY", "target": "Northwind Analytics Inc." },
+    { "source": "Tom Beckett", "relation": "EMPLOYED_BY", "target": "Northwind Analytics Inc." },
+    { "source": "Atlas Reporting Suite", "relation": "ISSUED_BY", "target": "Northwind Analytics Inc." }
+  ],
+  "qa": [
+    {
+      "question": "Which company did Northwind acquire and for how much?",
+      "expectedAnswer": "Lumen Metrics Ltd., for USD 27 million in cash on August 6, 2025.",
+      "answerable": true
+    },
+    {
+      "question": "Who audits Northwind Analytics?",
+      "expectedAnswer": "Harkness & Wolfe LLP.",
+      "answerable": true
+    },
+    {
+      "question": "What was Northwind's Q1 FY2024 revenue?",
+      "expectedAnswer": null,
+      "answerable": false
+    }
+  ]
+}
