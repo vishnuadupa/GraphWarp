@@ -5,7 +5,7 @@ services:
     rootDir: services/markitdown-service
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
-    plan: starter
+    plan: free
     envVars:
       - key: MARKITDOWN_SERVICE_TOKEN
         sync: false
