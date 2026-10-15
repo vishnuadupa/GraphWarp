@@ -357,6 +357,20 @@ export const processDocument = inngest.createFunction(
     // visible failure. 10 minutes covers the largest documents (13 chunks)
     // with real margin even sequentially; comfortably more with batching.
     timeouts: { finish: '10m' },
+    // The in-body try/catch below only runs for in-process throws — a
+    // `finish` timeout kills the run externally and never reaches that
+    // catch, leaving the document stuck "Processing" forever. onFailure
+    // fires for every terminal failure (retries exhausted, cancelled, or
+    // timed out), so it's the one place that reliably closes the loop.
+    onFailure: async ({ event }: { event: { data: { event: { data: { documentId: string } } } } }) => {
+      const documentId = event.data.event.data.documentId;
+      try {
+        await supabaseAdmin
+          .from('documents')
+          .update({ status: 'Failed', processing_step: null })
+          .eq('id', documentId);
+      } catch { /* non-fatal */ }
+    },
   },
   async ({ event, step }: { event: { data: { documentId: string; filePath: string; userId: string; filename: string } }; step: any }) => {
     const { documentId, filePath, userId, filename } = event.data;
@@ -424,6 +438,7 @@ export const processDocument = inngest.createFunction(
 
         const entityRegistry: Array<{ name: string; type: string }> = [];
         const allTriples: GraphTriple[] = [];
+        let chunksFailed = 0;
 
         // Chunks within a batch run concurrently (real latency win — one
         // sequential LLM round-trip per chunk was the biggest lever in this
@@ -446,6 +461,7 @@ export const processDocument = inngest.createFunction(
                 return { entities, triples: triples.map((t) => ({ ...t, source_chunk: sourceChunk })) };
               } catch (err: any) {
                 console.warn(`[ingest] Chunk ${i + 1} failed, skipping: ${err?.message}`);
+                chunksFailed++;
                 return { entities: [] as Array<{ name: string; type: string }>, triples: [] as GraphTriple[] };
               }
             }),
@@ -489,15 +505,22 @@ export const processDocument = inngest.createFunction(
           console.warn('[ingest] Extraction produced 0 triples — document will be marked Completed with 0 entities');
         }
 
-        return resolved;
+        return { triples: resolved, chunksFailed, chunksTotal: chunks.length };
       });
 
-      console.log(`[ingest] Extracted ${extractedData.length} triples from "${filename}"`);
+      const extractedTriples = extractedData.triples;
+      if (extractedData.chunksFailed > 0) {
+        console.warn(
+          `[ingest] ${extractedData.chunksFailed}/${extractedData.chunksTotal} chunk(s) failed for "${filename}" — graph will be incomplete`,
+        );
+      }
+
+      console.log(`[ingest] Extracted ${extractedTriples.length} triples from "${filename}"`);
 
       // ── Early abort if extraction produced 0 triples ───────────────────────
       // This prevents Step 4 (update-status) from overwriting a 'Failed' status
       // with 'Completed', which was the root cause of the 'Completed with 0 entities' bug.
-      if (!extractedData.length) {
+      if (!extractedTriples.length) {
         await step.run('mark-failed-empty', async () => {
           await supabaseAdmin
             .from('documents')
@@ -536,7 +559,7 @@ export const processDocument = inngest.createFunction(
                                              THEN coalesce(r.source_chunks, [])
                                              ELSE coalesce(r.source_chunks, []) + [item.sourceChunk] END`,
               {
-                batch: extractedData.map((item: GraphTriple) => ({
+                batch: extractedTriples.map((item: GraphTriple) => ({
                   source:      item.source,
                   sourceType:  item.source_type,
                   target:      item.target,
@@ -553,19 +576,20 @@ export const processDocument = inngest.createFunction(
           await session.close();
         }
 
-        return { inserted: extractedData.length };
+        return { inserted: extractedTriples.length };
       });
 
       // ── Step 4: Mark complete — graph is now visible to the user ──────────
       await step.run('update-status', async () => {
         const uniqueEntities = new Set(
-          extractedData.flatMap((d: GraphTriple) => [d.source, d.target]),
+          extractedTriples.flatMap((d: GraphTriple) => [d.source, d.target]),
         );
         await supabaseAdmin.from('documents').update({
           processing_step: null,
           status:          'Completed',
           entity_count:    uniqueEntities.size,
-          relation_count:  extractedData.length,
+          relation_count:  extractedTriples.length,
+          chunks_failed:   extractedData.chunksFailed,
         }).eq('id', documentId);
       });
 
@@ -573,14 +597,29 @@ export const processDocument = inngest.createFunction(
       // Activated automatically when OPENAI_API_KEY (or EMBEDDING_API_KEY) is
       // set.  Falls back gracefully when no key is present — exact-match +
       // substring search in the chat route still work without embeddings.
+      // Embeddings are a soft enhancement — the graph is already fully saved
+      // to Neo4j and marked Completed above (Step 4). An embedding-API error
+      // here must NOT throw: that would hit the outer catch and flip a
+      // document back to 'Failed' even though its graph is live and correct,
+      // which is more misleading than just running without embeddings (the
+      // chat route already falls back to exact-match/substring search).
       await step.run('generate-embeddings', async () => {
+        try {
+          return await generateEmbeddingsForDocument();
+        } catch (err: any) {
+          console.warn(`[ingest] Embeddings failed for "${filename}" — document stays Completed without them: ${err?.message ?? err}`);
+          return { embedded: 0, status: `failed: ${err?.message ?? 'unknown error'}` };
+        }
+      });
+
+      async function generateEmbeddingsForDocument() {
         if (!embeddingsEnabled) {
           return { embedded: 0, status: 'skipped — set OPENAI_API_KEY to enable' };
         }
 
         // Only embed entity names that don't already have an embedding stored.
         const uniqueNames: string[] = [...new Set(
-          (extractedData as GraphTriple[]).flatMap((d) => [d.source, d.target]),
+          (extractedTriples as GraphTriple[]).flatMap((d) => [d.source, d.target]),
         )];
 
         const session = driver.session();
@@ -622,9 +661,9 @@ export const processDocument = inngest.createFunction(
         } finally {
           await session.close();
         }
-      });
+      }
 
-      return { success: true, relationsExtracted: extractedData.length };
+      return { success: true, relationsExtracted: extractedTriples.length };
 
     } catch (err: any) {
       console.error(`[ingest] FAILED for ${documentId}:`, err?.message ?? err);

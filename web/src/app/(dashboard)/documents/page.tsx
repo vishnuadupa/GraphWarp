@@ -18,6 +18,7 @@ interface Doc {
   created_at: string;
   entity_count?: number;
   relation_count?: number;
+  chunks_failed?: number;
   storage_path?: string;
 }
 
@@ -28,7 +29,17 @@ const PROCESSING_STEPS = [
   { key: "saving",      label: "Save" },
 ] as const;
 
-function StatusBadge({ status, processingStep }: { status: string; processingStep?: string | null }) {
+function StatusBadge({ status, processingStep, chunksFailed }: { status: string; processingStep?: string | null; chunksFailed?: number }) {
+  if (status === "Completed" && chunksFailed) {
+    return (
+      <span
+        title={`${chunksFailed} chunk(s) failed to extract — this document's graph is incomplete`}
+        className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none text-xs font-mono font-bold bg-amber-50 text-amber-700 border border-amber-200"
+      >
+        <AlertCircle className="w-3 h-3" /> PARTIAL
+      </span>
+    );
+  }
   if (status === "Completed")
     return (
       <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-none text-xs font-mono font-bold bg-green-50 text-green-700 border border-green-200">
@@ -347,7 +358,7 @@ export default function DocumentsPage() {
                         <span className="font-bold text-[var(--color-ink)] text-sm truncate max-w-xs">{doc.filename}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4"><StatusBadge status={doc.status} processingStep={doc.processing_step} /></td>
+                    <td className="px-6 py-4"><StatusBadge status={doc.status} processingStep={doc.processing_step} chunksFailed={doc.chunks_failed} /></td>
                     <td className="px-6 py-4">
                       <span className="text-sm font-mono font-bold text-[var(--color-muted)] tabular-nums">
                         {doc.status === "Completed" ? (doc.entity_count ?? "—") : <span className="text-[var(--color-rule)]">—</span>}

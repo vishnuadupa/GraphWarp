@@ -69,10 +69,18 @@ export async function POST(req: NextRequest) {
     const session = driver.session();
     try {
       await session.executeWrite(async (tx: any) => {
+        // Relationships can be shared across documents (weight/source_files
+        // accumulate when multiple docs produce the same triple). Only drop
+        // this document's contribution; delete the edge outright only if it
+        // has no other source documents left.
         await tx.run(
           `MATCH ()-[r:RELATION {user_id: $uid}]->()
            WHERE r.source_file = $filename OR $filename IN coalesce(r.source_files, [])
-           DELETE r`,
+           WITH r, [f IN coalesce(r.source_files, []) WHERE f <> $filename] AS remaining
+           FOREACH (_ IN CASE WHEN size(remaining) = 0 THEN [1] ELSE [] END | DELETE r)
+           FOREACH (_ IN CASE WHEN size(remaining) > 0 THEN [1] ELSE [] END |
+             SET r.source_files = remaining,
+                 r.weight = CASE WHEN r.weight > 1 THEN r.weight - 1 ELSE 1 END)`,
           { filename: doc.filename, uid: user.id }
         );
         await tx.run(
